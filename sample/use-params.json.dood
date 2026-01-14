@@ -1,0 +1,12 @@
+<setup>
+import { useParams } from "doodl";
+
+const config = useParams<{ name: string; count: number }>();
+</setup>
+
+<output lang="json">
+{
+    "greeting": "Hello, <<config.name>>!",
+    "count": <<config.count>>
+}
+</output>

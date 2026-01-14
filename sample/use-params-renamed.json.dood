@@ -1,0 +1,11 @@
+<setup>
+import { useParams as getConfig } from "doodl";
+
+const config = getConfig<{ value: string }>();
+</setup>
+
+<output lang="json">
+{
+    "result": "<<config.value>>"
+}
+</output>

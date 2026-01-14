@@ -1,0 +1,11 @@
+<setup>
+import { useParams } from "doodl";
+
+const config = useParams();
+</setup>
+
+<output lang="json">
+{
+    "hasParams": <<config !== undefined>>
+}
+</output>
