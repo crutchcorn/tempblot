@@ -8,8 +8,7 @@ export { DoodlInstance, useParams } from "./instance.js";
 
 // Declare the global storage for params
 declare global {
-  // eslint-disable-next-line no-var
-  var doodleParams: Record<string, unknown> | undefined;
+  let doodleParams: Record<string, unknown> | undefined;
 }
 
 /**
@@ -75,11 +74,6 @@ const __doodlInstance = new __DoodlInstance(globalThis.doodleParams["${escapedSo
 
   // Rewrite useParams() calls (with optional generic type parameters)
   // Pattern: localUseParamsName<...>() -> useParamsRef<...>.call(__doodlInstance)
-  // We need to handle:
-  // - useParams()
-  // - useParams<Type>()
-  // - aliasedName()
-  // - aliasedName<Type>()
   const callRegex = new RegExp(
     `\\b${localUseParamsName}(<[^>]*>)?\\s*\\(\\s*\\)`,
     "g",
