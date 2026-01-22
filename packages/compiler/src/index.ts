@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import * as ts from "typescript";
 import { tokenizeRoot } from "./root-lexer.js";
 import { parseRoot } from "./root-parser.js";
 import { transformOutput } from "./output-transformer.js";
@@ -28,32 +29,39 @@ function ensureDoodleParams(): Record<string, unknown> {
  * - Injects the __doodlInstance creation at the top of setup
  */
 function transformSetupCode(setupCode: string, sourcePath: string): string {
+  const sourceFile = ts.createSourceFile(
+    sourcePath,
+    setupCode,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
+
   // Find the local name of useParams (could be renamed via `import { useParams as foo }`)
-  const importRegex = /import\s*\{([^}]*)\}\s*from\s*["']doodl["']/g;
   let localUseParamsName: string | null = null;
   let isRenamed = false;
 
-  let match: RegExpExecArray | null;
-  while ((match = importRegex.exec(setupCode)) !== null) {
-    const importClause = match[1];
-    // Parse named imports: "useParams", "useParams as foo", etc.
-    const namedImports = importClause.split(",").map((s) => s.trim());
-    for (const namedImport of namedImports) {
-      // Match "useParams" or "useParams as localName"
-      const asMatch = namedImport.match(/^useParams(?:\s+as\s+(\w+))?$/);
-      if (asMatch) {
-        localUseParamsName = asMatch[1] ?? "useParams";
-        isRenamed = asMatch[1] !== undefined;
-        break;
-      }
+  for (const stmt of sourceFile.statements) {
+    if (!ts.isImportDeclaration(stmt)) continue;
+    if (!ts.isStringLiteral(stmt.moduleSpecifier)) continue;
+    if (stmt.moduleSpecifier.text !== "doodl") continue;
+
+    const namedBindings = stmt.importClause?.namedBindings;
+    if (!namedBindings || !ts.isNamedImports(namedBindings)) continue;
+
+    for (const el of namedBindings.elements) {
+      const importedName = el.propertyName?.text ?? el.name.text;
+      if (importedName !== "useParams") continue;
+      localUseParamsName = el.name.text;
+      isRenamed = localUseParamsName !== "useParams";
+      break;
     }
+
     if (localUseParamsName) break;
   }
 
   // If useParams is not imported from doodl, no transformation needed
-  if (!localUseParamsName) {
-    return setupCode;
-  }
+  if (!localUseParamsName) return setupCode;
 
   // Escape sourcePath for use in string literal
   const escapedSourcePath = sourcePath
@@ -72,20 +80,39 @@ function transformSetupCode(setupCode: string, sourcePath: string): string {
 const __doodlInstance = new __DoodlInstance(globalThis.doodleParams["${escapedSourcePath}"]);
 `;
 
-  // Rewrite useParams() calls (with optional generic type parameters)
-  // Pattern: localUseParamsName<...>() -> useParamsRef<...>.call(__doodlInstance)
-  const callRegex = new RegExp(
-    `\\b${localUseParamsName}(<[^>]*>)?\\s*\\(\\s*\\)`,
-    "g",
-  );
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (context) => {
+    const visit: ts.Visitor = (node) => {
+      if (
+        ts.isCallExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        node.expression.text === localUseParamsName &&
+        node.arguments.length === 0
+      ) {
+        const instantiated =
+          node.typeArguments && node.typeArguments.length > 0
+            ? ts.factory.createInstantiationExpression(
+                ts.factory.createIdentifier(useParamsRef),
+                node.typeArguments,
+              )
+            : ts.factory.createIdentifier(useParamsRef);
 
-  const transformedCode = setupCode.replace(
-    callRegex,
-    (_fullMatch, generic) => {
-      const genericPart = generic ?? "";
-      return `${useParamsRef}${genericPart}.call(__doodlInstance)`;
-    },
-  );
+        return ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(instantiated, "call"),
+          undefined,
+          [ts.factory.createIdentifier("__doodlInstance")],
+        );
+      }
+
+      return ts.visitEachChild(node, visit, context);
+    };
+
+    return (node) => ts.visitNode(node, visit) as ts.SourceFile;
+  };
+
+  const result = ts.transform(sourceFile, [transformer]);
+  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+  const transformedCode = printer.printFile(result.transformed[0]);
+  result.dispose();
 
   return instanceInit + transformedCode;
 }

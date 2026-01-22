@@ -22,6 +22,9 @@
     "test:attw": "attw --profile esm-only --pack ."
   },
   "keywords": [],
+  "dependencies": {
+    "typescript": "^5.9.2"
+  },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
     "@types/node": "^24.5.2",
