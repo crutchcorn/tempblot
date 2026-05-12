@@ -1,5 +1,5 @@
 {
-	"name": "doodl-language-server",
+	"name": "tempblot-language-server",
 	"version": "0.0.1",
 	"main": "out/index.js",
 	"files": [
@@ -7,7 +7,7 @@
 		"out/**/*.d.ts"
 	],
 	"bin": {
-		"doodl-language-server": "./bin/doodl-language-server.js"
+		"tempblot-language-server": "./bin/tempblot-language-server.js"
 	},
 	"dependencies": {
 		"@volar/language-core": "~2.4.23",

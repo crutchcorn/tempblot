@@ -7,7 +7,7 @@ import { transformOutput } from "./output-transformer.js";
 const outputVarName = "o" + crypto.randomUUID().replace(/-/g, "");
 
 /**
- * @param sourcePath - the absolute path to the `.dood` source file
+ * @param sourcePath - the absolute path to the `.blot` source file
  * @returns the compiled output as a string
  */
 export async function compilePath(sourcePath: string): Promise<string> {
@@ -21,7 +21,7 @@ export async function compilePath(sourcePath: string): Promise<string> {
     export const ${outputVarName} = \`${transformedOutput}\`;
   `;
   // Write a temporary file to disk
-  const tempPath = path.join(sourceDir, `.doodl_${outputVarName}.ts`);
+  const tempPath = path.join(sourceDir, `.tempblot_${outputVarName}.ts`);
   await fs.writeFile(tempPath, concatenatedSetupOutput);
   const compiledOutput: string = (await import(tempPath))[outputVarName];
   await fs.unlink(tempPath);

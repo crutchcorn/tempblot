@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "Doodl",
-  "scopeName": "source.doodl",
+  "name": "Tempblot",
+  "scopeName": "source.tempblot",
   "patterns": [
     {
       "include": "text.html.basic#comment"
@@ -16,13 +16,13 @@
       "begin": "(<)",
       "beginCaptures": {
         "1": {
-          "name": "punctuation.definition.tag.begin.html.doodl"
+          "name": "punctuation.definition.tag.begin.html.tempblot"
         }
       },
       "end": "(>)",
       "endCaptures": {
         "1": {
-          "name": "punctuation.definition.tag.end.html.doodl"
+          "name": "punctuation.definition.tag.end.html.tempblot"
         }
       },
       "patterns": [
@@ -30,16 +30,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)md\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -62,16 +62,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)html\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -94,16 +94,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)pug\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -126,16 +126,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)stylus\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -158,16 +158,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)postcss\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -190,16 +190,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)sass\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -222,16 +222,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)css\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -254,16 +254,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)scss\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -286,16 +286,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)less\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -318,16 +318,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)js\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -350,16 +350,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)ts\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -382,16 +382,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)jsx\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -414,16 +414,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)tsx\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -446,16 +446,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)json\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -478,16 +478,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)jsonc\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -510,16 +510,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)json5\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -542,16 +542,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)yaml\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -574,16 +574,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)toml\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -606,16 +606,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)(gql|graphql)\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -638,16 +638,16 @@
           "begin": "([a-zA-Z0-9:-]+)\\b(?=[^>]*\\blang\\s*=\\s*(['\"]?)(coffee)\\b\\2)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -702,16 +702,16 @@
           "begin": "(output)\\b",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -734,16 +734,16 @@
           "begin": "(setup)\\b",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -766,16 +766,16 @@
           "begin": "(style)\\b",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -798,16 +798,16 @@
           "begin": "([a-zA-Z0-9:-]+)",
           "beginCaptures": {
             "1": {
-              "name": "entity.name.tag.$1.html.doodl"
+              "name": "entity.name.tag.$1.html.tempblot"
             }
           },
           "end": "(</)(\\1)\\s*(?=>)",
           "endCaptures": {
             "1": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "2": {
-              "name": "entity.name.tag.$2.html.doodl"
+              "name": "entity.name.tag.$2.html.tempblot"
             }
           },
           "patterns": [
@@ -834,16 +834,16 @@
       "begin": "(<<)\\s*",
       "beginCaptures": {
         "1": {
-          "name": "punctuation.definition.interpolation.begin.doodl"
+          "name": "punctuation.definition.interpolation.begin.tempblot"
         }
       },
       "end": "\\s*(>>)",
       "endCaptures": {
         "1": {
-          "name": "punctuation.definition.interpolation.end.doodl"
+          "name": "punctuation.definition.interpolation.end.tempblot"
         }
       },
-      "name": "meta.interpolation.doodl",
+      "name": "meta.interpolation.tempblot",
       "patterns": [
         {
           "include": "source.ts"
@@ -854,16 +854,16 @@
       "begin": "(<)([a-zA-Z0-9:-]+)(?=([^>]+/>))",
       "beginCaptures": {
         "1": {
-          "name": "punctuation.definition.tag.begin.html.doodl"
+          "name": "punctuation.definition.tag.begin.html.tempblot"
         },
         "2": {
-          "name": "entity.name.tag.$2.html.doodl"
+          "name": "entity.name.tag.$2.html.tempblot"
         }
       },
       "end": "(/>)",
       "endCaptures": {
         "1": {
-          "name": "punctuation.definition.tag.end.html.doodl"
+          "name": "punctuation.definition.tag.end.html.tempblot"
         }
       },
       "name": "self-closing-tag",
@@ -887,19 +887,19 @@
       "begin": "(<)(output)\\b(>)",
       "beginCaptures": {
         "1": {
-          "name": "punctuation.definition.tag.begin.html.doodl"
+          "name": "punctuation.definition.tag.begin.html.tempblot"
         },
         "2": {
-          "name": "entity.name.tag.$2.html.doodl"
+          "name": "entity.name.tag.$2.html.tempblot"
         },
         "3": {
-          "name": "punctuation.definition.tag.end.html.doodl"
+          "name": "punctuation.definition.tag.end.html.tempblot"
         }
       },
       "end": "(/?>)",
       "endCaptures": {
         "1": {
-          "name": "punctuation.definition.tag.end.html.doodl"
+          "name": "punctuation.definition.tag.end.html.tempblot"
         }
       },
       "name": "meta.output-tag.start",
@@ -909,10 +909,10 @@
           "end": "(?=/>)|((</)(output)\\b)",
           "endCaptures": {
             "2": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "3": {
-              "name": "entity.name.tag.$3.html.doodl"
+              "name": "entity.name.tag.$3.html.tempblot"
             }
           },
           "name": "meta.output-tag.end",
@@ -928,16 +928,16 @@
       "begin": "(<)(output)\\b",
       "beginCaptures": {
         "1": {
-          "name": "punctuation.definition.tag.begin.html.doodl"
+          "name": "punctuation.definition.tag.begin.html.tempblot"
         },
         "2": {
-          "name": "entity.name.tag.$2.html.doodl"
+          "name": "entity.name.tag.$2.html.tempblot"
         }
       },
       "end": "(/?>)",
       "endCaptures": {
         "1": {
-          "name": "punctuation.definition.tag.end.html.doodl"
+          "name": "punctuation.definition.tag.end.html.tempblot"
         }
       },
       "name": "meta.output-tag.start",
@@ -947,10 +947,10 @@
           "end": "(?=/>)|((</)(output)\\b)",
           "endCaptures": {
             "2": {
-              "name": "punctuation.definition.tag.begin.html.doodl"
+              "name": "punctuation.definition.tag.begin.html.tempblot"
             },
             "3": {
-              "name": "entity.name.tag.$3.html.doodl"
+              "name": "entity.name.tag.$3.html.tempblot"
             }
           },
           "name": "meta.output-tag.end",
@@ -986,7 +986,7 @@
       "end": "(?=/>)|(>)",
       "endCaptures": {
         "1": {
-          "name": "punctuation.definition.tag.end.html.doodl"
+          "name": "punctuation.definition.tag.end.html.tempblot"
         }
       },
       "name": "meta.tag-stuff",

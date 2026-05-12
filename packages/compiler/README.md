@@ -1,8 +1,8 @@
-# Doodl ✏︎
+# Tempblot ✏︎
 
 > A modern type-safe templating engine
 
-```dood
+```blot
 <!-- Run TypeScript via Node -->
 <setup>
 import {v4} from "uuid";
@@ -24,7 +24,7 @@ const data = {
 # Installation
 
 ```shell
-npm install doodl
+npm install tempblot
 ```
 
 # Prerequisites

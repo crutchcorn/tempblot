@@ -86,7 +86,7 @@ importers:
       '@volar/vscode':
         specifier: ~2.4.23
         version: 2.4.23
-      doodl-language-server:
+      tempblot-language-server:
         specifier: workspace:*
         version: link:../language-server
       esbuild:

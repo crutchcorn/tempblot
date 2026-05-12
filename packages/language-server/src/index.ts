@@ -2,7 +2,7 @@ import { createConnection, createServer, createTypeScriptProject, Diagnostic, lo
 import { create as createHtmlService } from 'volar-service-html';
 import { create as createTypeScriptServices } from 'volar-service-typescript';
 import { URI } from 'vscode-uri';
-import { doodlLanguagePlugin, DoodlVirtualCode } from './languagePlugin';
+import { tempblotLanguagePlugin, TempblotVirtualCode } from './languagePlugin';
 
 const connection = createConnection();
 const server = createServer(connection);
@@ -13,7 +13,7 @@ connection.onInitialize(params => {
 	const tsdk = loadTsdkByPath(params.initializationOptions.typescript.tsdk, params.locale);
 	return server.initialize(
 		params,
-		createTypeScriptProject(tsdk.typescript, tsdk.diagnosticMessages, () => ({languagePlugins: [doodlLanguagePlugin]})),
+		createTypeScriptProject(tsdk.typescript, tsdk.diagnosticMessages, () => ({languagePlugins: [tempblotLanguagePlugin]})),
 		[
 			createHtmlService(),
 			...createTypeScriptServices(tsdk.typescript),
@@ -30,7 +30,7 @@ connection.onInitialize(params => {
 								return;
 							}
 							const virtualCode = context.language.scripts.get(decoded[0])?.generated?.embeddedCodes.get(decoded[1]);
-							if (!(virtualCode instanceof DoodlVirtualCode)) {
+							if (!(virtualCode instanceof TempblotVirtualCode)) {
 								return;
 							}
 							const setupNodes = virtualCode.htmlDocument.roots.filter(root => root.tag === 'setup');
@@ -49,7 +49,7 @@ connection.onInitialize(params => {
 										start: document.positionAt(0),
 										end: document.positionAt(1),
 									},
-									source: 'doodl',
+									source: 'tempblot',
 									message: 'Missing setup tag.',
 								});
 							}
@@ -61,7 +61,7 @@ connection.onInitialize(params => {
 										start: document.positionAt(0),
 										end: document.positionAt(1),
 									},
-									source: 'doodl',
+									source: 'tempblot',
 									message: 'Missing output tag.',
 								});
 							}
@@ -73,7 +73,7 @@ connection.onInitialize(params => {
 										start: document.positionAt(setupNodes[i].start),
 										end: document.positionAt(setupNodes[i].end),
 									},
-									source: 'doodl',
+									source: 'tempblot',
 									message: 'Only one setup tag is allowed.',
 								});
 							}
@@ -85,7 +85,7 @@ connection.onInitialize(params => {
 										start: document.positionAt(outputNodes[i].start),
 										end: document.positionAt(outputNodes[i].end),
 									},
-									source: 'doodl',
+									source: 'tempblot',
 									message: 'Only one output tag is allowed.',
 								});
 							}

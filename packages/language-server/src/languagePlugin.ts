@@ -4,19 +4,19 @@ import type * as ts from 'typescript';
 import * as html from 'vscode-html-languageservice';
 import { URI } from 'vscode-uri';
 
-export const doodlLanguagePlugin = {
+export const tempblotLanguagePlugin = {
 	getLanguageId(uri) {
-		if (uri.path.endsWith('.dood')) {
-			return 'doodl';
+		if (uri.path.endsWith('.blot')) {
+			return 'tempblot';
 		}
 	},
 	createVirtualCode(_uri, languageId, snapshot) {
-		if (languageId === 'doodl') {
-			return new DoodlVirtualCode(snapshot);
+		if (languageId === 'tempblot') {
+			return new TempblotVirtualCode(snapshot);
 		}
 	},
 	typescript: {
-		extraFileExtensions: [{ extension: 'dood', isMixedContent: true, scriptKind: 3 satisfies ts.ScriptKind.TS }],
+		extraFileExtensions: [{ extension: 'blot', isMixedContent: true, scriptKind: 3 satisfies ts.ScriptKind.TS }],
 		getServiceScript() {
 			return undefined;
 		},
@@ -39,9 +39,9 @@ export const doodlLanguagePlugin = {
 
 const htmlLs = html.getLanguageService();
 
-export class DoodlVirtualCode implements VirtualCode {
+export class TempblotVirtualCode implements VirtualCode {
 	id = 'root';
-	languageId = 'doodl';
+	languageId = 'tempblot';
 	mappings: CodeMapping[];
 	embeddedCodes: VirtualCode[] = [];
 
@@ -63,11 +63,11 @@ export class DoodlVirtualCode implements VirtualCode {
 			},
 		}];
 		this.htmlDocument = htmlLs.parseHTMLDocument(html.TextDocument.create('', 'html', 0, snapshot.getText(0, snapshot.getLength())));
-		this.embeddedCodes = [...getDoodlEmbeddedCodes(snapshot, this.htmlDocument)];
+		this.embeddedCodes = [...getTempblotEmbeddedCodes(snapshot, this.htmlDocument)];
 	}
 }
 
-function* getDoodlEmbeddedCodes(snapshot: ts.IScriptSnapshot, htmlDocument: html.HTMLDocument): Generator<VirtualCode> {
+function* getTempblotEmbeddedCodes(snapshot: ts.IScriptSnapshot, htmlDocument: html.HTMLDocument): Generator<VirtualCode> {
 	const setups = htmlDocument.roots.filter(root => root.tag === 'setup');
 	const outputs = htmlDocument.roots.filter(root => root.tag === 'output');
 
@@ -89,7 +89,7 @@ function* getDoodlEmbeddedCodes(snapshot: ts.IScriptSnapshot, htmlDocument: html
 		const interpolationsData = extractInterpolationsWithPositions(outputText);
 
 		// Create a combined TypeScript context wrapped in a module
-		// This ensures each .dood file has its own isolated scope
+		// This ensures each .blot file has its own isolated scope
 		const base = `export {}; // Make this file a module\n\n`
 		let combinedText = `${base}${setupText}\n\n// Output interpolations:\n`;
 

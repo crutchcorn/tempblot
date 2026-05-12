@@ -1,43 +1,43 @@
 {
 	"private": true,
-	"name": "doodl-vscode",
+	"name": "tempblot-vscode",
 	"version": "0.0.1",
 	"categories": [
 		"Programming Languages"
 	],
-	"displayName": "Doodl Language Features",
-	"description": "Doodl Language Features",
+	"displayName": "Tempblot Language Features",
+	"description": "Tempblot Language Features",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/crutchcorn/doodl.git"
+		"url": "https://github.com/crutchcorn/tempblot.git"
 	},
 	"engines": {
 		"vscode": "^1.104.0"
 	},
 	"activationEvents": [
-		"onLanguage:doodl"
+		"onLanguage:tempblot"
 	],
 	"main": "./dist/client.js",
 	"contributes": {
 		"languages": [
 			{
-				"id": "doodl",
+				"id": "tempblot",
 				"icon": {
-					"light": "images/doodl_light.png",
-					"dark": "images/doodl_dark.png"
+					"light": "images/tempblot_light.png",
+					"dark": "images/tempblot_dark.png"
 				},
 				"extensions": [
-					".dood"
+					".blot"
 				]
 			}
 		],
 		"grammars": [
 			{
-				"language": "doodl",
-				"scopeName": "source.doodl",
-				"path": "./syntaxes/doodl.tmLanguage.json",
+				"language": "tempblot",
+				"scopeName": "source.tempblot",
+				"path": "./syntaxes/tempblot.tmLanguage.json",
 				"embeddedLanguages": {
-					"source.doodl": "doodl",
+					"source.tempblot": "tempblot",
 					"text.html.derivative": "html",
 					"text.html.markdown": "markdown",
 					"source.ts": "typescript",
@@ -69,7 +69,7 @@
 		"@types/vscode": "^1.104.0",
 		"@volar/language-server": "~2.4.23",
 		"@volar/vscode": "~2.4.23",
-		"doodl-language-server": "workspace:*",
+		"tempblot-language-server": "workspace:*",
 		"esbuild": "^0.25.10",
 		"vsce": "^2.15.0",
 		"vscode-languageclient": "^9.0.1"
