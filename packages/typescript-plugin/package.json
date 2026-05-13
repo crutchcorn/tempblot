@@ -1,8 +1,8 @@
 {
-  "name": "doodl-typescript-plugin",
+  "name": "tempblot-typescript-plugin",
   "version": "0.0.1",
   "type": "module",
-  "description": "A TypeScript plugin to support language features in Doodl files",
+  "description": "A TypeScript plugin to support language features in Tempblot files",
   "main": "./lib/index.cjs",
   "exports": {
     "types": "./types/index.d.cts",
@@ -13,7 +13,7 @@
     "types"
   ],
   "keywords": [
-    "doodl",
+    "tempblot",
     "typescript",
     "plugin",
     "templating"
@@ -23,12 +23,12 @@
     "build": "tsc --build"
   },
   "dependencies": {
-    "doodl-language-service": "workspace:*",
-    "@volar/typescript": "~2.4.23"
+    "@volar/typescript": "~2.4.23",
+    "tempblot-language-service": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "@types/node": "^24.5.2",
+    "typescript": "^6.0.3"
   },
   "sideEffects": false
 }

@@ -1,5 +1,5 @@
 {
-  "name": "doodl",
+  "name": "tempblot",
   "type": "module",
   "version": "0.0.1",
   "description": "A modern type-safe templating engine",
@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/crutchcorn/doodl.git",
+    "url": "https://github.com/crutchcorn/tempblot.git",
     "directory": "packages/compiler"
   },
   "funding": {
@@ -22,13 +22,16 @@
     "test:attw": "attw --profile esm-only --pack ."
   },
   "keywords": [],
+  "dependencies": {
+    "typescript": "^6.0.3"
+  },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
     "@types/node": "^24.5.2",
     "publint": "^0.3.14",
     "unplugin-dts": "^1.0.0-beta.6",
-    "vite": "^7.1.9",
-    "vitest": "^3.2.4"
+    "vite": "^8.0.12",
+    "vitest": "^4.1.6"
   },
   "engines": {
     "node": ">=22.18.0"

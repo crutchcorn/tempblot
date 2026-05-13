@@ -1,8 +1,8 @@
 import { Diagnostic } from '@volar/language-service';
 import { URI } from 'vscode-uri';
-import { DoodlVirtualCode } from './language-plugin.js';
+import { TempblotVirtualCode } from './language-plugin.js';
 
-export function createDoodlServicePlugin() {
+export function createTempblotServicePlugin() {
   return {
     capabilities: {
       diagnosticProvider: { interFileDependencies: false, workspaceDiagnostics: false },
@@ -16,7 +16,7 @@ export function createDoodlServicePlugin() {
             return;
           }
           const virtualCode = context.language.scripts.get(decoded[0])?.generated?.embeddedCodes.get(decoded[1]);
-          if (!(virtualCode instanceof DoodlVirtualCode)) {
+          if (!(virtualCode instanceof TempblotVirtualCode)) {
             return;
           }
           const setupNodes = virtualCode.htmlDocument.roots.filter((root: any) => root.tag === 'setup');
@@ -35,7 +35,7 @@ export function createDoodlServicePlugin() {
                 start: document.positionAt(0),
                 end: document.positionAt(1),
               },
-              source: 'doodl',
+              source: 'tempblot',
               message: 'Missing setup tag.',
             });
           }
@@ -47,7 +47,7 @@ export function createDoodlServicePlugin() {
                 start: document.positionAt(0),
                 end: document.positionAt(1),
               },
-              source: 'doodl',
+              source: 'tempblot',
               message: 'Missing output tag.',
             });
           }
@@ -59,7 +59,7 @@ export function createDoodlServicePlugin() {
                 start: document.positionAt(setupNodes[i].start),
                 end: document.positionAt(setupNodes[i].end),
               },
-              source: 'doodl',
+              source: 'tempblot',
               message: 'Only one setup tag is allowed.',
             });
           }
@@ -71,7 +71,7 @@ export function createDoodlServicePlugin() {
                 start: document.positionAt(outputNodes[i].start),
                 end: document.positionAt(outputNodes[i].end),
               },
-              source: 'doodl',
+              source: 'tempblot',
               message: 'Only one output tag is allowed.',
             });
           }

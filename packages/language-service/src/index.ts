@@ -1,2 +1,2 @@
-export { createDoodlLanguagePlugin, DoodlVirtualCode } from './language-plugin.js';
-export { createDoodlServicePlugin } from './service-plugin.js';
+export { createTempblotLanguagePlugin, TempblotVirtualCode } from './language-plugin.js';
+export { createTempblotServicePlugin } from './service-plugin.js';

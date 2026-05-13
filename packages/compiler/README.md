@@ -1,8 +1,22 @@
-# Doodl ✏︎
+<div align="center">
+<h1>Tempblot</h1>
 
-> A modern type-safe templating engine
+<a href="https://emojipedia.org/noto-emoji/17.0/splatter">
+  <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/crutchcorn/tempblot/refs/heads/main/packages/vscode/images/tempblot_dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/crutchcorn/tempblot/refs/heads/main/packages/vscode/images/tempblot_light.png">
+      <img height="80" width="80" alt="splatter" src="https://raw.githubusercontent.com/crutchcorn/tempblot/refs/heads/main/packages/vscode/images/tempblot.svg">
+  </picture>
 
-```dood
+</a>
+
+<p>A modern type-safe templating engine</p>
+
+</div>
+
+<hr />
+
+```blot
 <!-- Run TypeScript via Node -->
 <setup>
 import {v4} from "uuid";
@@ -24,7 +38,7 @@ const data = {
 # Installation
 
 ```shell
-npm install doodl
+npm install tempblot
 ```
 
 # Prerequisites

@@ -5,8 +5,8 @@
     "moduleResolution": "node",
     "strict": true,
     "plugins": [
-      { "name": "doodl-typescript-plugin" }
+      { "name": "tempblot-typescript-plugin" }
     ]
   },
-  "include": ["*.dood"]
+  "include": ["*.blot"]
 }

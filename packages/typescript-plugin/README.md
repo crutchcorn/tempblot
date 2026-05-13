@@ -1,18 +1,18 @@
-# Doodl TypeScript Plugin
+# Tempblot TypeScript Plugin
 
-A TypeScript plugin that provides language features for Doodl (`.dood`) files within the existing TypeScript language service.
+A TypeScript plugin that provides language features for Tempblot (`.blot`) files within the existing TypeScript language service.
 
 ## Features
 
 - **Type-safe templating**: Full TypeScript support in setup blocks and interpolations
-- **Syntax highlighting**: Rich syntax highlighting for Doodl files
+- **Syntax highlighting**: Rich syntax highlighting for Tempblot files
 - **IntelliSense**: Auto-completion, error checking, and refactoring
 - **Resource efficient**: Integrates with existing TypeScript service instead of running a separate language server
 
 ## Installation
 
 ```bash
-npm install doodl-typescript-plugin
+npm install tempblot-typescript-plugin
 ```
 
 ## Configuration
@@ -24,7 +24,7 @@ Add to your VS Code workspace settings (`.vscode/settings.json`):
 ```json
 {
   "typescript.preferences.plugins": [
-    { "name": "doodl-typescript-plugin" }
+    { "name": "tempblot-typescript-plugin" }
   ]
 }
 ```
@@ -37,7 +37,7 @@ Add to your `tsconfig.json`:
 {
   "compilerOptions": {
     "plugins": [
-      { "name": "doodl-typescript-plugin" }
+      { "name": "tempblot-typescript-plugin" }
     ]
   }
 }
@@ -45,7 +45,7 @@ Add to your `tsconfig.json`:
 
 ## Usage
 
-Once configured, the plugin will automatically provide language features for `.dood` files:
+Once configured, the plugin will automatically provide language features for `.blot` files:
 
 ```html
 <setup>
@@ -66,14 +66,14 @@ const count = 42;
 
 This plugin uses the [Volar](https://volarjs.dev) framework to integrate with TypeScript's language service, providing:
 
-- **Virtual Code Generation**: Transforms Doodl templates into TypeScript code for analysis
-- **Source Mapping**: Maps between original Doodl source and generated TypeScript
+- **Virtual Code Generation**: Transforms Tempblot templates into TypeScript code for analysis
+- **Source Mapping**: Maps between original Tempblot source and generated TypeScript
 - **Embedded Languages**: Supports TypeScript in setup blocks and JSON in output blocks
-- **Custom Diagnostics**: Validates Doodl-specific rules (required setup/output tags, etc.)
+- **Custom Diagnostics**: Validates Tempblot-specific rules (required setup/output tags, etc.)
 
 ## Migration from Language Server
 
-If you're migrating from the Doodl language server, you can:
+If you're migrating from the Tempblot language server, you can:
 
 1. Remove the language server configuration from your VS Code settings
 2. Install this TypeScript plugin

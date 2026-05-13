@@ -27,13 +27,13 @@ export async function activate(context: ExtensionContext) {
 
   // Create language client
   client = new LanguageClient(
-    'Doodl',
+    'Tempblot',
     {
-      module: context.asAbsolutePath('./dist/language-server.js'),
+      module: context.asAbsolutePath('./out/language-server.js'),
       transport: TransportKind.ipc
     },
     {
-      documentSelector: [{ language: 'doodl' }],
+      documentSelector: [{ language: 'tempblot' }],
       initializationOptions: {
         typescript: { tsdk }
       },
@@ -47,7 +47,7 @@ export async function activate(context: ExtensionContext) {
   // Watch for configuration changes
   context.subscriptions.push(
     workspace.onDidChangeConfiguration((event) => {
-      if (event.affectsConfiguration('doodl.server.enable')) {
+      if (event.affectsConfiguration('tempblot.server.enable')) {
         tryRestartServer();
       }
     })
@@ -61,7 +61,7 @@ export async function activate(context: ExtensionContext) {
 
   async function tryRestartServer() {
     await stopServer();
-    if (workspace.getConfiguration('doodl').get('server.enable')) {
+    if (workspace.getConfiguration('tempblot').get('server.enable')) {
       await startServer();
     }
   }
@@ -83,14 +83,14 @@ async function startServer() {
     await window.withProgress(
       {
         location: ProgressLocation.Window,
-        title: 'Starting Doodl Language Server…'
+        title: 'Starting Tempblot Language Server...'
       },
       async () => {
         await client!.start();
 
         disposable = Disposable.from(
-          activateAutoInsertion('doodl', client!),
-          activateDocumentDropEdit('doodl', client!)
+          activateAutoInsertion('tempblot', client!),
+          activateDocumentDropEdit('tempblot', client!)
         );
       }
     );

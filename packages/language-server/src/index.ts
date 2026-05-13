@@ -3,9 +3,9 @@
 import assert from 'node:assert';
 import process from 'node:process';
 import {
-  createDoodlLanguagePlugin,
-  createDoodlServicePlugin
-} from '../../language-service/lib/src/index.js';
+  createTempblotLanguagePlugin,
+  createTempblotServicePlugin
+} from 'tempblot-language-service';
 import {
   createConnection,
   createServer,
@@ -17,7 +17,7 @@ import type {
   InitializeResult 
 } from '@volar/language-server';
 
-process.title = 'doodl-language-server';
+process.title = 'tempblot-language-server';
 
 const connection = createConnection();
 const server = createServer(connection);
@@ -39,20 +39,20 @@ connection.onInitialize(async (parameters: InitializeParams): Promise<Initialize
     parameters,
     createTypeScriptProject(
       typescript,
-      diagnosticMessages,
+        diagnosticMessages,
       () => ({
-        languagePlugins: [createDoodlLanguagePlugin()]
+        languagePlugins: [createTempblotLanguagePlugin()]
       })
     ),
     [
-      createDoodlServicePlugin()
+      createTempblotServicePlugin()
     ]
   );
 });
 
 connection.onInitialized(() => {
   server.initialized();
-  server.fileWatcher?.watchFiles(['**/*.dood']);
+  server.fileWatcher?.watchFiles(['**/*.blot']);
 });
 
 connection.listen();

@@ -1,8 +1,8 @@
 {
-  "name": "doodl-language-service",
+  "name": "tempblot-language-service",
   "version": "0.0.1",
   "type": "module",
-  "description": "Doodl support for Volar",
+  "description": "Tempblot support for Volar",
   "exports": {
     ".": {
       "types": "./lib/src/index.d.ts",
@@ -13,7 +13,7 @@
     "lib"
   ],
   "keywords": [
-    "doodl",
+    "tempblot",
     "typescript",
     "volar",
     "templating"
@@ -30,8 +30,8 @@
     "vscode-uri": "^3.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "@types/node": "^24.5.2",
+    "typescript": "^6.0.3"
   },
   "sideEffects": false
 }

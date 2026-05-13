@@ -3,7 +3,7 @@
   "workspaces": {
     "packages/vscode": {
       "entry": ["src/extension.ts"],
-      "ignoreDependencies": ["doodl-language-server"]
+      "ignoreDependencies": ["tempblot-language-server"]
     }
   },
   "ignoreDependencies": ["uuid"]

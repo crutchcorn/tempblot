@@ -1,0 +1,11 @@
+<setup>
+import { useParams as getParams } from "tempblot";
+
+const config = getParams<{ hello: number }>();
+</setup>
+
+<output lang="json">
+{
+    "test": <<config.hello>>
+}
+</output>

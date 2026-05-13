@@ -5,14 +5,14 @@ import type * as ts from "typescript";
 import * as html from "vscode-html-languageservice";
 import { URI } from "vscode-uri";
 
-export function createDoodlLanguagePlugin(): LanguagePlugin<
+export function createTempblotLanguagePlugin(): LanguagePlugin<
   URI,
-  DoodlVirtualCode
+  TempblotVirtualCode
 > {
   return {
     getLanguageId(fileNameOrUri) {
-      if (String(fileNameOrUri).endsWith(".dood")) {
-        return "doodl";
+      if (String(fileNameOrUri).endsWith(".blot")) {
+        return "tempblot";
       }
     },
     createVirtualCode(
@@ -20,14 +20,14 @@ export function createDoodlLanguagePlugin(): LanguagePlugin<
       languageId: string,
       snapshot: ts.IScriptSnapshot,
     ) {
-      if (languageId === "doodl") {
-        return new DoodlVirtualCode(snapshot);
+      if (languageId === "tempblot") {
+        return new TempblotVirtualCode(snapshot);
       }
     },
     typescript: {
       extraFileExtensions: [
         {
-          extension: "dood",
+          extension: "blot",
           isMixedContent: true,
           scriptKind: 3 satisfies ts.ScriptKind.TS,
         },
@@ -55,9 +55,9 @@ export function createDoodlLanguagePlugin(): LanguagePlugin<
 
 const htmlLs = html.getLanguageService();
 
-export class DoodlVirtualCode implements VirtualCode {
+export class TempblotVirtualCode implements VirtualCode {
   id = "root";
-  languageId = "doodl";
+  languageId = "tempblot";
   mappings: CodeMapping[];
   embeddedCodes: VirtualCode[] = [];
 
@@ -89,12 +89,12 @@ export class DoodlVirtualCode implements VirtualCode {
       ),
     );
     this.embeddedCodes = [
-      ...getDoodlEmbeddedCodes(snapshot, this.htmlDocument),
+      ...getTempblotEmbeddedCodes(snapshot, this.htmlDocument),
     ];
   }
 }
 
-function* getDoodlEmbeddedCodes(
+function* getTempblotEmbeddedCodes(
   snapshot: ts.IScriptSnapshot,
   htmlDocument: html.HTMLDocument,
 ): Generator<VirtualCode> {
@@ -123,7 +123,7 @@ function* getDoodlEmbeddedCodes(
     const interpolationsData = extractInterpolationsWithPositions(outputText);
 
     // Create a combined TypeScript context wrapped in a module
-    // This ensures each .dood file has its own isolated scope
+    // This ensures each .blot file has its own isolated scope
     const base = `export {}; // Make this file a module\n\n`;
     let combinedText = `${base}${setupText}\n\n// Output interpolations:\n`;
 

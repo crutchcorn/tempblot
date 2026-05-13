@@ -1,27 +1,27 @@
 {
-  "name": "doodl-language-server",
+  "name": "tempblot-language-server",
   "version": "0.0.1",
   "type": "module",
-  "description": "A language server for Doodl",
+  "description": "A language server for Tempblot",
   "repository": {
     "type": "git",
-    "url": "https://github.com/crutchcorn/doodl.git",
+    "url": "https://github.com/crutchcorn/tempblot.git",
     "directory": "packages/language-server"
   },
-  "homepage": "https://github.com/crutchcorn/doodl",
-  "bugs": "https://github.com/crutchcorn/doodl/issues",
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": "https://github.com/crutchcorn/tempblot/issues",
   "author": "Corbin Crutchley <crutchcorn@gmail.com>",
   "license": "MIT",
   "exports": "./lib/index.js",
   "bin": {
-    "doodl-language-server": "./lib/index.js"
+    "tempblot-language-server": "./lib/index.js"
   },
   "files": [
     "lib"
   ],
   "keywords": [
     "IntelliSense",
-    "doodl",
+    "tempblot",
     "typescript",
     "templating",
     "volar"
@@ -33,11 +33,11 @@
     "test": "npm run test-api"
   },
   "dependencies": {
-    "doodl-language-service": "workspace:*",
-    "@volar/language-server": "~2.4.23"
+    "@volar/language-server": "~2.4.23",
+    "tempblot-language-service": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "@types/node": "^24.5.2",
+    "typescript": "^6.0.3"
   }
 }

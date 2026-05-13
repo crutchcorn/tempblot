@@ -1,4 +1,4 @@
 {
-    "doodl.trace.server.verbosity": "compact",
-    "doodl.trace.server.format": "text",
+    "tempblot.trace.server.verbosity": "compact",
+    "tempblot.trace.server.format": "text",
 }

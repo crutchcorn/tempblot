@@ -1,34 +1,34 @@
 {
 	"private": true,
-	"name": "doodl-vscode",
+	"name": "tempblot-vscode",
 	"version": "0.0.1",
 	"categories": [
 		"Programming Languages"
 	],
-	"displayName": "Doodl Language Features",
-	"description": "Doodl Language Features",
+	"displayName": "Tempblot Language Features",
+	"description": "Tempblot Language Features",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/crutchcorn/doodl.git"
+		"url": "https://github.com/crutchcorn/tempblot.git"
 	},
 	"engines": {
 		"vscode": "^1.104.0"
 	},
 	"activationEvents": [
-		"onLanguage:doodl"
+		"onLanguage:tempblot"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": [
 			{
-				"title": "Doodl",
+				"title": "Tempblot",
 				"properties": {
-					"doodl.server.enable": {
+					"tempblot.server.enable": {
 						"type": "boolean",
 						"default": true,
-						"description": "Enable experimental IntelliSense support for Doodl files."
+						"description": "Enable experimental IntelliSense support for Tempblot files."
 					},
-					"doodl.trace.server.verbosity": {
+					"tempblot.trace.server.verbosity": {
 						"enum": [
 							"off",
 							"messages",
@@ -36,38 +36,38 @@
 							"verbose"
 						],
 						"default": "off",
-						"description": "Trace Doodl language server requests in the output console."
+						"description": "Trace Tempblot language server requests in the output console."
 					},
-					"doodl.trace.server.format": {
+					"tempblot.trace.server.format": {
 						"enum": [
 							"text",
 							"json"
 						],
 						"default": "text",
-						"description": "How to format traced Doodl language server requests."
+						"description": "How to format traced Tempblot language server requests."
 					}
 				}
 			}
 		],
 		"languages": [
 			{
-				"id": "doodl",
+				"id": "tempblot",
 				"icon": {
-					"light": "images/doodl_light.png",
-					"dark": "images/doodl_dark.png"
+					"light": "images/tempblot_light.png",
+					"dark": "images/tempblot_dark.png"
 				},
 				"extensions": [
-					".dood"
+					".blot"
 				]
 			}
 		],
 		"grammars": [
 			{
-				"language": "doodl",
-				"scopeName": "source.doodl",
-				"path": "./syntaxes/doodl.tmLanguage.json",
+				"language": "tempblot",
+				"scopeName": "source.tempblot",
+				"path": "./syntaxes/tempblot.tmLanguage.json",
 				"embeddedLanguages": {
-					"source.doodl": "doodl",
+					"source.tempblot": "tempblot",
 					"text.html.derivative": "html",
 					"text.html.markdown": "markdown",
 					"source.ts": "typescript",
@@ -90,11 +90,11 @@
 		],
 		"typescriptServerPlugins": [
 			{
-				"name": "doodl-typescript-plugin",
+				"name": "tempblot-typescript-plugin",
 				"enableForWorkspaceTypeScriptVersions": true,
 				"configNamespace": "typescript",
 				"languages": [
-					"doodl"
+					"tempblot"
 				]
 			}
 		]
@@ -106,15 +106,15 @@
 		"release": "npm run build && vsce publish --pre-release"
 	},
 	"dependencies": {
-		"doodl-typescript-plugin": "workspace:*",
-		"doodl-language-server": "workspace:*",
-		"doodl-language-service": "workspace:*",
 		"@volar/language-server": "~2.4.23",
-		"@volar/vscode": "~2.4.23"
+		"@volar/vscode": "~2.4.23",
+		"tempblot-language-server": "workspace:*",
+		"tempblot-language-service": "workspace:*",
+		"tempblot-typescript-plugin": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.104.0",
-		"esbuild": "^0.25.10",
+		"esbuild": "^0.28.0",
 		"vsce": "^2.15.0"
 	}
 }

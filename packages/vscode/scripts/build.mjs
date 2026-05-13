@@ -12,8 +12,8 @@ await build({
   bundle: true,
   entryPoints: {
     'out/extension': require.resolve('../src/extension.ts'),
-    'out/language-server': require.resolve('doodl-language-server'),
-    'node_modules/doodl-typescript-plugin': require.resolve(
+    'out/language-server': require.resolve('tempblot-language-server'),
+    'node_modules/tempblot-typescript-plugin': require.resolve(
       '../../typescript-plugin/lib/index.cjs'
     )
   },

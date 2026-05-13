@@ -8,6 +8,6 @@ const data: any = await new Promise(resolve => {
 
 <output lang="json">
 {
-    "test": <<data.hello>>
+    "test": "<<data.hello>>"
 }
 </output>
