@@ -11,7 +11,7 @@ exports[`compiles a basic file 1`] = `
 exports[`compiles a top-level await file 1`] = `
 "
 {
-    "test": 123
+    "test": "world"
 }
 "
 `;
@@ -19,12 +19,28 @@ exports[`compiles a top-level await file 1`] = `
 exports[`compiles an array-interpolated file 1`] = `
 "
 {
-    "test": 123
+    "test": "one,two,three"
 }
 "
 `;
 
 exports[`compiles an import file 1`] = `
+"
+{
+    "test": 123
+}
+"
+`;
+
+exports[`passes params to a tempblot file 1`] = `
+"
+{
+    "test": 123
+}
+"
+`;
+
+exports[`passes params to an aliased useParams import 1`] = `
 "
 {
     "test": 123

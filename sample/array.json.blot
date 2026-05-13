@@ -4,6 +4,6 @@ const hello = 123;
 
 <output lang="json">
 {
-    "test": <<hello ? ["one", 'two', 'three'] : "">>
+    "test": "<<hello ? ["one", 'two', 'three'] : "">>"
 }
 </output>
