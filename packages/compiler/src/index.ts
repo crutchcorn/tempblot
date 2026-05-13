@@ -1,6 +1,7 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import ts from "typescript";
 import { tokenizeRoot } from "./root-lexer.js";
 import { parseRoot } from "./root-parser.js";
 import { transformOutput } from "./output-transformer.js";
@@ -36,27 +37,43 @@ export function useParams<TParams = unknown>(
   return this.params;
 }
 
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function isTempblotImportDeclaration(
+  node: ts.Node,
+): node is ts.ImportDeclaration & { moduleSpecifier: ts.StringLiteral } {
+  return (
+    ts.isImportDeclaration(node) &&
+    ts.isStringLiteral(node.moduleSpecifier) &&
+    node.moduleSpecifier.text === "tempblot"
+  );
 }
 
-function getUseParamsLocalNames(setup: string): string[] {
-  const localNames: string[] = [];
-  const tempblotImportRegex =
-    /import\s*{(?<imports>[^}]*)}\s*from\s*["']tempblot["']\s*;?/g;
+function getNamedImportElements(
+  node: ts.ImportDeclaration,
+): ts.NodeArray<ts.ImportSpecifier> | undefined {
+  const namedBindings = node.importClause?.namedBindings;
 
-  for (const match of setup.matchAll(tempblotImportRegex)) {
-    const imports = match.groups?.imports;
+  if (!namedBindings || !ts.isNamedImports(namedBindings)) {
+    return undefined;
+  }
 
-    if (!imports) continue;
+  return namedBindings.elements;
+}
 
-    for (const specifier of imports.split(",")) {
-      const parts = specifier.trim().split(/\s+as\s+/);
-      const importedName = parts[0]?.trim();
-      const localName = parts[1]?.trim() ?? importedName;
+function getImportedName(specifier: ts.ImportSpecifier): string {
+  return specifier.propertyName?.text ?? specifier.name.text;
+}
 
-      if (importedName === "useParams" && localName) {
-        localNames.push(localName);
+function getUseParamsLocalNames(sourceFile: ts.SourceFile): Set<string> {
+  const localNames = new Set<string>();
+
+  for (const statement of sourceFile.statements) {
+    if (!isTempblotImportDeclaration(statement) || statement.importClause?.isTypeOnly) {
+      continue;
+    }
+
+    for (const specifier of getNamedImportElements(statement) ?? []) {
+      if (!specifier.isTypeOnly && getImportedName(specifier) === "useParams") {
+        localNames.add(specifier.name.text);
       }
     }
   }
@@ -64,85 +81,201 @@ function getUseParamsLocalNames(setup: string): string[] {
   return localNames;
 }
 
-function setupImportsTempblotInstance(setup: string): boolean {
-  const tempblotImportRegex =
-    /import\s*{(?<imports>[^}]*)}\s*from\s*["']tempblot["']\s*;?/g;
-
-  for (const match of setup.matchAll(tempblotImportRegex)) {
-    const imports = match.groups?.imports;
-
-    if (!imports) continue;
-
-    for (const specifier of imports.split(",")) {
-      const importedName = specifier.trim().split(/\s+as\s+/)[0]?.trim();
-
-      if (importedName === "TempblotInstance") {
-        return true;
-      }
+function sourceFileImportsTempblotInstance(sourceFile: ts.SourceFile): boolean {
+  return sourceFile.statements.some((statement) => {
+    if (!isTempblotImportDeclaration(statement) || statement.importClause?.isTypeOnly) {
+      return false;
     }
-  }
 
-  return false;
+    return (getNamedImportElements(statement) ?? []).some((specifier) => {
+      return (
+        !specifier.isTypeOnly && getImportedName(specifier) === "TempblotInstance"
+      );
+    });
+  });
 }
 
-function updateTempblotImports(setup: string): string {
-  let addedTempblotInstanceImport = setupImportsTempblotInstance(setup);
+function updateTempblotImportDeclaration(
+  node: ts.ImportDeclaration,
+  shouldAddTempblotInstance: boolean,
+): ts.ImportDeclaration {
+  const importClause = node.importClause;
 
-  return setup.replace(
-    /import\s*{(?<imports>[^}]*)}\s*from\s*["']tempblot["']\s*;?/g,
-    (importStatement, imports: string) => {
-      if (addedTempblotInstanceImport) {
-        return importStatement.replace(
-          /["']tempblot["']/,
-          JSON.stringify(tempblotModulePath),
-        );
-      }
+  if (!importClause) {
+    return ts.factory.updateImportDeclaration(
+      node,
+      node.modifiers,
+      importClause,
+      ts.factory.createStringLiteral(tempblotModulePath),
+      node.attributes,
+    );
+  }
 
-      addedTempblotInstanceImport = true;
+  const namedBindings = importClause.namedBindings;
 
-      return importStatement
-        .replace(`{${imports}}`, `{${imports.trim()}, TempblotInstance}`)
-        .replace(/["']tempblot["']/, JSON.stringify(tempblotModulePath));
-    },
+  if (
+    !shouldAddTempblotInstance ||
+    !namedBindings ||
+    !ts.isNamedImports(namedBindings)
+  ) {
+    return ts.factory.updateImportDeclaration(
+      node,
+      node.modifiers,
+      importClause,
+      ts.factory.createStringLiteral(tempblotModulePath),
+      node.attributes,
+    );
+  }
+
+  const updatedNamedBindings = ts.factory.updateNamedImports(namedBindings, [
+    ...namedBindings.elements,
+    ts.factory.createImportSpecifier(
+      false,
+      undefined,
+      ts.factory.createIdentifier("TempblotInstance"),
+    ),
+  ]);
+  const updatedImportClause = ts.factory.updateImportClause(
+    importClause,
+    importClause.isTypeOnly,
+    importClause.name,
+    updatedNamedBindings,
+  );
+
+  return ts.factory.updateImportDeclaration(
+    node,
+    node.modifiers,
+    updatedImportClause,
+    ts.factory.createStringLiteral(tempblotModulePath),
+    node.attributes,
   );
 }
 
-function getImportInsertionIndex(setup: string): number {
-  const importRegex = /^\s*import[\s\S]*?;\s*$/gm;
-  let insertionIndex = 0;
+function createTempblotInstanceDeclaration(sourcePath: string): ts.Statement {
+  return ts.factory.createVariableStatement(
+    undefined,
+    ts.factory.createVariableDeclarationList(
+      [
+        ts.factory.createVariableDeclaration(
+          tempblotInstanceVarName,
+          undefined,
+          undefined,
+          ts.factory.createNewExpression(
+            ts.factory.createIdentifier("TempblotInstance"),
+            undefined,
+            [
+              ts.factory.createElementAccessExpression(
+                ts.factory.createPropertyAccessExpression(
+                  ts.factory.createIdentifier("globalThis"),
+                  "tempbloteParams",
+                ),
+                ts.factory.createStringLiteral(sourcePath),
+              ),
+            ],
+          ),
+        ),
+      ],
+      ts.NodeFlags.Const,
+    ),
+  );
+}
 
-  for (const match of setup.matchAll(importRegex)) {
-    insertionIndex = match.index + match[0].length;
+function transformUseParamsCalls(
+  sourceFile: ts.SourceFile,
+  useParamsLocalNames: Set<string>,
+): ts.SourceFile {
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (context) => {
+    const visit: ts.Visitor = (node) => {
+      if (
+        ts.isCallExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        node.arguments.length === 0 &&
+        useParamsLocalNames.has(node.expression.text)
+      ) {
+        const callTarget = node.typeArguments
+          ? ts.factory.createPropertyAccessExpression(
+              ts.factory.createExpressionWithTypeArguments(
+                node.expression,
+                node.typeArguments,
+              ),
+              "call",
+            )
+          : ts.factory.createPropertyAccessExpression(node.expression, "call");
+
+        return ts.factory.createCallExpression(callTarget, undefined, [
+          ts.factory.createIdentifier(tempblotInstanceVarName),
+        ]);
+      }
+
+      return ts.visitEachChild(node, visit, context);
+    };
+
+    return (node) => ts.visitNode(node, visit) as ts.SourceFile;
+  };
+
+  const transformResult = ts.transform(sourceFile, [transformer]);
+  const transformedSourceFile = transformResult.transformed[0];
+  transformResult.dispose();
+
+  return transformedSourceFile;
+}
+
+function injectTempblotInstance(
+  sourceFile: ts.SourceFile,
+  sourcePath: string,
+): ts.SourceFile {
+  const statements: ts.Statement[] = [];
+  const importsTempblotInstance = sourceFileImportsTempblotInstance(sourceFile);
+  let addedTempblotInstanceImport = importsTempblotInstance;
+  let insertedTempblotInstanceDeclaration = false;
+
+  for (const statement of sourceFile.statements) {
+    if (isTempblotImportDeclaration(statement)) {
+      const shouldAddTempblotInstance = !addedTempblotInstanceImport;
+      statements.push(
+        updateTempblotImportDeclaration(statement, shouldAddTempblotInstance),
+      );
+      addedTempblotInstanceImport = true;
+      continue;
+    }
+
+    if (!ts.isImportDeclaration(statement) && !insertedTempblotInstanceDeclaration) {
+      statements.push(createTempblotInstanceDeclaration(sourcePath));
+      insertedTempblotInstanceDeclaration = true;
+    }
+
+    statements.push(statement);
   }
 
-  return insertionIndex;
+  if (!insertedTempblotInstanceDeclaration) {
+    statements.push(createTempblotInstanceDeclaration(sourcePath));
+  }
+
+  return ts.factory.updateSourceFile(sourceFile, statements);
 }
 
 function transformSetup(setup: string, sourcePath: string): string {
-  const useParamsLocalNames = getUseParamsLocalNames(setup);
+  const sourceFile = ts.createSourceFile(
+    "setup.ts",
+    setup,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+  const useParamsLocalNames = getUseParamsLocalNames(sourceFile);
 
-  if (useParamsLocalNames.length === 0) {
+  if (useParamsLocalNames.size === 0) {
     return setup;
   }
 
-  let transformedSetup = updateTempblotImports(setup);
+  const transformedSourceFile = transformUseParamsCalls(
+    injectTempblotInstance(sourceFile, sourcePath),
+    useParamsLocalNames,
+  );
 
-  for (const localName of useParamsLocalNames) {
-    const callRegex = new RegExp(
-      String.raw`(?<![\w$.])${escapeRegExp(localName)}(\s*<[^()\n;]+>)?\s*\(\s*\)`,
-      "g",
-    );
-
-    transformedSetup = transformedSetup.replace(
-      callRegex,
-      `${localName}$1.call(${tempblotInstanceVarName})`,
-    );
-  }
-
-  const insertionIndex = getImportInsertionIndex(transformedSetup);
-  const tempblotInstanceDeclaration = `\nconst ${tempblotInstanceVarName} = new TempblotInstance(globalThis.tempbloteParams[${JSON.stringify(sourcePath)}]);\n`;
-
-  return `${transformedSetup.slice(0, insertionIndex)}${tempblotInstanceDeclaration}${transformedSetup.slice(insertionIndex)}`;
+  return ts.createPrinter({ newLine: ts.NewLineKind.LineFeed }).printFile(
+    transformedSourceFile,
+  );
 }
 
 /**

@@ -28,6 +28,10 @@ importers:
         version: 13.0.0
 
   packages/compiler:
+    dependencies:
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.18.2
@@ -64,10 +68,10 @@ importers:
         version: 2.4.23
       volar-service-html:
         specifier: volar-2.4
-        version: 0.0.64(@volar/language-service@2.4.23)
+        version: 0.0.68(@volar/language-service@2.4.23)
       volar-service-typescript:
         specifier: volar-2.4
-        version: 0.0.65(@volar/language-service@2.4.23)
+        version: 0.0.68(@volar/language-service@2.4.23)
       vscode-html-languageservice:
         specifier: ^5.5.1
         version: 5.5.1
@@ -86,12 +90,12 @@ importers:
       '@volar/vscode':
         specifier: ~2.4.23
         version: 2.4.23
-      tempblot-language-server:
-        specifier: workspace:*
-        version: link:../language-server
       esbuild:
         specifier: ^0.25.10
         version: 0.25.10
+      tempblot-language-server:
+        specifier: workspace:*
+        version: link:../language-server
       vsce:
         specifier: ^2.15.0
         version: 2.15.0
@@ -1648,16 +1652,16 @@ packages:
       jsdom:
         optional: true
 
-  volar-service-html@0.0.64:
-    resolution: {integrity: sha512-5xknMYKmZBFzp2399RlsnGce25PfNu9ViXa1s63Q8NP6xeXcF3lInFsV+1o2DWBoXZdnXcuRvWOA+K+JIZLEcA==}
+  volar-service-html@0.0.68:
+    resolution: {integrity: sha512-fru9gsLJxy33xAltXOh4TEdi312HP80hpuKhpYQD4O5hDnkNPEBdcQkpB+gcX0oK0VxRv1UOzcGQEUzWCVHLfA==}
     peerDependencies:
       '@volar/language-service': ~2.4.0
     peerDependenciesMeta:
       '@volar/language-service':
         optional: true
 
-  volar-service-typescript@0.0.65:
-    resolution: {integrity: sha512-zPJuLIMs7lkQCvL+Rza8+3/EIoXEIkX8+DL7bNNfPgnbalbvRDhqWLVMJ6Zk3pINjLJafDqyhSbw8srfkUv97w==}
+  volar-service-typescript@0.0.68:
+    resolution: {integrity: sha512-z7B/7CnJ0+TWWFp/gh2r5/QwMObHNDiQiv4C9pTBNI2Wxuwymd4bjEORzrJ/hJ5Yd5+OzeYK+nFCKevoGEEeKw==}
     peerDependencies:
       '@volar/language-service': ~2.4.0
     peerDependenciesMeta:
@@ -1710,6 +1714,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
@@ -3226,7 +3231,7 @@ snapshots:
       - tsx
       - yaml
 
-  volar-service-html@0.0.64(@volar/language-service@2.4.23):
+  volar-service-html@0.0.68(@volar/language-service@2.4.23):
     dependencies:
       vscode-html-languageservice: 5.5.1
       vscode-languageserver-textdocument: 1.0.12
@@ -3234,7 +3239,7 @@ snapshots:
     optionalDependencies:
       '@volar/language-service': 2.4.23
 
-  volar-service-typescript@0.0.65(@volar/language-service@2.4.23):
+  volar-service-typescript@0.0.68(@volar/language-service@2.4.23):
     dependencies:
       path-browserify: 1.0.1
       semver: 7.7.2
