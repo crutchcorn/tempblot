@@ -32,19 +32,30 @@ function getImportedName(specifier: ts.ImportSpecifier): string {
   return specifier.propertyName?.text ?? specifier.name.text;
 }
 
+function isTypeOnlyImportClause(importClause: ts.ImportClause): boolean {
+  return importClause.phaseModifier === ts.SyntaxKind.TypeKeyword;
+}
+
+function isTypeOnlyImportSpecifier(specifier: ts.ImportSpecifier): boolean {
+  return ts.isTypeOnlyImportDeclaration(specifier);
+}
+
 function getUseParamsLocalNames(sourceFile: ts.SourceFile): Set<string> {
   const localNames = new Set<string>();
 
   for (const statement of sourceFile.statements) {
     if (
       !isTempblotImportDeclaration(statement) ||
-      statement.importClause?.isTypeOnly
+      (statement.importClause && isTypeOnlyImportClause(statement.importClause))
     ) {
       continue;
     }
 
     for (const specifier of getNamedImportElements(statement) ?? []) {
-      if (!specifier.isTypeOnly && getImportedName(specifier) === "useParams") {
+      if (
+        !isTypeOnlyImportSpecifier(specifier) &&
+        getImportedName(specifier) === "useParams"
+      ) {
         localNames.add(specifier.name.text);
       }
     }
@@ -57,14 +68,14 @@ function sourceFileImportsTempblotInstance(sourceFile: ts.SourceFile): boolean {
   return sourceFile.statements.some((statement) => {
     if (
       !isTempblotImportDeclaration(statement) ||
-      statement.importClause?.isTypeOnly
+      (statement.importClause && isTypeOnlyImportClause(statement.importClause))
     ) {
       return false;
     }
 
     return (getNamedImportElements(statement) ?? []).some((specifier) => {
       return (
-        !specifier.isTypeOnly &&
+        !isTypeOnlyImportSpecifier(specifier) &&
         getImportedName(specifier) === "TempblotInstance"
       );
     });
@@ -111,9 +122,8 @@ function updateTempblotImportDeclaration(
       ts.factory.createIdentifier("TempblotInstance"),
     ),
   ]);
-  const updatedImportClause = ts.factory.updateImportClause(
-    importClause,
-    importClause.isTypeOnly,
+  const updatedImportClause = ts.factory.createImportClause(
+    importClause.phaseModifier,
     importClause.name,
     updatedNamedBindings,
   );
