@@ -69,9 +69,9 @@
 		"@types/vscode": "^1.104.0",
 		"@volar/language-server": "~2.4.23",
 		"@volar/vscode": "~2.4.23",
+		"esbuild": "^0.28.0",
 		"tempblot-language-server": "workspace:*",
-		"esbuild": "^0.25.10",
-		"vsce": "^2.15.0",
+		"@vscode/vsce": "^3.9.1",
 		"vscode-languageclient": "^9.0.1"
 	}
 }

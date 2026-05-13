@@ -4,6 +4,7 @@
 		"lib": [
 			"ES2021",
 		],
+		"types": ["node"],
 		"module": "NodeNext",
 		"sourceMap": true,
 		"composite": true,
