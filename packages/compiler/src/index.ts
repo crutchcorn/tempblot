@@ -7,7 +7,7 @@ import { parseRoot } from "./root-parser.js";
 import { transformOutput } from "./output-transformer.js";
 
 declare global {
-  var tempbloteParams: Record<string, unknown> | undefined;
+  var tempblotParams: Record<string, unknown> | undefined;
 }
 
 const tempblotInstanceVarName = "__tempblotInstance";
@@ -167,7 +167,7 @@ function createTempblotInstanceDeclaration(sourcePath: string): ts.Statement {
               ts.factory.createElementAccessExpression(
                 ts.factory.createPropertyAccessExpression(
                   ts.factory.createIdentifier("globalThis"),
-                  "tempbloteParams",
+                  "tempblotParams",
                 ),
                 ts.factory.createStringLiteral(sourcePath),
               ),
@@ -287,8 +287,8 @@ export async function compilePath<TParams = unknown>(
   sourcePath: string,
   params: TParams,
 ): Promise<string> {
-  globalThis.tempbloteParams ??= {};
-  globalThis.tempbloteParams[sourcePath] = params;
+  globalThis.tempblotParams ??= {};
+  globalThis.tempblotParams[sourcePath] = params;
 
   const outputVarName = "o" + crypto.randomUUID().replace(/-/g, "");
   const source = await fs.readFile(sourcePath, "utf8");
