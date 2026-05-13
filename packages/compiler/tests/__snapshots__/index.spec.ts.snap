@@ -31,3 +31,19 @@ exports[`compiles an import file 1`] = `
 }
 "
 `;
+
+exports[`passes params to a tempblot file 1`] = `
+"
+{
+    "test": 123
+}
+"
+`;
+
+exports[`passes params to an aliased useParams import 1`] = `
+"
+{
+    "test": 123
+}
+"
+`;
