@@ -3,9 +3,9 @@
 
 <a href="https://emojipedia.org/noto-emoji/17.0/splatter">
   <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/crutchcorn/coldspa/refs/heads/main/packages/vscode/images/tempblot_dark.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/crutchcorn/coldspa/refs/heads/main/packages/vscode/images/tempblot_light.png">
-      <img height="80" width="80" alt="splatter" src="https://raw.githubusercontent.com/crutchcorn/coldspa/refs/heads/main/packages/vscode/images/tempblot.svg">
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/crutchcorn/tempblot/refs/heads/main/packages/vscode/images/tempblot_dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/crutchcorn/tempblot/refs/heads/main/packages/vscode/images/tempblot_light.png">
+      <img height="80" width="80" alt="splatter" src="https://raw.githubusercontent.com/crutchcorn/tempblot/refs/heads/main/packages/vscode/images/tempblot.svg">
   </picture>
 
 </a>
