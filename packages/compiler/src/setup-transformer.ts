@@ -1,10 +1,6 @@
-import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
 
 const tempblotInstanceVarName = "__tempblotInstance";
-const tempblotModulePath = pathToFileURL(
-  fileURLToPath(new URL("./index.ts", import.meta.url)),
-).href;
 
 function isTempblotImportDeclaration(
   node: ts.Node,
@@ -93,7 +89,7 @@ function updateTempblotImportDeclaration(
       node,
       node.modifiers,
       importClause,
-      ts.factory.createStringLiteral(tempblotModulePath),
+      node.moduleSpecifier,
       node.attributes,
     );
   }
@@ -109,7 +105,7 @@ function updateTempblotImportDeclaration(
       node,
       node.modifiers,
       importClause,
-      ts.factory.createStringLiteral(tempblotModulePath),
+      node.moduleSpecifier,
       node.attributes,
     );
   }
@@ -132,7 +128,7 @@ function updateTempblotImportDeclaration(
     node,
     node.modifiers,
     updatedImportClause,
-    ts.factory.createStringLiteral(tempblotModulePath),
+    node.moduleSpecifier,
     node.attributes,
   );
 }

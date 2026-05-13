@@ -10,6 +10,11 @@ export default defineConfig({
     tsconfigPath: "tsconfig.app.json",
     entryRoot: "src",
   })],
+  resolve: {
+    alias: {
+      tempblot: resolve(__dirname, "src/index.ts"),
+    },
+  },
   build: {
     lib: {
       name: "Tempblot",
