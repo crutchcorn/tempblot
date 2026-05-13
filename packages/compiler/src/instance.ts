@@ -1,4 +1,6 @@
-export class TempblotInstance<TParams = unknown> {
+export interface TempblotParams {}
+
+export class TempblotInstance<TParams = TempblotParams> {
   params: TParams;
 
   constructor(params: TParams) {
@@ -6,11 +8,11 @@ export class TempblotInstance<TParams = unknown> {
   }
 }
 
-export function useParams<TParams = unknown>(): TParams;
-export function useParams<TParams = unknown>(
+export function useParams<TParams = TempblotParams>(): TParams;
+export function useParams<TParams = TempblotParams>(
   this: TempblotInstance<TParams>,
 ): TParams;
-export function useParams<TParams = unknown>(
+export function useParams<TParams = TempblotParams>(
   this: TempblotInstance<TParams> | undefined,
 ): TParams {
   if (!(this instanceof TempblotInstance)) {
