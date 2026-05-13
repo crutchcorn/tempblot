@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`does not transform setup without tempblot useParams import 1`] = `
+"const config = useParams<{ abc: 1 }>();
+"
+`;
+
+exports[`transforms aliased useParams calls 1`] = `
+"import { useParams as getParams, TempblotInstance } from "file:///tempblot/index.ts";
+const __tempblotInstance = new TempblotInstance(globalThis.tempblotParams["/path/to/somefile.tempblot"]);
+const config = getParams.call(__tempblotInstance) as {
+    abc: 1;
+};
+"
+`;
+
+exports[`transforms useParams calls 1`] = `
+"import { useParams, TempblotInstance } from "file:///tempblot/index.ts";
+const __tempblotInstance = new TempblotInstance(globalThis.tempblotParams["/path/to/somefile.tempblot"]);
+const _config = useParams.call(__tempblotInstance);
+const config = useParams.call(__tempblotInstance) as {
+    abc: 1;
+};
+"
+`;
