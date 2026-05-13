@@ -192,19 +192,20 @@ function transformUseParamsCalls(
         node.arguments.length === 0 &&
         useParamsLocalNames.has(node.expression.text)
       ) {
-        const callTarget = node.typeArguments
-          ? ts.factory.createPropertyAccessExpression(
-              ts.factory.createExpressionWithTypeArguments(
-                node.expression,
-                node.typeArguments,
-              ),
-              "call",
-            )
-          : ts.factory.createPropertyAccessExpression(node.expression, "call");
+        const callExpression = ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(node.expression, "call"),
+          undefined,
+          [ts.factory.createIdentifier(tempblotInstanceVarName)],
+        );
 
-        return ts.factory.createCallExpression(callTarget, undefined, [
-          ts.factory.createIdentifier(tempblotInstanceVarName),
-        ]);
+        if (node.typeArguments?.[0]) {
+          return ts.factory.createAsExpression(
+            callExpression,
+            node.typeArguments[0],
+          );
+        }
+
+        return callExpression;
       }
 
       return ts.visitEachChild(node, visit, context);
