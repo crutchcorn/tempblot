@@ -52,6 +52,28 @@ test("creates output embedded code for output-only files", () => {
     .toContain('{"value": null}');
 });
 
+test("creates empty TypeScript embedded code for output-only files without interpolations", () => {
+  const source = `<output lang="json">
+{
+    "test": "a"
+}
+</output>`;
+
+  const virtualCode = createVirtualCode(source);
+  const combinedContext = virtualCode.embeddedCodes.find(
+    (code) => code.id === "combined_context",
+  );
+  const outputJson = virtualCode.embeddedCodes.find(
+    (code) => code.id === "output_json",
+  );
+
+  expect(combinedContext?.snapshot.getText(0, combinedContext.snapshot.getLength()))
+    .toBe("export {}; // Make this file a module\n\n");
+  expect(combinedContext?.mappings).toEqual([]);
+  expect(outputJson?.snapshot.getText(0, outputJson.snapshot.getLength()))
+    .toContain('"test": "a"');
+});
+
 test("does not report missing-block diagnostics for single-section files", () => {
   const setupOnlyDiagnostics = getTempblotRootDiagnostics(
     parseTempblotRoot("<setup></setup>"),

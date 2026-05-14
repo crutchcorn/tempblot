@@ -191,19 +191,17 @@ function* getTempblotEmbeddedCodes(
       });
     });
 
-    if (tsMappings.length > 0) {
-      yield {
-        id: "combined_context",
-        languageId: "typescript",
-        snapshot: {
-          getText: (start, end) => combinedText.substring(start, end),
-          getLength: () => combinedText.length,
-          getChangeRange: () => undefined,
-        },
-        mappings: tsMappings,
-        embeddedCodes: [],
-      };
-    }
+    yield {
+      id: "combined_context",
+      languageId: "typescript",
+      snapshot: {
+        getText: (start, end) => combinedText.substring(start, end),
+        getLength: () => combinedText.length,
+        getChangeRange: () => undefined,
+      },
+      mappings: tsMappings,
+      embeddedCodes: [],
+    };
 
     if (!output) {
       return;
