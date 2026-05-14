@@ -1,0 +1,11 @@
+<!-- before setup -->
+<setup>
+const hello = 123;
+</setup>
+<!-- between setup and output -->
+<output lang="json">
+{
+    "test": <<hello>>
+}
+</output>
+<!-- after output -->

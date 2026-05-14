@@ -78,3 +78,38 @@ const hello = 123;
     { type: "TagClose", attributes: { name: "output" } },
   ]);
 });
+
+test("tokenizeRoot ignores top-level HTML comments", () => {
+  const source = `
+<!-- before setup -->
+<setup>
+const setup = 123;
+</setup>
+<!-- between setup and output -->
+<output lang="json">
+{
+  "test": <<setup>>
+}
+</output>
+<!-- after output -->
+`.trim();
+
+  const tokens = tokenizeRoot(source);
+  expect(withoutOffsets(tokens)).toStrictEqual([
+    { type: "Text", attributes: { value: "<!-- before setup -->\n" } },
+    { type: "TagOpenStart", attributes: { name: "setup" } },
+    { type: "TagOpenEnd", attributes: { name: "setup" } },
+    { type: "Text", attributes: { value: "\nconst setup = 123;\n" } },
+    { type: "TagClose", attributes: { name: "setup" } },
+    {
+      type: "Text",
+      attributes: { value: "\n<!-- between setup and output -->\n" },
+    },
+    { type: "TagOpenStart", attributes: { name: "output" } },
+    { type: "TagAttribute", attributes: { name: "lang", value: "json" } },
+    { type: "TagOpenEnd", attributes: { name: "output" } },
+    { type: "Text", attributes: { value: "\n{\n  \"test\": <<setup>>\n}\n" } },
+    { type: "TagClose", attributes: { name: "output" } },
+    { type: "Text", attributes: { value: "\n<!-- after output -->" } },
+  ]);
+});

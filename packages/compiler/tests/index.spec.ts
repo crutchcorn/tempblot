@@ -45,6 +45,15 @@ test("compiles an import file", async () => {
   expect(result).toMatchSnapshot();
 });
 
+test("compiles a file with top-level HTML comments", async () => {
+  const result = await compilePath(
+    path.resolve(__dirname, "../../../sample/comments.json.blot"),
+    undefined,
+  );
+
+  expect(result).toMatchSnapshot();
+});
+
 test("passes params to a tempblot file", async () => {
   const result = await compilePath(
     path.resolve(__dirname, "../../../sample/params.json.blot"),

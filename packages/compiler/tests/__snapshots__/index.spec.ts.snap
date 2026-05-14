@@ -8,6 +8,14 @@ exports[`compiles a basic file 1`] = `
 "
 `;
 
+exports[`compiles a file with top-level HTML comments 1`] = `
+"
+{
+    "test": 123
+}
+"
+`;
+
 exports[`compiles a top-level await file 1`] = `
 "
 {
