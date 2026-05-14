@@ -39,27 +39,19 @@ export function createTempblotLanguagePlugin(): LanguagePlugin<
         },
       ],
       getServiceScript(root) {
+        return undefined;
+      },
+      getExtraServiceScripts(fileName, root) {
         const code = root.embeddedCodes?.find(
           (code) => code.id === "combined_context",
         );
-        if (!code) {
-          return undefined;
-        }
-        return {
-          code,
-          extension: ".ts",
-          scriptKind: 3 satisfies ts.ScriptKind.TS,
-          preventLeadingOffset: true,
-        };
-      },
-      getExtraServiceScripts(fileName, root) {
-        if (root.embeddedCodes) {
-          const code = root.embeddedCodes[0];
+
+        if (code) {
           return [
             {
-              fileName: fileName + "." + code.id + ".ts",
+              fileName: fileName + "." + code.id + ".mts",
               code,
-              extension: ".ts",
+              extension: ".mts",
               scriptKind: 3,
             },
           ];

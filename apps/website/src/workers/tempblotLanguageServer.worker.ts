@@ -196,6 +196,7 @@ function patchPlaygroundTypeScriptHost(host: typescript.LanguageServiceHost | un
 
 function createVirtualTypeFiles() {
   return new Map<string, string>([
+    ['/playground/package.json', JSON.stringify({ type: 'module' })],
     ['/playground/tsconfig.json', JSON.stringify({
       compilerOptions: {
         target: 'ES2021',
