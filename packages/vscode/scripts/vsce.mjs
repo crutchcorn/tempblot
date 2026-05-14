@@ -40,7 +40,7 @@ try {
 }
 
 async function stageExtension(stageRoot) {
-  for (const entry of ["images", "syntaxes", "LICENSE"]) {
+  for (const entry of ["images", "syntaxes", "LICENSE", "README.md"]) {
     await cp(join(root, entry), join(stageRoot, entry), { recursive: true });
   }
   await mkdir(join(stageRoot, "out"));

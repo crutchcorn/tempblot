@@ -10,6 +10,7 @@
   ],
   "displayName": "Tempblot Language Features",
   "description": "Syntax highlighting and language features for Tempblot files",
+  "icon": "images/tempblot_dark.png",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/crutchcorn/tempblot.git",
