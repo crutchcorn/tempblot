@@ -6,9 +6,7 @@ export default [
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
     languageOptions: {
       parserOptions: {
-        projectService: {
-          allowDefaultProject: ['tests/*.ts', 'vite.config.ts'],
-        },
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
