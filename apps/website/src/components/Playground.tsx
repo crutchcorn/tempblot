@@ -43,7 +43,9 @@ const { createOnigScanner, createOnigString, loadWASM } = vscodeOniguruma;
 const tempblotDarkTheme = 'tempblot-dark';
 const tempblotLightTheme = 'tempblot-light';
 
-const DEFAULT_SOURCE = `<setup>
+const DEFAULT_SOURCE = `<!-- Tempblot playground -->
+<!-- Add your code below! -->
+<setup>
 // Run TypeScript in the <setup>
 const someNumber = 123;
 
@@ -159,20 +161,6 @@ export default function Playground() {
 
   return (
     <main className="playground-shell">
-      <section className="playground-copy">
-        <h1>Write templates with real TypeScript values</h1>
-        <p>
-          Tempblot lets you prepare data in a setup block, then interpolate those
-          values into any text-based output format. Use it for generated files,
-          configuration, fixtures, documentation, or any template that benefits
-          from typed JavaScript and TypeScript expressions.
-        </p>
-        <div className="playground-actions">
-          <a className="playground-guide-link" href="/guides/basic-usage/">
-            Read the basic usage guide
-          </a>
-        </div>
-      </section>
       <section className="playground-editor" aria-label="Tempblot editor">
         <Editor
           defaultLanguage="tempblot"
@@ -192,6 +180,9 @@ export default function Playground() {
           onMount={handleMount}
         />
       </section>
+      <a className="playground-guide-link" href="/guides/basic-usage/">
+        Read the docs
+      </a>
     </main>
   );
 }
