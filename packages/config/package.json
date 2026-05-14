@@ -2,7 +2,7 @@
   "name": "@tempblot/config",
   "type": "module",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shared configuration for Tempblot packages",
   "author": "Corbin Crutchley <crutchcorn@gmail.com>",
   "license": "MIT",

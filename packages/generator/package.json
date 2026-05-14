@@ -1,6 +1,6 @@
 {
   "name": "@tempblot/generator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "File-based scaffolding engine for Tempblot",
   "author": "Corbin Crutchley <crutchcorn@gmail.com>",

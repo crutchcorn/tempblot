@@ -2,7 +2,7 @@
   "name": "@tempblot/website",
   "private": true,
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Documentation website for Tempblot",
   "author": "Corbin Crutchley <crutchcorn@gmail.com>",
   "license": "MIT",

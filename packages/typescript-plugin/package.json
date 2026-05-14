@@ -1,6 +1,6 @@
 {
   "name": "@tempblot/typescript-plugin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "A TypeScript plugin to support language features in Tempblot files",
   "author": "Corbin Crutchley <crutchcorn@gmail.com>",
