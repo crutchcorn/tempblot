@@ -1,6 +1,8 @@
-name: PR
+name: Tests
 
 on:
+  push:
+    branches: [main, alpha, beta, rc]
   pull_request:
 
 concurrency:
