@@ -14,6 +14,8 @@ import type {
   MarkupContent,
   Position as LspPosition,
   Range as LspRange,
+  SemanticTokens,
+  SemanticTokensOptions,
   SignatureHelp,
   ProtocolConnection,
 } from 'vscode-languageserver-protocol/browser';
@@ -38,6 +40,42 @@ const data = {
 `;
 
 const BLOT_URI = 'file:///playground/template.blot';
+const SEMANTIC_TOKEN_TYPES = [
+  'namespace',
+  'class',
+  'enum',
+  'interface',
+  'typeParameter',
+  'type',
+  'parameter',
+  'variable',
+  'property',
+  'enumMember',
+  'function',
+  'method',
+  'macro',
+  'keyword',
+  'modifier',
+  'comment',
+  'string',
+  'number',
+  'regexp',
+  'operator',
+  'decorator',
+];
+const SEMANTIC_TOKEN_MODIFIERS = [
+  'declaration',
+  'definition',
+  'readonly',
+  'static',
+  'deprecated',
+  'abstract',
+  'async',
+  'modification',
+  'documentation',
+  'defaultLibrary',
+  'local',
+];
 
 type Disposable = { dispose(): void };
 
@@ -80,6 +118,7 @@ export default function Playground() {
             minimap: { enabled: false },
             padding: { top: 16, bottom: 16 },
             scrollBeyondLastLine: false,
+            'semanticHighlighting.enabled': true,
             tabSize: 2,
           }}
           theme="vs-dark"
@@ -141,6 +180,16 @@ async function startTempblotLanguageClient(
         implementation: { dynamicRegistration: false, linkSupport: true },
         documentHighlight: { dynamicRegistration: false },
         documentSymbol: { dynamicRegistration: false },
+        semanticTokens: {
+          dynamicRegistration: false,
+          requests: { full: true, range: false },
+          tokenTypes: SEMANTIC_TOKEN_TYPES,
+          tokenModifiers: SEMANTIC_TOKEN_MODIFIERS,
+          formats: ['relative'],
+          overlappingTokenSupport: false,
+          multilineTokenSupport: false,
+          augmentsSyntaxTokens: true,
+        },
         publishDiagnostics: { relatedInformation: true, versionSupport: false },
       },
       workspace: {
@@ -317,6 +366,26 @@ function registerLanguageProviders(
 
         return locationsToMonaco(monaco, result);
       },
+    }));
+  }
+
+  if (capabilities.semanticTokensProvider) {
+    const semanticTokensProvider = capabilities.semanticTokensProvider as SemanticTokensOptions;
+    disposables.push(monaco.languages.registerDocumentSemanticTokensProvider('tempblot', {
+      getLegend() {
+        return semanticTokensProvider.legend;
+      },
+      async provideDocumentSemanticTokens(model: editor.ITextModel) {
+        const result = await connection.sendRequest('textDocument/semanticTokens/full', {
+          textDocument: { uri: model.uri.toString() },
+        }) as SemanticTokens | null;
+
+        return {
+          resultId: result?.resultId,
+          data: new Uint32Array(result?.data ?? []),
+        };
+      },
+      releaseDocumentSemanticTokens() {},
     }));
   }
 }
