@@ -1,10 +1,8 @@
 import Editor, { type Monaco } from '@monaco-editor/react';
 import { useRef, useState } from 'react';
 import type { CancellationToken, editor, IMarkdownString, languages, Position } from 'monaco-editor';
-import type * as monacoNamespace from 'monaco-editor';
-import { wireTmGrammars } from 'monaco-editor-textmate';
-import { Registry } from 'monaco-textmate';
-import { loadWASM } from 'onigasm';
+import { Registry, INITIAL, type IGrammar, type IRawGrammar, type IRawTheme, type StateStack } from 'vscode-textmate';
+import { createOnigScanner, createOnigString, loadWASM } from 'vscode-oniguruma';
 import { BrowserMessageReader, BrowserMessageWriter, createProtocolConnection } from 'vscode-languageserver-protocol/browser';
 import type {
   CompletionItem,
@@ -46,7 +44,8 @@ import tsxGrammar from 'tm-grammars/grammars/tsx.json';
 import typescriptGrammar from 'tm-grammars/grammars/typescript.json';
 import vueGrammar from 'tm-grammars/grammars/vue.json';
 import yamlGrammar from 'tm-grammars/grammars/yaml.json';
-import onigasmWasmUrl from 'onigasm/lib/onigasm.wasm?url';
+import darkPlusTheme from 'tm-themes/themes/dark-plus.json';
+import onigurumaWasmUrl from 'vscode-oniguruma/release/onig.wasm?url';
 import './Playground.css';
 
 const DEFAULT_SOURCE = `<!-- Run TypeScript via Node -->
@@ -106,7 +105,24 @@ const SEMANTIC_TOKEN_MODIFIERS = [
 ];
 
 type Disposable = { dispose(): void };
-type RawGrammar = Record<string, unknown>;
+type RawGrammar = IRawGrammar;
+const asRawGrammar = (grammar: unknown): RawGrammar => grammar as RawGrammar;
+
+class TextMateState implements languages.IState {
+  constructor(private readonly ruleStack: StateStack | null) {}
+
+  get stack() {
+    return this.ruleStack;
+  }
+
+  clone() {
+    return new TextMateState(this.ruleStack);
+  }
+
+  equals(other: languages.IState) {
+    return other instanceof TextMateState && this.ruleStack === other.ruleStack;
+  }
+}
 
 interface TempblotLanguageClient {
   dispose(): void;
@@ -283,61 +299,94 @@ let textMateConfiguration: Promise<void> | undefined;
 
 async function configureTextMate(monaco: Monaco, instance: editor.IStandaloneCodeEditor) {
   textMateConfiguration ??= (async () => {
-    await loadWASM(onigasmWasmUrl);
+    await loadWASM(await fetch(onigurumaWasmUrl));
 
     const grammarByScope = new Map<string, RawGrammar>([
-      ['source.tempblot', tempblotGrammar],
-      ['source.ts', typescriptGrammar],
-      ['source.tsx', tsxGrammar],
-      ['source.js', javascriptGrammar],
-      ['source.js.jsx', jsxGrammar],
-      ['source.json', jsonGrammar],
-      ['source.json.comments', jsoncGrammar],
-      ['source.json5', json5Grammar],
-      ['text.html.basic', htmlGrammar],
-      ['text.html.derivative', htmlDerivativeGrammar],
-      ['text.html.markdown', markdownGrammar],
-      ['source.css', cssGrammar],
-      ['source.css.scss', scssGrammar],
-      ['source.css.less', lessGrammar],
-      ['source.css.postcss', postcssGrammar],
-      ['source.postcss', postcssGrammar],
-      ['source.sass', sassGrammar],
-      ['source.stylus', stylusGrammar],
-      ['text.pug', pugGrammar],
-      ['source.yaml', yamlGrammar],
-      ['source.toml', tomlGrammar],
-      ['source.graphql', graphqlGrammar],
-      ['source.coffee', coffeeGrammar],
-      ['source.vue', vueGrammar],
-      ['text.html.vue', vueGrammar],
+      ['source.tempblot', asRawGrammar(tempblotGrammar)],
+      ['source.ts', asRawGrammar(typescriptGrammar)],
+      ['source.tsx', asRawGrammar(tsxGrammar)],
+      ['source.js', asRawGrammar(javascriptGrammar)],
+      ['source.js.jsx', asRawGrammar(jsxGrammar)],
+      ['source.json', asRawGrammar(jsonGrammar)],
+      ['source.json.comments', asRawGrammar(jsoncGrammar)],
+      ['source.json5', asRawGrammar(json5Grammar)],
+      ['text.html.basic', asRawGrammar(htmlGrammar)],
+      ['text.html.derivative', asRawGrammar(htmlDerivativeGrammar)],
+      ['text.html.markdown', asRawGrammar(markdownGrammar)],
+      ['source.css', asRawGrammar(cssGrammar)],
+      ['source.css.scss', asRawGrammar(scssGrammar)],
+      ['source.css.less', asRawGrammar(lessGrammar)],
+      ['source.css.postcss', asRawGrammar(postcssGrammar)],
+      ['source.postcss', asRawGrammar(postcssGrammar)],
+      ['source.sass', asRawGrammar(sassGrammar)],
+      ['source.stylus', asRawGrammar(stylusGrammar)],
+      ['text.pug', asRawGrammar(pugGrammar)],
+      ['source.yaml', asRawGrammar(yamlGrammar)],
+      ['source.toml', asRawGrammar(tomlGrammar)],
+      ['source.graphql', asRawGrammar(graphqlGrammar)],
+      ['source.coffee', asRawGrammar(coffeeGrammar)],
+      ['source.vue', asRawGrammar(vueGrammar)],
+      ['text.html.vue', asRawGrammar(vueGrammar)],
     ]);
 
     const registry = new Registry({
-      getGrammarDefinition: async (scopeName) => {
-        const grammar = grammarByScope.get(scopeName) ?? createPlainTextGrammar(scopeName);
-
-        return {
-          format: 'json',
-          content: JSON.stringify(grammar),
-        };
-      },
+      theme: { settings: darkPlusTheme.tokenColors } as IRawTheme,
+      onigLib: Promise.resolve({ createOnigScanner, createOnigString }),
+      loadGrammar: async (scopeName) => grammarByScope.get(scopeName) ?? createPlainTextGrammar(scopeName),
     });
 
-    await wireTmGrammars(
-      monaco as typeof monacoNamespace,
-      registry,
-      new Map([['tempblot', 'source.tempblot']]),
-      instance,
-    );
+    const grammar = await registry.loadGrammarWithEmbeddedLanguages('source.tempblot', 1, {
+      'source.tempblot': 1,
+      'text.html.derivative': 2,
+      'text.html.markdown': 3,
+      'source.ts': 4,
+      'source.css': 5,
+      'source.css.scss': 6,
+      'source.css.less': 7,
+      'source.sass': 8,
+      'source.stylus': 9,
+      'source.postcss': 10,
+      'source.vue': 11,
+      'source.coffee': 12,
+      'source.json': 13,
+      'source.json.comments': 14,
+      'source.json5': 15,
+      'source.yaml': 16,
+      'source.toml': 17,
+      'source.graphql': 18,
+    });
+
+    if (!grammar) {
+      throw new Error('Unable to load Tempblot TextMate grammar.');
+    }
+
+    monaco.languages.setColorMap(registry.getColorMap());
+    monaco.languages.setTokensProvider('tempblot', createTextMateTokensProvider(grammar));
+    instance.setModel(instance.getModel());
   })();
 
   await textMateConfiguration;
 }
 
+function createTextMateTokensProvider(grammar: IGrammar): languages.EncodedTokensProvider {
+  return {
+    getInitialState() {
+      return new TextMateState(INITIAL);
+    },
+    tokenizeEncoded(line, state) {
+      const result = grammar.tokenizeLine2(line, state instanceof TextMateState ? state.stack : INITIAL);
+      return {
+        tokens: result.tokens,
+        endState: new TextMateState(result.ruleStack),
+      };
+    },
+  };
+}
+
 function createPlainTextGrammar(scopeName: string): RawGrammar {
   return {
     scopeName,
+    repository: { $self: {}, $base: {} },
     patterns: [],
   };
 }
