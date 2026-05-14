@@ -330,7 +330,7 @@ async function configureTextMate(monaco: Monaco, instance: editor.IStandaloneCod
     ]);
 
     const registry = new Registry({
-      theme: { settings: darkPlusTheme.tokenColors } as IRawTheme,
+      theme: createTextMateTheme(),
       onigLib: Promise.resolve({ createOnigScanner, createOnigString }),
       loadGrammar: async (scopeName) => grammarByScope.get(scopeName) ?? createPlainTextGrammar(scopeName),
     });
@@ -380,6 +380,21 @@ function createTextMateTokensProvider(grammar: IGrammar): languages.EncodedToken
         endState: new TextMateState(result.ruleStack),
       };
     },
+  };
+}
+
+function createTextMateTheme(): IRawTheme {
+  return {
+    name: 'Tempblot Dark+',
+    settings: [
+      {
+        settings: {
+          foreground: darkPlusTheme.colors['editor.foreground'],
+          background: darkPlusTheme.colors['editor.background'],
+        },
+      },
+      ...darkPlusTheme.tokenColors,
+    ],
   };
 }
 
