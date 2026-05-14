@@ -23,6 +23,7 @@
   },
   "keywords": [],
   "dependencies": {
+    "tempblot-parser": "workspace:*",
     "typescript": "^6.0.3"
   },
   "devDependencies": {

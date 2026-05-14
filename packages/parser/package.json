@@ -1,0 +1,28 @@
+{
+  "name": "tempblot-parser",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Shared parser utilities for Tempblot",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "default": "./lib/index.js"
+    }
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "prepack": "tsc --build --clean && tsc --build",
+    "test:lib": "vitest",
+    "test:types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.6"
+  },
+  "sideEffects": false
+}

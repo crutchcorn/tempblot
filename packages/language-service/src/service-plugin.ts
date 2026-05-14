@@ -19,8 +19,8 @@ export function createTempblotServicePlugin() {
           if (!(virtualCode instanceof TempblotVirtualCode)) {
             return;
           }
-          const setupNodes = virtualCode.htmlDocument.roots.filter((root: any) => root.tag === 'setup');
-          const outputNodes = virtualCode.htmlDocument.roots.filter((root: any) => root.tag === 'output');
+          const setupNodes = virtualCode.rootDocument.blocks.filter((root) => root.tag === 'setup');
+          const outputNodes = virtualCode.rootDocument.blocks.filter((root) => root.tag === 'output');
 
           if (setupNodes.length == 1 && outputNodes.length == 1) {
             return;

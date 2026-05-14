@@ -1,8 +1,14 @@
 /// <reference types="@volar/typescript" />
 import { CodeMapping, type VirtualCode } from "@volar/language-core";
 import { type LanguagePlugin } from "@volar/language-service";
+import {
+  getRootBlocks,
+  parseTempblotRoot,
+  scanInterpolations,
+  type InterpolationData,
+  type ParsedRoot,
+} from "tempblot-parser";
 import type * as ts from "typescript";
-import * as html from "vscode-html-languageservice";
 import { URI } from "vscode-uri";
 
 export function createTempblotLanguagePlugin(): LanguagePlugin<
@@ -64,8 +70,6 @@ export function createTempblotLanguagePlugin(): LanguagePlugin<
   };
 }
 
-const htmlLs = html.getLanguageService();
-
 export class TempblotVirtualCode implements VirtualCode {
   id = "root";
   languageId = "tempblot";
@@ -73,7 +77,7 @@ export class TempblotVirtualCode implements VirtualCode {
   embeddedCodes: VirtualCode[] = [];
 
   // Reuse in custom language service plugin
-  htmlDocument: html.HTMLDocument;
+  rootDocument: ParsedRoot;
 
   constructor(public snapshot: ts.IScriptSnapshot) {
     this.mappings = [
@@ -91,26 +95,19 @@ export class TempblotVirtualCode implements VirtualCode {
         },
       },
     ];
-    this.htmlDocument = htmlLs.parseHTMLDocument(
-      html.TextDocument.create(
-        "",
-        "html",
-        0,
-        snapshot.getText(0, snapshot.getLength()),
-      ),
-    );
+    this.rootDocument = parseTempblotRoot(snapshot.getText(0, snapshot.getLength()));
     this.embeddedCodes = [
-      ...getTempblotEmbeddedCodes(snapshot, this.htmlDocument),
+      ...getTempblotEmbeddedCodes(snapshot, this.rootDocument),
     ];
   }
 }
 
 function* getTempblotEmbeddedCodes(
   snapshot: ts.IScriptSnapshot,
-  htmlDocument: html.HTMLDocument,
+  rootDocument: ParsedRoot,
 ): Generator<VirtualCode> {
-  const setups = htmlDocument.roots.filter((root) => root.tag === "setup");
-  const outputs = htmlDocument.roots.filter((root) => root.tag === "output");
+  const setups = getRootBlocks(rootDocument, "setup");
+  const outputs = getRootBlocks(rootDocument, "output");
 
   // If we have both setup and output, combine them into a single TypeScript context
   // This allows setup variables to be accessible in output interpolations
@@ -118,20 +115,11 @@ function* getTempblotEmbeddedCodes(
     const setup = setups[0]; // Take the first setup block
     const output = outputs[0]; // Take the first output block
 
-    if (
-      !setup.startTagEnd ||
-      !setup.endTagStart ||
-      !output.startTagEnd ||
-      !output.endTagStart
-    ) {
-      return;
-    }
-
     const setupText = snapshot.getText(setup.startTagEnd, setup.endTagStart);
     const outputText = snapshot.getText(output.startTagEnd, output.endTagStart);
 
     // Extract interpolation expressions and their positions from output
-    const interpolationsData = extractInterpolationsWithPositions(outputText);
+    const interpolationsData = scanInterpolations(outputText);
 
     // Create a combined TypeScript context wrapped in a module
     // This ensures each .blot file has its own isolated scope
@@ -211,69 +199,6 @@ function* getTempblotEmbeddedCodes(
       embeddedCodes: [],
     };
   }
-}
-
-interface InterpolationData {
-  expression: string;
-  sourceStart: number;
-  sourceEnd: number;
-  fullStart: number; // includes <<
-  fullEnd: number; // includes >>
-}
-
-function extractInterpolationsWithPositions(text: string): InterpolationData[] {
-  const interpolations: InterpolationData[] = [];
-  let i = 0;
-  const length = text.length;
-
-  while (i < length) {
-    if (text[i] === "<" && text[i + 1] === "<") {
-      const fullStart = i;
-      let j = i + 2;
-      let depth = 1;
-
-      // Find the matching >>
-      while (j < length && depth > 0) {
-        if (text[j] === "<" && text[j + 1] === "<") {
-          depth++;
-          j += 2;
-        } else if (text[j] === ">" && text[j + 1] === ">") {
-          depth--;
-          if (depth === 0) {
-            // Extract the interpolation content
-            const sourceStart = i + 2;
-            const sourceEnd = j;
-            const expression = text.substring(sourceStart, sourceEnd).trim();
-            const fullEnd = j + 2;
-
-            if (expression) {
-              interpolations.push({
-                expression,
-                sourceStart,
-                sourceEnd,
-                fullStart,
-                fullEnd,
-              });
-            }
-            i = j + 2;
-            break;
-          }
-          j += 2;
-        } else {
-          j++;
-        }
-      }
-
-      if (depth > 0) {
-        // Unclosed interpolation, skip
-        i++;
-      }
-    } else {
-      i++;
-    }
-  }
-
-  return interpolations;
 }
 
 function createJsonWithMappings(
