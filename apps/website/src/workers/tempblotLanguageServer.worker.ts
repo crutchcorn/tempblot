@@ -9,7 +9,7 @@ import {
 import {
   createTempblotLanguagePlugin,
   createTempblotServicePlugin,
-} from 'tempblot-language-service';
+} from '@tempblot/language-service';
 import * as typescript from 'typescript';
 import { create as createTypeScriptServicePlugins } from 'volar-service-typescript';
 

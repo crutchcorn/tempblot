@@ -3,7 +3,7 @@
 const {
   createTempblotLanguagePlugin,
   createTempblotServicePlugin
-} = require('tempblot-language-service')
+} = require('@tempblot/language-service')
 const {
   createLanguageServicePlugin
 } = require('@volar/typescript/lib/quickstart/createLanguageServicePlugin.js')

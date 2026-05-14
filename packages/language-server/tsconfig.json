@@ -1,5 +1,5 @@
 {
-  "extends": "tempblot-config/tsconfig.json",
+  "extends": "@tempblot/config/tsconfig.json",
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",

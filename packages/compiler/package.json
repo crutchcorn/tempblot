@@ -1,19 +1,30 @@
 {
   "name": "tempblot",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A modern type-safe templating engine",
-  "author": "crutchcorn",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/crutchcorn/tempblot.git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
     "directory": "packages/compiler"
   },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/crutchcorn"
   },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "keywords": [
+    "compiler",
+    "tempblot",
+    "template",
+    "templating",
+    "typescript"
+  ],
   "scripts": {
     "build": "vite build",
     "test:lib": "vitest",
@@ -21,16 +32,15 @@
     "test:types": "tsc --noEmit",
     "test:eslint": "eslint ."
   },
-  "keywords": [],
   "dependencies": {
-    "tempblot-parser": "workspace:*",
+    "@tempblot/parser": "workspace:*",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
+    "@tempblot/config": "workspace:*",
     "@types/node": "^24.5.2",
     "publint": "^0.3.21",
-    "tempblot-config": "workspace:*",
     "unplugin-dts": "^1.0.0-beta.6",
     "vite": "^8.0.12",
     "vitest": "^4.1.6"

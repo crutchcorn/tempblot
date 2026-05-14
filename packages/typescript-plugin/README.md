@@ -12,7 +12,7 @@ A TypeScript plugin that provides language features for Tempblot (`.blot`) files
 ## Installation
 
 ```bash
-npm install tempblot-typescript-plugin
+npm install @tempblot/typescript-plugin
 ```
 
 ## Configuration
@@ -24,7 +24,7 @@ Add to your VS Code workspace settings (`.vscode/settings.json`):
 ```json
 {
   "typescript.preferences.plugins": [
-    { "name": "tempblot-typescript-plugin" }
+    { "name": "@tempblot/typescript-plugin" }
   ]
 }
 ```
@@ -37,7 +37,7 @@ Add to your `tsconfig.json`:
 {
   "compilerOptions": {
     "plugins": [
-      { "name": "tempblot-typescript-plugin" }
+      { "name": "@tempblot/typescript-plugin" }
     ]
   }
 }
@@ -61,23 +61,3 @@ const count = 42;
 }
 </output>
 ```
-
-## Architecture
-
-This plugin uses the [Volar](https://volarjs.dev) framework to integrate with TypeScript's language service, providing:
-
-- **Virtual Code Generation**: Transforms Tempblot templates into TypeScript code for analysis
-- **Source Mapping**: Maps between original Tempblot source and generated TypeScript
-- **Embedded Languages**: Supports TypeScript in setup blocks and JSON in output blocks
-- **Custom Diagnostics**: Validates Tempblot-specific rules (required setup/output tags, etc.)
-
-## Migration from Language Server
-
-If you're migrating from the Tempblot language server, you can:
-
-1. Remove the language server configuration from your VS Code settings
-2. Install this TypeScript plugin
-3. Configure it using one of the methods above
-4. Restart the TypeScript service (`Cmd+Shift+P` → "TypeScript: Restart TS Server")
-
-The TypeScript plugin provides the same language features as the language server but with better performance and compatibility with other TypeScript tools.

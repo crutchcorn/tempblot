@@ -1,8 +1,23 @@
 {
-  "name": "tempblot-language-service",
-  "version": "0.0.1",
+  "name": "@tempblot/language-service",
+  "version": "0.1.0",
   "type": "module",
   "description": "Tempblot support for Volar",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/language-service"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/crutchcorn"
+  },
   "exports": {
     ".": {
       "types": "./lib/src/index.d.ts",
@@ -13,10 +28,12 @@
     "lib"
   ],
   "keywords": [
+    "intellisense",
+    "language-service",
     "tempblot",
+    "templating",
     "typescript",
-    "volar",
-    "templating"
+    "volar"
   ],
   "scripts": {
     "build": "tsc --build",
@@ -24,15 +41,15 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
+    "@tempblot/parser": "workspace:*",
     "@volar/language-core": "~2.4.23",
     "@volar/language-service": "~2.4.23",
     "@volar/typescript": "~2.4.23",
-    "tempblot-parser": "workspace:*",
     "vscode-uri": "^3.1.0"
   },
   "devDependencies": {
+    "@tempblot/config": "workspace:*",
     "@types/node": "^24.5.2",
-    "tempblot-config": "workspace:*",
     "typescript": "^6.0.3"
   },
   "sideEffects": false

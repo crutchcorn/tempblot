@@ -1,4 +1,4 @@
-import tempblotPreset from 'tempblot-config/eslint-preset.js'
+import tempblotPreset from '@tempblot/config/eslint-preset.js'
 
 export default [
   ...tempblotPreset,

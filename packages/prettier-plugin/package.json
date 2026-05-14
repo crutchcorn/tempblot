@@ -1,8 +1,30 @@
 {
   "name": "prettier-plugin-tempblot",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "description": "Prettier plugin for Tempblot templates",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/prettier-plugin"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/crutchcorn"
+  },
+  "keywords": [
+    "formatter",
+    "prettier",
+    "prettier-plugin",
+    "tempblot",
+    "templating"
+  ],
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
@@ -20,13 +42,13 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
-    "tempblot-parser": "workspace:*"
+    "@tempblot/parser": "workspace:*"
   },
   "devDependencies": {
+    "@tempblot/config": "workspace:*",
     "@types/node": "^24.5.2",
     "cli-testing-library": "^3.0.0",
     "prettier": "^3.6.2",
-    "tempblot-config": "workspace:*",
     "typescript": "^6.0.3",
     "vitest": "^4.1.6"
   },

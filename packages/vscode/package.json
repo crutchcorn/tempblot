@@ -1,16 +1,32 @@
 {
 	"private": true,
-	"name": "tempblot-vscode",
-	"version": "0.0.1",
+	"name": "@tempblot/vscode",
+	"version": "0.1.0",
+	"publisher": "crutchcorn",
+	"author": "Corbin Crutchley <crutchcorn@gmail.com>",
+	"license": "MIT",
 	"categories": [
 		"Programming Languages"
 	],
 	"displayName": "Tempblot Language Features",
-	"description": "Tempblot Language Features",
+	"description": "Syntax highlighting and language features for Tempblot files",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/crutchcorn/tempblot.git"
+		"url": "git+https://github.com/crutchcorn/tempblot.git",
+		"directory": "packages/vscode"
 	},
+	"homepage": "https://github.com/crutchcorn/tempblot",
+	"bugs": {
+		"url": "https://github.com/crutchcorn/tempblot/issues"
+	},
+	"keywords": [
+		"intellisense",
+		"language-server",
+		"syntax-highlighting",
+		"tempblot",
+		"typescript",
+		"vscode"
+	],
 	"engines": {
 		"vscode": "^1.104.0"
 	},
@@ -90,7 +106,7 @@
 		],
 		"typescriptServerPlugins": [
 			{
-				"name": "tempblot-typescript-plugin",
+				"name": "@tempblot/typescript-plugin",
 				"enableForWorkspaceTypeScriptVersions": true,
 				"configNamespace": "typescript",
 				"languages": [
@@ -107,14 +123,14 @@
 		"test:eslint": "eslint ."
 	},
 	"dependencies": {
+		"@tempblot/language-server": "workspace:*",
 		"@volar/language-server": "~2.4.28",
-		"@volar/vscode": "~2.4.23",
-		"tempblot-language-server": "workspace:*"
+		"@volar/vscode": "~2.4.23"
 	},
 	"devDependencies": {
+		"@tempblot/config": "workspace:*",
 		"@types/vscode": "^1.104.0",
 		"esbuild": "^0.28.0",
-		"tempblot-config": "workspace:*",
 		"vsce": "^2.15.0"
 	}
 }

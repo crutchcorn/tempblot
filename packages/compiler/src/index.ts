@@ -4,7 +4,7 @@ import {
   parseRoot,
   tokenizeRoot,
   transformOutputTemplate,
-} from "tempblot-parser";
+} from "@tempblot/parser";
 import { transformSetup } from "./setup-transformer.ts";
 
 export { TempblotInstance, useParams } from "./instance.ts";

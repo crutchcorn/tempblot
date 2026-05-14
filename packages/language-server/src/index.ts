@@ -5,7 +5,7 @@ import process from 'node:process';
 import {
   createTempblotLanguagePlugin,
   createTempblotServicePlugin
-} from 'tempblot-language-service';
+} from '@tempblot/language-service';
 import {
   createConnection,
   createServer,
