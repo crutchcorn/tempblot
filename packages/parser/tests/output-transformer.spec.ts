@@ -6,3 +6,9 @@ test("transformOutputTemplate", () => {
   const cleaned = transformOutputTemplate(source);
   expect(cleaned).toEqual('const someStr = \\`<div>${val ? ">>" : "<<"}</div>\\`;');
 });
+
+test("transformOutputTemplate allows shift operators in interpolations", () => {
+  const source = "<< 1 << 2 >> 3 >>";
+  const cleaned = transformOutputTemplate(source);
+  expect(cleaned).toEqual("${1 << 2 >> 3}");
+});

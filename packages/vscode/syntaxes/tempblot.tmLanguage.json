@@ -837,7 +837,7 @@
           "name": "punctuation.definition.interpolation.begin.tempblot"
         }
       },
-      "end": "\\s*(>>)",
+      "end": "\\s*(>>(?![^\\n]*>>))",
       "endCaptures": {
         "1": {
           "name": "punctuation.definition.interpolation.end.tempblot"
@@ -845,6 +845,10 @@
       },
       "name": "meta.interpolation.tempblot",
       "patterns": [
+        {
+          "match": "(?<=\\s)(<<|>>)(?=\\s)",
+          "name": "keyword.operator.bitwise.shift.ts"
+        },
         {
           "include": "source.ts"
         }
