@@ -1,4 +1,6 @@
 import Editor, { type Monaco } from '@monaco-editor/react';
+import 'monaco-editor/esm/vs/language/json/monaco.contribution';
+import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
 import { useRef, useState } from 'react';
 import type { CancellationToken, editor, IMarkdownString, languages, Position } from 'monaco-editor';
 import { BrowserMessageReader, BrowserMessageWriter, createProtocolConnection } from 'vscode-languageserver-protocol/browser';
@@ -251,7 +253,8 @@ function configureMonaco(monaco: Monaco) {
         root: [
           [/<!--/, 'comment', '@comment'],
           [/(<setup\b)([^>]*)(>)/, ['tag', 'attribute.value', { token: 'tag', next: '@setup', nextEmbedded: 'typescript' }]],
-          [/(<output\b)([^>]*)(>)/, ['tag', 'attribute.value', { token: 'tag', next: '@output', nextEmbedded: 'json' }]],
+          [/(<output\b)(?=[^>]*\blang=["']json["'])([^>]*)(>)/, ['tag', 'attribute.value', { token: 'tag', next: '@outputJson', nextEmbedded: 'json' }]],
+          [/(<output\b)([^>]*)(>)/, ['tag', 'attribute.value', { token: 'tag', next: '@output' }]],
           [/<\/?(?:setup|output)\b/, 'tag'],
           [/\b[a-zA-Z-]+(?==)/, 'attribute.name'],
           [/"[^"]*"/, 'attribute.value'],
@@ -265,7 +268,14 @@ function configureMonaco(monaco: Monaco) {
           [/<\/setup>/, { token: '@rematch', next: '@pop', nextEmbedded: '@pop' }],
         ],
         output: [
+          [/<\/output>/, { token: '@rematch', next: '@pop' }],
+        ],
+        outputJson: [
           [/<\/output>/, { token: '@rematch', next: '@pop', nextEmbedded: '@pop' }],
+          [/<<\s*/, { token: 'delimiter', next: '@outputInterpolation', nextEmbedded: 'typescript' }],
+        ],
+        outputInterpolation: [
+          [/\s*>>/, { token: 'delimiter', next: '@outputJson', nextEmbedded: 'json' }],
         ],
       },
     });
