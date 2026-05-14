@@ -133,13 +133,13 @@ export default function Playground() {
   return (
     <main className="playground-shell">
       <section className="playground-copy">
-        <p className="playground-eyebrow">Tempblot Playground</p>
-        <h1>Edit templates with browser language tooling</h1>
+        <p className="playground-eyebrow">Tempblot</p>
+        <h1>Write templates with real TypeScript values</h1>
         <p>
-          Try changing setup variables, interpolation expressions, or the JSON output.
-          Monaco talks to the Tempblot Volar language service in a browser worker,
-          so diagnostics, completions, hover, signatures, and definitions come from
-          the same language infrastructure as the editor extensions.
+          Tempblot lets you prepare data in a setup block, then interpolate those
+          values into any text-based output format. Use it for generated files,
+          configuration, fixtures, documentation, or any template that benefits
+          from typed JavaScript and TypeScript expressions.
         </p>
       </section>
       <section className="playground-editor" aria-label="Tempblot editor">
