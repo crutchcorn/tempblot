@@ -1,0 +1,121 @@
+---
+title: Project Layout
+description: How to organize Tempblot templates, static files, and dynamic paths in a project.
+---
+
+Tempblot treats your input directory as a source tree. Static files are copied as-is, and `.blot` files are compiled into output files by removing the `.blot` extension.
+
+## Static Layouts
+
+Use `.blot` when a file needs TypeScript-powered templating. Leave everything else as a normal static file.
+
+<FileTree>
+- templates
+  - package.json.blot becomes `package.json`
+  - README.md.blot becomes `README.md`
+  - public
+    - favicon.svg copied as-is
+    - robots.txt copied as-is
+</FileTree>
+
+Given that input tree, generating into `dist` produces this output shape:
+
+<FileTree>
+- dist
+  - package.json
+  - README.md
+  - public
+    - favicon.svg
+    - robots.txt
+</FileTree>
+
+Each regular `.blot` file should include one `<output>` block. Add `<setup>` only when the template needs imports, params, helper functions, or computed values.
+
+```blot
+<setup>
+const name = "tempblot";
+</setup>
+
+<output lang="json">
+{
+  "name": <<JSON.stringify(name)>>
+}
+</output>
+```
+
+## Dynamic File Names
+
+Put bracketed params in a `.blot` file name to generate one output file for each path entry. The same file provides both the `getPaths()` function and the output template.
+
+<FileTree>
+- templates
+  - posts
+    - `[slug].json.blot` generates one file per slug
+</FileTree>
+
+```blot
+<setup>
+export function getPaths() {
+  return [{ slug: "hello-world" }, { slug: "release-notes" }];
+}
+</setup>
+
+<output lang="json">
+{
+  "slug": <<JSON.stringify(slug)>>
+}
+</output>
+```
+
+The generated output keeps the surrounding directory structure and replaces `[slug]` with each returned value.
+
+<FileTree>
+- dist
+  - posts
+    - hello-world.json
+    - release-notes.json
+</FileTree>
+
+## Dynamic Directories
+
+Put bracketed params in a directory name when a whole folder should be generated more than once. Add a `_paths.blot` file inside that directory to describe the path entries for the directory.
+
+<FileTree>
+- templates
+  - docs
+    - `[section]`
+      - `_paths.blot` provides section params
+      - index.md.blot
+      - sidebar.json.blot
+</FileTree>
+
+Path files are the exception to the regular `.blot` shape: `_paths.blot` should contain exactly one `<setup>` block and no `<output>` block.
+
+```blot
+<setup>
+export function getPaths() {
+  return [{ section: "guides" }, { section: "reference" }];
+}
+</setup>
+```
+
+Every file inside `[section]` is generated once for each returned path entry.
+
+<FileTree>
+- dist
+  - docs
+    - guides
+      - index.md
+      - sidebar.json
+    - reference
+      - index.md
+      - sidebar.json
+</FileTree>
+
+## Rules Of Thumb
+
+- Regular `.blot` files require one `<output>` block.
+- Regular `.blot` files may include one `<setup>` block.
+- `_paths.blot` files require one `<setup>` block.
+- `_paths.blot` files must not include an `<output>` block.
+- Static files do not need `.blot`; they are copied directly.

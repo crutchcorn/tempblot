@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import AutoImport from "astro-auto-import";
 import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 import { bundledLanguages } from "shiki/langs";
@@ -81,9 +82,15 @@ export default defineConfig({
         { label: "Playground", slug: "playground" },
         {
           label: "Guides",
-          items: [{ label: "Basic Usage", slug: "guides/basic-usage" }],
+          items: [
+            { label: "Basic Usage", slug: "guides/basic-usage" },
+            { label: "Project Layout", slug: "guides/project-layout" },
+          ],
         },
       ],
+    }),
+    AutoImport({
+      imports: [{ [import.meta.resolve("@astrojs/starlight/components")]: ["FileTree"] }],
     }),
   ],
 });

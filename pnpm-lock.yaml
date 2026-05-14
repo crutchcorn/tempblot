@@ -59,6 +59,9 @@ importers:
       astro:
         specifier: ^6.3.1
         version: 6.3.1(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(yaml@2.9.0)
+      astro-auto-import:
+        specifier: ^0.5.1
+        version: 0.5.1(astro@6.3.1(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(yaml@2.9.0))
       monaco-editor:
         specifier: ^0.55.1
         version: 0.55.1
@@ -1970,6 +1973,12 @@ packages:
   astring@1.9.0:
     resolution: {integrity: sha512-LElXdjswlqjWrPpJFg1Fx4wpkOCxj1TDHlSV4PlaRxHGWko024xICaa97ZkMfs6DRKlCguiAI+rbXv5GWwXIkg==}
     hasBin: true
+
+  astro-auto-import@0.5.1:
+    resolution: {integrity: sha512-7YZKVA7LE5nLkopOM+KIHqnh6g2CfHrysj2JUXNBrC3FppHH42RSNBM7mgsEgaq2lgHVDt7hsDQIA0JKTwIN8A==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      astro: ^5.0.0-beta || ^6.0.0-alpha
 
   astro-expressive-code@0.42.0:
     resolution: {integrity: sha512-aiTePi2Cn0mJPYWZSzP1GcxCinX9mNtJyCCshVVPSg1yRwM7ADvFJOx0FnS440M9t65hp8JH//dc2qr22Bm4ag==}
@@ -6014,6 +6023,11 @@ snapshots:
   assertion-error@2.0.1: {}
 
   astring@1.9.0: {}
+
+  astro-auto-import@0.5.1(astro@6.3.1(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(yaml@2.9.0)):
+    dependencies:
+      acorn: 8.16.0
+      astro: 6.3.1(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(yaml@2.9.0)
 
   astro-expressive-code@0.42.0(astro@6.3.1(@types/node@24.12.4)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(yaml@2.9.0)):
     dependencies:
