@@ -1,7 +1,8 @@
-name: PR
+name: Tests
 
 on:
-  pull_request:
+  push:
+    branches: [main, alpha, beta, rc]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
@@ -22,9 +23,5 @@ jobs:
           persist-credentials: false
       - name: Setup Tools
         uses: ./.github/actions/setup-tools
-      - name: Get base and head commits for `nx affected`
-        uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # v4.4.0
-        with:
-          main-branch-name: main
       - name: Run Checks
         run: pnpm run test:pr --parallel=3
