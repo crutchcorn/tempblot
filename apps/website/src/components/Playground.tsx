@@ -141,6 +141,11 @@ export default function Playground() {
           configuration, fixtures, documentation, or any template that benefits
           from typed JavaScript and TypeScript expressions.
         </p>
+        <div className="playground-actions">
+          <a className="playground-guide-link" href="/guides/basic-usage/">
+            Read the basic usage guide
+          </a>
+        </div>
       </section>
       <section className="playground-editor" aria-label="Tempblot editor">
         <Editor

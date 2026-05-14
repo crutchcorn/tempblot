@@ -6,9 +6,7 @@
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at top left, rgba(124, 58, 237, 0.35), transparent 34rem),
-    linear-gradient(135deg, #09090b 0%, #111827 52%, #18181b 100%);
+  background: #0b0b0b;
   color: #f8fafc;
 }
 
@@ -19,6 +17,10 @@ body {
   gap: 2rem;
   min-height: 100vh;
   padding: clamp(1rem, 4vw, 3rem);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 4rem 4rem;
 }
 
 .playground-copy {
@@ -28,7 +30,7 @@ body {
 
 .playground-eyebrow {
   margin: 0 0 1rem;
-  color: #c4b5fd;
+  color: #ffffff;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -49,16 +51,46 @@ body {
 }
 
 .playground-copy code {
-  color: #ddd6fe;
+  color: #ffffff;
+}
+
+.playground-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.playground-guide-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ffffff;
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  color: #0b0b0b;
+  background: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.playground-guide-link:hover,
+.playground-guide-link:focus-visible {
+  color: #ffffff;
+  background: transparent;
 }
 
 .playground-editor {
   min-height: 40rem;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
   background: #1e1e1e;
-  box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.36);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.45);
 }
 
 @media (max-width: 900px) {
