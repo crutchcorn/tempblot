@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "main",
   "targetDefaults": {
     "build": {
       "dependsOn": [
@@ -69,6 +70,5 @@
       ],
       "cache": false
     }
-  },
-  "analytics": false
+  }
 }
