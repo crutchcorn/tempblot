@@ -24,4 +24,4 @@ jobs:
       - name: Setup Tools
         uses: ./.github/actions/setup-tools
       - name: Run Checks
-        run: pnpm run test:pr --parallel=3
+        run: pnpm run test:ci
