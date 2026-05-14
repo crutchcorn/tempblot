@@ -23,11 +23,7 @@ test("generates a static blot file", async () => {
 
   const result = await generate({ inputDir, outputDir });
 
-  await expect(fs.readFile(path.join(outputDir, "test.json"), "utf8")).resolves.toBe(
-    `
-{ "value": 123 }
-`,
-  );
+  await expectOutputToMatchFixture(outputDir, "static");
   expect(result.files).toMatchObject([
     {
       outputPath: path.join(outputDir, "test.json"),
@@ -42,16 +38,7 @@ test("generates dynamic file names from getPaths", async () => {
 
   await generate({ inputDir, outputDir });
 
-  await expect(fs.readFile(path.join(outputDir, "one.js"), "utf8")).resolves.toBe(
-    `
-console.log(1);
-`,
-  );
-  await expect(fs.readFile(path.join(outputDir, "two.js"), "utf8")).resolves.toBe(
-    `
-console.log(2);
-`,
-  );
+  await expectOutputToMatchFixture(outputDir, "dynamic-files");
 });
 
 test("generates dynamic directories from _paths.blot", async () => {
@@ -60,16 +47,7 @@ test("generates dynamic directories from _paths.blot", async () => {
 
   await generate({ inputDir, outputDir });
 
-  await expect(fs.readFile(path.join(outputDir, "one", "index.ts"), "utf8"))
-    .resolves.toBe(`
-export const name = "one";
-`);
-  await expect(fs.readFile(path.join(outputDir, "two", "index.ts"), "utf8"))
-    .resolves.toBe(`
-export const name = "two";
-`);
-  await expect(fs.readFile(path.join(outputDir, "one", "static.txt"), "utf8"))
-    .resolves.toBe("copied\n");
+  await expectOutputToMatchFixture(outputDir, "dynamic-directories");
 });
 
 test("skips existing files when requested", async () => {
@@ -86,10 +64,54 @@ test("skips existing files when requested", async () => {
     existingFiles: "skip",
   });
 
-  await expect(fs.readFile(path.join(outputDir, "test.txt"), "utf8"))
-    .resolves.toBe("existing\n");
+  await expectOutputToMatchFixture(outputDir, "skip-existing");
   expect(result.files).toMatchObject([{ action: "skipped" }]);
 });
+
+async function expectOutputToMatchFixture(
+  outputDir: string,
+  fixtureName: string,
+): Promise<void> {
+  const fixtureOutputDir = getFixtureOutputDir(fixtureName);
+  const outputFiles = await readTreeFilePaths(outputDir);
+
+  expect(outputFiles).toEqual(await readTreeFilePaths(fixtureOutputDir));
+
+  for (const outputFile of outputFiles) {
+    await expect(
+      await fs.readFile(path.join(outputDir, outputFile), "utf8"),
+    ).toMatchFileSnapshot(path.join(fixtureOutputDir, outputFile));
+  }
+}
+
+async function readTreeFilePaths(rootDir: string): Promise<string[]> {
+  const files: string[] = [];
+  await readTreeFilePathsInto(rootDir, rootDir, files);
+  return files;
+}
+
+async function readTreeFilePathsInto(
+  rootDir: string,
+  currentDir: string,
+  files: string[],
+): Promise<void> {
+  const entries = await fs.readdir(currentDir, { withFileTypes: true });
+
+  entries.sort((a, b) => a.name.localeCompare(b.name));
+
+  for (const entry of entries) {
+    const entryPath = path.join(currentDir, entry.name);
+
+    if (entry.isDirectory()) {
+      await readTreeFilePathsInto(rootDir, entryPath, files);
+      continue;
+    }
+
+    if (entry.isFile()) {
+      files.push(path.relative(rootDir, entryPath));
+    }
+  }
+}
 
 async function createOutputDir(): Promise<string> {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "tempblot-generator-"));
