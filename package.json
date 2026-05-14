@@ -1,20 +1,26 @@
 {
+  "name": "tempblot-root",
   "private": true,
   "scripts": {
-    "build": "nx run-many -t build --projects=tempblot-parser,prettier-plugin-tempblot,tempblot-language-service,tempblot-language-server,tempblot-typescript-plugin,tempblot-vscode",
-    "build:vscode": "nx run tempblot-vscode:build",
-    "build:website": "nx run website:build",
-    "watch": "nx run tempblot-vscode:watch",
-    "pack": "nx run tempblot-vscode:pack",
-    "release": "nx run tempblot-vscode:release",
+    "build": "nx affected --target=build",
+    "build:all": "nx run-many --target=build",
     "format": "prettier --write .",
-    "test": "nx run-many -t test:lib --projects=tempblot-parser,prettier-plugin-tempblot,tempblot && nx run-many -t test:types --projects=tempblot-parser,tempblot && nx run-many -t test:build --projects=tempblot && nx run tempblot-workspace:sherif && nx run tempblot-workspace:knip",
-    "test:pr": "nx affected -t test:lib --projects=tempblot-parser,prettier-plugin-tempblot,tempblot && nx affected -t test:types --projects=tempblot-parser,tempblot && nx affected -t test:build --projects=tempblot && nx run tempblot-workspace:sherif && nx run tempblot-workspace:knip",
-    "test:lib": "nx run-many -t test:lib --projects=tempblot-parser,prettier-plugin-tempblot,tempblot",
-    "test:types": "nx run-many -t test:types --projects=tempblot-parser,tempblot",
-    "test:build": "nx run-many -t test:build --projects=tempblot",
-    "test:sherif": "nx run tempblot-workspace:sherif",
-    "test:knip": "nx run tempblot-workspace:knip"
+    "test": "pnpm run test:ci",
+    "test:pr": "nx affected --targets=test:sherif,test:knip,test:eslint,test:lib,test:types,test:build,build",
+    "test:ci": "nx run-many --targets=test:sherif,test:knip,test:eslint,test:lib,test:types,test:build,build",
+    "test:eslint": "nx affected --target=test:eslint",
+    "test:sherif": "sherif",
+    "test:lib": "nx affected --target=test:lib",
+    "test:lib:dev": "pnpm run test:lib && nx watch --all -- pnpm run test:lib",
+    "test:build": "nx affected --target=test:build",
+    "test:types": "nx affected --target=test:types",
+    "test:knip": "knip"
+  },
+  "nx": {
+    "includedScripts": [
+      "test:knip",
+      "test:sherif"
+    ]
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
