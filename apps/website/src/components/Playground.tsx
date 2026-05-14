@@ -1,5 +1,5 @@
 import Editor, { type Monaco } from '@monaco-editor/react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CancellationToken, editor, IMarkdownString, languages, Position } from 'monaco-editor';
 import * as vscodeTextmate from 'vscode-textmate';
 import type { IGrammar, IRawGrammar, IRawTheme, StateStack } from 'vscode-textmate';
@@ -34,11 +34,14 @@ import tsxGrammar from 'tm-grammars/grammars/tsx.json';
 import typescriptGrammar from 'tm-grammars/grammars/typescript.json';
 import yamlGrammar from 'tm-grammars/grammars/yaml.json';
 import darkPlusTheme from 'tm-themes/themes/dark-plus.json';
+import lightPlusTheme from 'tm-themes/themes/light-plus.json';
 import onigurumaWasmUrl from 'vscode-oniguruma/release/onig.wasm?url';
 import './Playground.css';
 
 const { Registry, INITIAL } = vscodeTextmate;
 const { createOnigScanner, createOnigString, loadWASM } = vscodeOniguruma;
+const tempblotDarkTheme = 'tempblot-dark';
+const tempblotLightTheme = 'tempblot-light';
 
 const DEFAULT_SOURCE = `<setup>
 // Run TypeScript in the <setup>
@@ -124,12 +127,32 @@ interface TempblotLanguageClient {
 
 export default function Playground() {
   const [source, setSource] = useState(DEFAULT_SOURCE);
+  const [editorTheme, setEditorTheme] = useState(getCurrentEditorTheme);
   const clientRef = useRef<TempblotLanguageClient | null>(null);
+  const monacoRef = useRef<Monaco | null>(null);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const observer = new MutationObserver(() => {
+      const nextTheme = getCurrentEditorTheme();
+      setEditorTheme(nextTheme);
+      monacoRef.current?.editor.setTheme(nextTheme);
+      void updateTextMateTheme(monacoRef.current, editorRef.current, nextTheme);
+    });
+
+    observer.observe(root, { attributeFilter: ['data-theme'] });
+
+    return () => observer.disconnect();
+  }, []);
 
   async function handleMount(instance: editor.IStandaloneCodeEditor, monaco: Monaco) {
+    monacoRef.current = monaco;
+    editorRef.current = instance;
     const model = monaco.editor.createModel(source, 'tempblot', monaco.Uri.parse(BLOT_URI));
     instance.setModel(model);
-    await configureMonaco(monaco, instance);
+    await configureMonaco(monaco, instance, editorTheme);
+    monaco.editor.setTheme(editorTheme);
     clientRef.current?.dispose();
     clientRef.current = await startTempblotLanguageClient(monaco, model);
   }
@@ -164,7 +187,7 @@ export default function Playground() {
             'semanticHighlighting.enabled': true,
             tabSize: 2,
           }}
-          theme="vs-dark"
+          theme={editorTheme}
           onChange={(value) => setSource(value ?? '')}
           onMount={handleMount}
         />
@@ -274,7 +297,17 @@ async function startTempblotLanguageClient(
   };
 }
 
-async function configureMonaco(monaco: Monaco, instance: editor.IStandaloneCodeEditor) {
+function getCurrentEditorTheme() {
+  if (typeof document === 'undefined') {
+    return tempblotDarkTheme;
+  }
+
+  return document.documentElement.dataset.theme === 'light' ? tempblotLightTheme : tempblotDarkTheme;
+}
+
+async function configureMonaco(monaco: Monaco, instance: editor.IStandaloneCodeEditor, themeName: string) {
+  defineMonacoThemes(monaco);
+
   if (!monaco.languages.getLanguages().some((language: languages.ILanguageExtensionPoint) => language.id === 'tempblot')) {
     monaco.languages.register({ id: 'tempblot', extensions: ['.blot'] });
     monaco.languages.setLanguageConfiguration('tempblot', {
@@ -290,12 +323,28 @@ async function configureMonaco(monaco: Monaco, instance: editor.IStandaloneCodeE
     });
   }
 
-  await configureTextMate(monaco, instance);
+  await configureTextMate(monaco, instance, themeName);
 }
 
-let textMateConfiguration: Promise<void> | undefined;
+let textMateConfiguration: Promise<IGrammar> | undefined;
 
-async function configureTextMate(monaco: Monaco, instance: editor.IStandaloneCodeEditor) {
+function defineMonacoThemes(monaco: Monaco) {
+  monaco.editor.defineTheme(tempblotDarkTheme, {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [],
+    colors: darkPlusTheme.colors,
+  });
+
+  monaco.editor.defineTheme(tempblotLightTheme, {
+    base: 'vs',
+    inherit: true,
+    rules: [],
+    colors: lightPlusTheme.colors,
+  });
+}
+
+async function configureTextMate(monaco: Monaco, instance: editor.IStandaloneCodeEditor, themeName: string) {
   textMateConfiguration ??= (async () => {
     await loadWASM(await fetch(onigurumaWasmUrl));
 
@@ -314,7 +363,7 @@ async function configureTextMate(monaco: Monaco, instance: editor.IStandaloneCod
     ]);
 
     const registry = new Registry({
-      theme: createTextMateTheme(),
+      theme: createTextMateTheme(themeName),
       onigLib: Promise.resolve({ createOnigScanner, createOnigString }),
       loadGrammar: async (scopeName) => grammarByScope.get(scopeName) ?? createPlainTextGrammar(scopeName),
     });
@@ -337,12 +386,38 @@ async function configureTextMate(monaco: Monaco, instance: editor.IStandaloneCod
       throw new Error('Unable to load Tempblot TextMate grammar.');
     }
 
-    monaco.languages.setColorMap(registry.getColorMap());
-    monaco.languages.setTokensProvider('tempblot', createTextMateTokensProvider(grammar));
-    instance.setModel(instance.getModel());
+    return grammar;
   })();
 
-  await textMateConfiguration;
+  const grammar = await textMateConfiguration;
+  await updateTextMateTheme(monaco, instance, themeName, grammar);
+}
+
+async function updateTextMateTheme(
+  monaco: Monaco | null,
+  instance: editor.IStandaloneCodeEditor | null,
+  themeName: string,
+  grammar?: IGrammar,
+) {
+  if (!monaco || !instance) {
+    return;
+  }
+
+  const loadedGrammar = grammar ?? await textMateConfiguration;
+
+  if (!loadedGrammar) {
+    return;
+  }
+
+  const registry = new Registry({
+    theme: createTextMateTheme(themeName),
+    onigLib: Promise.resolve({ createOnigScanner, createOnigString }),
+    loadGrammar: async () => loadedGrammar,
+  });
+
+  monaco.languages.setColorMap(registry.getColorMap());
+  monaco.languages.setTokensProvider('tempblot', createTextMateTokensProvider(loadedGrammar));
+  instance.setModel(instance.getModel());
 }
 
 function createTextMateTokensProvider(grammar: IGrammar): languages.EncodedTokensProvider {
@@ -360,17 +435,19 @@ function createTextMateTokensProvider(grammar: IGrammar): languages.EncodedToken
   };
 }
 
-function createTextMateTheme(): IRawTheme {
+function createTextMateTheme(themeName: string): IRawTheme {
+  const theme = themeName === tempblotLightTheme ? lightPlusTheme : darkPlusTheme;
+
   return {
-    name: 'Tempblot Dark+',
+    name: themeName,
     settings: [
       {
         settings: {
-          foreground: darkPlusTheme.colors['editor.foreground'],
-          background: darkPlusTheme.colors['editor.background'],
+          foreground: theme.colors['editor.foreground'],
+          background: theme.colors['editor.background'],
         },
       },
-      ...darkPlusTheme.tokenColors,
+      ...theme.tokenColors,
     ],
   };
 }
