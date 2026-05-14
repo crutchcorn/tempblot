@@ -47,10 +47,12 @@
     "test:lib": {
       "cache": true,
       "dependsOn": [
-        "^build"
+        "^build",
+        "build"
       ],
       "inputs": [
         "default",
+        "production",
         "^production"
       ],
       "outputs": [
