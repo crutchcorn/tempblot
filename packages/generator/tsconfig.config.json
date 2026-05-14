@@ -1,0 +1,8 @@
+{
+  "extends": "@tempblot/config/tsconfig.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
+  },
+  "include": ["vite.config.ts"]
+}

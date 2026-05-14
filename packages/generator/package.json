@@ -1,0 +1,60 @@
+{
+  "name": "@tempblot/generator",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "File-based scaffolding engine for Tempblot",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/generator"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/crutchcorn"
+  },
+  "keywords": [
+    "generator",
+    "scaffolding",
+    "tempblot",
+    "template",
+    "templating"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "test:lib": "vitest",
+    "test:build": "publint && attw --profile esm-only --pack .",
+    "test:types": "tsc --noEmit",
+    "test:eslint": "eslint ."
+  },
+  "dependencies": {
+    "tempblot": "^0.1.0"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
+    "@tempblot/config": "workspace:*",
+    "@types/node": "^24.5.2",
+    "publint": "^0.3.21",
+    "unplugin-dts": "^1.0.0-beta.6",
+    "vite": "^8.0.12",
+    "vitest": "^4.1.6"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  }
+}
