@@ -1,0 +1,32 @@
+{
+  "name": "prettier-plugin-tempblot",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Prettier plugin for Tempblot templates",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "default": "./lib/index.js"
+    }
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "prepack": "tsc --build --clean && tsc --build"
+  },
+  "dependencies": {
+    "tempblot-parser": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "prettier": "^3.6.2",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "prettier": ">=3.0.0"
+  },
+  "sideEffects": false
+}
