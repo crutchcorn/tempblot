@@ -8,19 +8,15 @@ export default defineConfig({
 	integrations: [
 		react(),
 		starlight({
-			title: 'My Docs',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			title: 'Tempblot',
+			customCss: ['./src/styles/theme.css'],
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/crutchcorn/tempblot' }],
 			sidebar: [
 				{
 					label: 'Guides',
 					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
+						{ label: 'Basic Usage', slug: 'guides/basic-usage' },
 					],
-				},
-				{
-					label: 'Reference',
-					items: [{ autogenerate: { directory: 'reference' } }],
 				},
 			],
 		}),
