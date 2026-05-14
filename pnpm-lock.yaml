@@ -65,9 +65,6 @@ importers:
       tempblot-language-service:
         specifier: workspace:*
         version: link:../../packages/language-service
-      tempblot-parser:
-        specifier: workspace:*
-        version: link:../../packages/parser
       tm-grammars:
         specifier: ^1.31.15
         version: 1.31.15
@@ -89,9 +86,6 @@ importers:
       vscode-textmate:
         specifier: ^9.3.2
         version: 9.3.2
-      vscode-uri:
-        specifier: ^3.1.0
-        version: 3.1.0
     devDependencies:
       '@types/node':
         specifier: ^24.5.2
@@ -134,7 +128,7 @@ importers:
   packages/language-server:
     dependencies:
       '@volar/language-server':
-        specifier: ~2.4.23
+        specifier: ~2.4.28
         version: 2.4.28
       tempblot-language-service:
         specifier: workspace:*
@@ -161,9 +155,6 @@ importers:
       tempblot-parser:
         specifier: workspace:*
         version: link:../parser
-      vscode-html-languageservice:
-        specifier: ^5.5.1
-        version: 5.6.2
       vscode-uri:
         specifier: ^3.1.0
         version: 3.1.0
@@ -228,7 +219,7 @@ importers:
   packages/vscode:
     dependencies:
       '@volar/language-server':
-        specifier: ~2.4.23
+        specifier: ~2.4.28
         version: 2.4.28
       '@volar/vscode':
         specifier: ~2.4.23
@@ -236,12 +227,6 @@ importers:
       tempblot-language-server:
         specifier: workspace:*
         version: link:../language-server
-      tempblot-language-service:
-        specifier: workspace:*
-        version: link:../language-service
-      tempblot-typescript-plugin:
-        specifier: workspace:*
-        version: link:../typescript-plugin
     devDependencies:
       '@types/vscode':
         specifier: ^1.104.0
@@ -1718,9 +1703,6 @@ packages:
 
   '@volar/vscode@2.4.28':
     resolution: {integrity: sha512-+08veB0c0l3Tp4afvVniQQSImVu4BgcojrBYYrKuR58ycch9raFfsS5NZBLFIlLes1XsggNOntyy7WpYW5AKnA==}
-
-  '@vscode/l10n@0.0.18':
-    resolution: {integrity: sha512-KYSIHVmslkaCDyw013pphY+d7x1qV8IZupYfeIfzNA+nsaWHbn5uPuQRvdRFsa9zFzGeudPuoGoZ1Op4jrJXIQ==}
 
   '@yarnpkg/lockfile@1.1.0':
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -4072,9 +4054,6 @@ packages:
     deprecated: vsce has been renamed to @vscode/vsce. Install using @vscode/vsce instead.
     hasBin: true
 
-  vscode-html-languageservice@5.6.2:
-    resolution: {integrity: sha512-ulCrSnFnfQ16YzvwnYUgEbUEl/ZG7u2eV27YhvLObSHKkb8fw1Z9cgsnUwjTEeDIdJDoTDTDpxuhQwoenoLNMg==}
-
   vscode-jsonrpc@8.2.0:
     resolution: {integrity: sha512-C+r0eKJUIfiDIfwJhria30+TYWPtuHJXHtI7J0YlOmKAo7ogxP20T0zxB7HZQIFhIyvoBPwWskjxrvAtfjyZfA==}
     engines: {node: '>=14.0.0'}
@@ -5439,8 +5418,6 @@ snapshots:
       path-browserify: 1.0.1
       vscode-languageclient: 9.0.1
       vscode-nls: 5.2.0
-
-  '@vscode/l10n@0.0.18': {}
 
   '@yarnpkg/lockfile@1.1.0': {}
 
@@ -8447,13 +8424,6 @@ snapshots:
       xml2js: 0.4.23
       yauzl: 2.10.0
       yazl: 2.5.1
-
-  vscode-html-languageservice@5.6.2:
-    dependencies:
-      '@vscode/l10n': 0.0.18
-      vscode-languageserver-textdocument: 1.0.12
-      vscode-languageserver-types: 3.17.5
-      vscode-uri: 3.1.0
 
   vscode-jsonrpc@8.2.0: {}
 

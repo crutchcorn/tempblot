@@ -8,8 +8,12 @@
     "pack": "nx run tempblot-vscode:pack",
     "release": "nx run tempblot-vscode:release",
     "format": "prettier --write .",
-    "test:sherif": "sherif",
-    "test:knip": "knip"
+    "test": "nx run-many -t test:lib --projects=tempblot-parser,prettier-plugin-tempblot,tempblot && nx run-many -t test:types --projects=tempblot-parser,tempblot && nx run-many -t test:build --projects=tempblot && nx run tempblot-workspace:sherif && nx run tempblot-workspace:knip",
+    "test:lib": "nx run-many -t test:lib --projects=tempblot-parser,prettier-plugin-tempblot,tempblot",
+    "test:types": "nx run-many -t test:types --projects=tempblot-parser,tempblot",
+    "test:build": "nx run-many -t test:build --projects=tempblot",
+    "test:sherif": "nx run tempblot-workspace:sherif",
+    "test:knip": "nx run tempblot-workspace:knip"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",

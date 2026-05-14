@@ -27,7 +27,6 @@
     "@volar/language-service": "~2.4.23",
     "@volar/typescript": "~2.4.23",
     "tempblot-parser": "workspace:*",
-    "vscode-html-languageservice": "^5.5.1",
     "vscode-uri": "^3.1.0"
   },
   "devDependencies": {
