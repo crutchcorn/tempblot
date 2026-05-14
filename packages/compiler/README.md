@@ -66,6 +66,10 @@ const params = useParams<{ name: string }>();
 npm install tempblot
 ```
 
+# VS Code Extension
+
+Install [Tempblot Language Features](https://marketplace.visualstudio.com/items?itemName=tempblot.tempblot-vsc) for `.blot` syntax highlighting and IntelliSense in VS Code.
+
 # Prerequisites
 
 - Node v22.18+

@@ -7,6 +7,9 @@ Tempblot files are `.blot` files with two main blocks: `<setup>` and `<output>`.
 Use `<setup>` for TypeScript that prepares values. Use `<output>` for the text
 you want Tempblot to generate.
 
+For VS Code syntax highlighting and IntelliSense, install the
+[Tempblot Language Features extension](https://marketplace.visualstudio.com/items?itemName=tempblot.tempblot-vsc).
+
 ```blot
 <setup>
 const message = "Hello from Tempblot";
