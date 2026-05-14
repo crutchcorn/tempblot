@@ -246,9 +246,18 @@ function configureMonaco(monaco: Monaco) {
       ],
     });
     monaco.languages.setMonarchTokensProvider('tempblot', {
+      keywords: [
+        'as', 'async', 'await', 'break', 'case', 'catch', 'class', 'const', 'continue',
+        'default', 'do', 'else', 'export', 'extends', 'false', 'finally', 'for', 'from',
+        'function', 'if', 'import', 'in', 'instanceof', 'let', 'new', 'null', 'of',
+        'return', 'super', 'switch', 'this', 'throw', 'true', 'try', 'typeof', 'undefined',
+        'var', 'void', 'while', 'yield',
+      ],
       tokenizer: {
         root: [
           [/<!--/, 'comment', '@comment'],
+          [/(<setup\b)([^>]*)(>)/, ['tag', 'attribute.value', { token: 'tag', next: '@setup' }]],
+          [/(<output\b)([^>]*)(>)/, ['tag', 'attribute.value', { token: 'tag', next: '@output' }]],
           [/<\/?(?:setup|output)\b/, 'tag'],
           [/\b[a-zA-Z-]+(?==)/, 'attribute.name'],
           [/"[^"]*"/, 'attribute.value'],
@@ -257,6 +266,41 @@ function configureMonaco(monaco: Monaco) {
         comment: [
           [/.*?-->/, 'comment', '@pop'],
           [/.*/, 'comment'],
+        ],
+        setup: [
+          [/(<\/setup>)/, 'tag', '@pop'],
+          [/\/\/.*$/, 'comment'],
+          [/\/\*/, 'comment', '@blockComment'],
+          [/`/, 'string', '@templateString'],
+          [/"([^"\\]|\\.)*$/, 'string.invalid'],
+          [/'([^'\\]|\\.)*$/, 'string.invalid'],
+          [/"([^"\\]|\\.)*"/, 'string'],
+          [/'([^'\\]|\\.)*'/, 'string'],
+          [/\b\d+(?:\.\d+)?\b/, 'number'],
+          [/[{}()[\]]/, '@brackets'],
+          [/[;,.]/, 'delimiter'],
+          [/[?:=><!~+\-*/%&|^]+/, 'operator'],
+          [/[a-zA-Z_$][\w$]*/, { cases: { '@keywords': 'keyword', '@default': 'identifier' } }],
+        ],
+        output: [
+          [/(<\/output>)/, 'tag', '@pop'],
+          [/<!--/, 'comment', '@comment'],
+          [/<<|>>/, 'delimiter'],
+          [/"(?:[^"\\]|\\.)*"(?=\s*:)/, 'attribute.name'],
+          [/"(?:[^"\\]|\\.)*"/, 'string'],
+          [/\b(?:true|false|null)\b/, 'keyword'],
+          [/-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/, 'number'],
+          [/[{}()[\]]/, '@brackets'],
+          [/[,:]/, 'delimiter'],
+        ],
+        blockComment: [
+          [/.*?\*\//, 'comment', '@pop'],
+          [/.*/, 'comment'],
+        ],
+        templateString: [
+          [/`/, 'string', '@pop'],
+          [/\$\{/, 'delimiter.bracket', '@setup'],
+          [/./, 'string'],
         ],
       },
     });
