@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@tempblot/vscode",
+  "name": "tempblot-vsc",
   "version": "0.1.0",
   "publisher": "crutchcorn",
   "author": "Corbin Crutchley <crutchcorn@gmail.com>",
