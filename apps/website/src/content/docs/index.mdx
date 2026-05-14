@@ -1,0 +1,48 @@
+---
+title: Tempblot
+description: A modern type-safe templating engine for generating files with TypeScript.
+template: splash # Remove or comment out this line to display the site sidebar on this page.
+hero:
+  tagline: Generate files from TypeScript-powered templates with typed params, imports, top-level await, and editor-friendly syntax.
+  image:
+    file: ../../../public/favicon.svg
+  actions:
+    - text: Get Started
+      link: /guides/basic-usage/
+      icon: right-arrow
+    - text: Playground
+      link: /playground/
+      icon: rocket
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Why Tempblot?
+
+<CardGrid stagger>
+	<Card title="TypeScript in templates" icon="seti:typescript">
+		Prepare data with normal TypeScript inside `<setup>`, including imports,
+		top-level `await`, and reusable helper functions.
+	</Card>
+	<Card title="Typed configuration" icon="setting">
+		Pass params into `.blot` files with `compilePath`, then read them with
+		`useParams` using explicit generics or module augmentation.
+	</Card>
+	<Card title="Simple interpolation" icon="pencil">
+		Write the output you want and interpolate setup values with `<< >>` where
+		they belong.
+	</Card>
+	<Card title="Editor-friendly files" icon="document">
+		Use `<output lang="json">` and other language hints so generated formats
+		remain readable while you edit templates.
+	</Card>
+	<Card title="Great for generated assets" icon="add-document">
+		Generate JSON, config files, fixtures, documentation snippets, or any other
+		text output from a small `.blot` source file.
+	</Card>
+	<Card title="Start small" icon="open-book">
+		Learn the file structure, params API, and comments support in the
+		[basic usage guide](/basic-usage/).
+	</Card>
+</CardGrid>

@@ -1,0 +1,36 @@
+name: Deploy Preview
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  deploy-docs:
+    permissions:
+      contents: write #  to write to gh-pages branch (peaceiris/actions-gh-pages)
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+      - uses: actions/setup-node@670825a89dc0abd596e7a3abd0f5e3f6e5faf37c
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: Install packages
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Build
+        run: pnpm run build:website
+
+      - name: Deploy docs
+        uses: peaceiris/actions-gh-pages@e589cdfe05d62b472d9fb7faf5efb6c826d9ab11
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: apps/website/dist
+          cname: tempblot.dev

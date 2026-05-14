@@ -1,0 +1,69 @@
+:root {
+  --playground-fg: #f8fafc;
+  --playground-muted: #cbd5e1;
+  --playground-border: rgba(255, 255, 255, 0.2);
+  --playground-button-bg: #ffffff;
+  --playground-button-fg: #0b0b0b;
+  --playground-editor-shadow: rgba(0, 0, 0, 0.45);
+}
+
+:root[data-theme='light'] {
+  --playground-fg: #0b0b0b;
+  --playground-muted: #424242;
+  --playground-border: rgba(0, 0, 0, 0.18);
+  --playground-button-bg: #0b0b0b;
+  --playground-button-fg: #ffffff;
+  --playground-editor-shadow: rgba(0, 0, 0, 0.18);
+}
+
+.playground-shell {
+  box-sizing: border-box;
+  position: relative;
+  min-height: calc(100vh - var(--sl-nav-height));
+  padding: clamp(1rem, 4vw, 3rem);
+  color: var(--playground-fg);
+}
+
+.playground-guide-link {
+  position: fixed;
+  right: clamp(1rem, 4vw, 2rem);
+  bottom: clamp(1rem, 4vw, 2rem);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--playground-button-bg);
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  color: var(--playground-button-fg);
+  background: var(--playground-button-bg);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.playground-guide-link:hover,
+.playground-guide-link:focus-visible {
+  color: var(--playground-button-bg);
+  background: transparent;
+}
+
+.playground-editor {
+  height: calc(100vh - var(--sl-nav-height) - clamp(1rem, 4vw, 3rem) * 2);
+  min-height: 32rem;
+  overflow: hidden;
+  border: 1px solid var(--playground-border);
+  border-radius: 1rem;
+  background: #1e1e1e;
+  box-shadow: 0 1.5rem 4rem var(--playground-editor-shadow);
+}
+
+@media (max-width: 900px) {
+  .playground-editor {
+    height: 60vh;
+    min-height: 24rem;
+  }
+}
