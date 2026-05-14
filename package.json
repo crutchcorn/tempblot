@@ -1,10 +1,14 @@
 {
   "private": true,
   "scripts": {
-    "build": "cd ./packages/vscode && npm run build",
-    "watch": "cd ./packages/vscode && npm run watch",
-    "pack": "cd ./packages/vscode && npm run pack",
-    "release": "cd ./packages/vscode && npm run release",
+    "build": "pnpm run build:language-service && pnpm run build:language-server && pnpm run build:typescript-plugin && pnpm run build:vscode",
+    "build:language-service": "cd ./packages/language-service && pnpm build",
+    "build:language-server": "cd ./packages/language-server && pnpm build",
+    "build:typescript-plugin": "cd ./packages/typescript-plugin && pnpm build", 
+    "build:vscode": "cd ./packages/vscode && pnpm build",
+    "watch": "cd ./packages/vscode && pnpm watch",
+    "pack": "cd ./packages/vscode && pnpm pack",
+    "release": "cd ./packages/vscode && pnpm release",
     "format": "prettier --write .",
     "test:sherif": "sherif",
     "test:knip": "knip"

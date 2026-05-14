@@ -1,0 +1,17 @@
+{
+  "settings": {
+    "editor.suggest.showWords": false,
+    "editor.wordBasedSuggestions": "off",
+    "git.openRepositoryInParentFolders": "never",
+    "mdx.server.enable": true,
+    "mdx.trace.server.verbosity": "compact",
+    "mdx.trace.server.format": "text",
+    "typescript.tsdk": "../../node_modules/typescript/lib"
+  },
+  "extensions": {
+    "recommendations": ["johnsoncodehk.volarjs-labs"]
+  },
+  "folders": [
+    {"path": "../sample"}
+  ]
+}

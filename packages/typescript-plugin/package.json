@@ -1,0 +1,34 @@
+{
+  "name": "tempblot-typescript-plugin",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "A TypeScript plugin to support language features in Tempblot files",
+  "main": "./lib/index.cjs",
+  "exports": {
+    "types": "./types/index.d.cts",
+    "default": "./lib/index.cjs"
+  },
+  "files": [
+    "lib",
+    "types"
+  ],
+  "keywords": [
+    "tempblot",
+    "typescript",
+    "plugin",
+    "templating"
+  ],
+  "scripts": {
+    "prepack": "tsc --build --clean && tsc --build",
+    "build": "tsc --build"
+  },
+  "dependencies": {
+    "@volar/typescript": "~2.4.23",
+    "tempblot-language-service": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "^6.0.3"
+  },
+  "sideEffects": false
+}

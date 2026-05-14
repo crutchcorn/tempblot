@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["lib"],
+  "references": [{"path": "../language-service/tsconfig.json"}],
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "resolveJsonModule": true,
+    "outDir": "types",
+    "rootDir": "lib"
+  }
+}

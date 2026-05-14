@@ -1,53 +1,98 @@
-import * as serverProtocol from '@volar/language-server/protocol';
-import { activateAutoInsertion, createLabsInfo, getTsdk } from '@volar/vscode';
-import * as vscode from 'vscode';
-import * as lsp from 'vscode-languageclient/node';
+import * as languageServerProtocol from '@volar/language-server/protocol.js';
+import {
+  activateAutoInsertion,
+  activateDocumentDropEdit,
+  createLabsInfo,
+  getTsdk
+} from '@volar/vscode';
+import {
+  extensions,
+  window,
+  workspace,
+  Disposable,
+  ProgressLocation,
+  ExtensionContext
+} from 'vscode';
+import { LanguageClient, TransportKind } from '@volar/vscode/node.js';
 
-let client: lsp.BaseLanguageClient;
+let client: LanguageClient | undefined;
+let disposable: Disposable | undefined;
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: ExtensionContext) {
+  // Activate TypeScript extension first
+  extensions.getExtension('vscode.typescript-language-features')?.activate();
 
-	const serverModule = vscode.Uri.joinPath(context.extensionUri, 'dist', 'server.js');
-	const runOptions = { execArgv: <string[]>[] };
-	const debugOptions = { execArgv: ['--nolazy', '--inspect=' + 6009] };
-	const serverOptions: lsp.ServerOptions = {
-		run: {
-			module: serverModule.fsPath,
-			transport: lsp.TransportKind.ipc,
-			options: runOptions
-		},
-		debug: {
-			module: serverModule.fsPath,
-			transport: lsp.TransportKind.ipc,
-			options: debugOptions
-		},
-	};
-	const clientOptions: lsp.LanguageClientOptions = {
-		documentSelector: [{ language: 'tempblot' }],
-		initializationOptions: {
-			typescript: {
-				tsdk: (await getTsdk(context))!.tsdk,
-			},
-		},
-	};
-	client = new lsp.LanguageClient(
-		'tempblot-language-server',
-		'Tempblot Language Server',
-		serverOptions,
-		clientOptions,
-	);
-	await client.start();
+  // Get TypeScript SDK path
+  const { tsdk } = (await getTsdk(context)) ?? { tsdk: '' };
 
-	// support for auto close tag
-	activateAutoInsertion('tempblot', client);
+  // Create language client
+  client = new LanguageClient(
+    'Tempblot',
+    {
+      module: context.asAbsolutePath('./out/language-server.js'),
+      transport: TransportKind.ipc
+    },
+    {
+      documentSelector: [{ language: 'tempblot' }],
+      initializationOptions: {
+        typescript: { tsdk }
+      },
+      middleware: {}
+    }
+  );
 
-	// support for https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volarjs-labs
-	// ref: https://twitter.com/johnsoncodehk/status/1656126976774791168
-	const labsInfo = createLabsInfo(serverProtocol);
-	labsInfo.addLanguageClient(client);
-	return labsInfo.extensionExports;
+  // Start server initially if enabled
+  tryRestartServer();
+
+  // Watch for configuration changes
+  context.subscriptions.push(
+    workspace.onDidChangeConfiguration((event) => {
+      if (event.affectsConfiguration('tempblot.server.enable')) {
+        tryRestartServer();
+      }
+    })
+  );
+
+  // Create Volar Labs integration
+  const volarLabs = createLabsInfo(languageServerProtocol);
+  volarLabs.addLanguageClient(client);
+
+  return volarLabs.extensionExports;
+
+  async function tryRestartServer() {
+    await stopServer();
+    if (workspace.getConfiguration('tempblot').get('server.enable')) {
+      await startServer();
+    }
+  }
 }
 
-export function deactivate(): Thenable<any> | undefined {
-	return client?.stop();
+export async function deactivate() {
+  await stopServer();
+}
+
+async function stopServer() {
+  if (client?.needsStop()) {
+    disposable?.dispose();
+    await client.stop();
+  }
+}
+
+async function startServer() {
+  if (client?.needsStart()) {
+    await window.withProgress(
+      {
+        location: ProgressLocation.Window,
+        title: 'Starting Tempblot Language Server...'
+      },
+      async () => {
+        await client!.start();
+
+        disposable = Disposable.from(
+          activateAutoInsertion('tempblot', client!),
+          activateDocumentDropEdit('tempblot', client!)
+        );
+      }
+    );
+  }
 }

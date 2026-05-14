@@ -1,0 +1,37 @@
+{
+  "name": "tempblot-language-service",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Tempblot support for Volar",
+  "exports": {
+    ".": {
+      "types": "./lib/src/index.d.ts",
+      "default": "./lib/src/index.js"
+    }
+  },
+  "files": [
+    "lib"
+  ],
+  "keywords": [
+    "tempblot",
+    "typescript",
+    "volar",
+    "templating"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "prepack": "tsc --build --clean && tsc --build"
+  },
+  "dependencies": {
+    "@volar/language-core": "~2.4.23",
+    "@volar/language-service": "~2.4.23",
+    "@volar/typescript": "~2.4.23",
+    "vscode-html-languageservice": "^5.5.1",
+    "vscode-uri": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "^6.0.3"
+  },
+  "sideEffects": false
+}

@@ -1,22 +1,43 @@
 {
-	"name": "tempblot-language-server",
-	"version": "0.0.1",
-	"main": "out/index.js",
-	"files": [
-		"out/**/*.js",
-		"out/**/*.d.ts"
-	],
-	"bin": {
-		"tempblot-language-server": "./bin/tempblot-language-server.js"
-	},
-	"dependencies": {
-		"@volar/language-core": "~2.4.23",
-		"@volar/language-server": "~2.4.23",
-		"@volar/language-service": "~2.4.23",
-		"@volar/typescript": "~2.4.23",
-		"volar-service-html": "volar-2.4",
-		"volar-service-typescript": "volar-2.4",
-		"vscode-html-languageservice": "^5.5.1",
-		"vscode-uri": "^3.1.0"
-	}
+  "name": "tempblot-language-server",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "A language server for Tempblot",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/language-server"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": "https://github.com/crutchcorn/tempblot/issues",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "exports": "./lib/index.js",
+  "bin": {
+    "tempblot-language-server": "./lib/index.js"
+  },
+  "files": [
+    "lib"
+  ],
+  "keywords": [
+    "IntelliSense",
+    "tempblot",
+    "typescript",
+    "templating",
+    "volar"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "prepack": "tsc --build --clean && tsc --build",
+    "test-api": "node --test",
+    "test": "npm run test-api"
+  },
+  "dependencies": {
+    "@volar/language-server": "~2.4.23",
+    "tempblot-language-service": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "^6.0.3"
+  }
 }
