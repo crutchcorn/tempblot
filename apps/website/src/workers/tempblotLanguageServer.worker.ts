@@ -86,6 +86,7 @@ function patchPlaygroundTypeScriptHost(host: typescript.LanguageServiceHost | un
   const originalFileExists = host.fileExists?.bind(host);
   const originalDirectoryExists = host.directoryExists?.bind(host);
   const originalReadDirectory = host.readDirectory?.bind(host);
+  const originalGetCompilationSettings = host.getCompilationSettings.bind(host);
   const originalGetScriptFileNames = host.getScriptFileNames.bind(host);
   const originalGetScriptSnapshot = host.getScriptSnapshot.bind(host);
   const originalGetScriptVersion = host.getScriptVersion.bind(host);
@@ -116,6 +117,11 @@ function patchPlaygroundTypeScriptHost(host: typescript.LanguageServiceHost | un
       ...(originalReadDirectory?.(rootDir, extensions, excludes, includes, depth) ?? []),
     ])];
   };
+  host.getCompilationSettings = () => ({
+    ...originalGetCompilationSettings(),
+    module: playgroundTypescript.ModuleKind.NodeNext,
+    moduleResolution: playgroundTypescript.ModuleResolutionKind.NodeNext,
+  });
   host.getScriptFileNames = () => [...new Set([
     ...originalGetScriptFileNames(),
     ...nodeTypeRootFiles,
