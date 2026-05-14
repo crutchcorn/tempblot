@@ -15,15 +15,18 @@
   ],
   "scripts": {
     "build": "tsc --build",
-    "prepack": "tsc --build --clean && tsc --build"
+    "prepack": "tsc --build --clean && tsc --build",
+    "test:lib": "vitest"
   },
   "dependencies": {
     "tempblot-parser": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
+    "cli-testing-library": "^3.0.0",
     "prettier": "^3.6.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.6"
   },
   "peerDependencies": {
     "prettier": ">=3.0.0"
