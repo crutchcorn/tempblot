@@ -27,12 +27,12 @@ export function createTempblotLanguagePlugin(
       }
     },
     createVirtualCode(
-      _uri: URI,
+      uri: URI,
       languageId: string,
       snapshot: ts.IScriptSnapshot,
     ) {
       if (languageId === "tempblot") {
-        return new TempblotVirtualCode(snapshot);
+        return new TempblotVirtualCode(snapshot, isPathBlotUri(uri));
       }
     },
     typescript: {
@@ -87,6 +87,11 @@ function getCombinedContextCode(root: VirtualCode) {
   return root.embeddedCodes?.find((code) => code.id === "combined_context");
 }
 
+export function isPathBlotUri(uri: URI | string): boolean {
+  const path = typeof uri === "string" ? uri : uri.path;
+  return path.endsWith("/_paths.blot") || path.endsWith("\\_paths.blot");
+}
+
 export class TempblotVirtualCode implements VirtualCode {
   id = "root";
   languageId = "tempblot";
@@ -97,9 +102,11 @@ export class TempblotVirtualCode implements VirtualCode {
   rootDocument: ParsedRoot;
 
   snapshot: ts.IScriptSnapshot;
+  isPathFile: boolean;
 
-  constructor(snapshot: ts.IScriptSnapshot) {
+  constructor(snapshot: ts.IScriptSnapshot, isPathFile = false) {
     this.snapshot = snapshot;
+    this.isPathFile = isPathFile;
     this.mappings = [
       {
         sourceOffsets: [0],
@@ -135,98 +142,96 @@ function* getTempblotEmbeddedCodes(
 
   // Combine setup and output interpolations into one TypeScript context so setup
   // variables are visible from interpolation expressions when both exist.
-  if (setup || output) {
-    const base = `export {}; // Make this file a module\n\n`;
-    let combinedText = base;
-    const tsMappings: CodeMapping[] = [];
+  const base = `export {}; // Make this file a module\n\n`;
+  let combinedText = base;
+  const tsMappings: CodeMapping[] = [];
 
-    if (setup) {
-      const setupText = snapshot.getText(setup.startTagEnd, setup.endTagStart);
-      const setupGeneratedOffset = combinedText.length;
-      combinedText += setupText;
+  if (setup) {
+    const setupText = snapshot.getText(setup.startTagEnd, setup.endTagStart);
+    const setupGeneratedOffset = combinedText.length;
+    combinedText += setupText;
 
-      tsMappings.push({
-        sourceOffsets: [setup.startTagEnd],
-        generatedOffsets: [setupGeneratedOffset],
-        lengths: [setupText.length],
-        data: {
-          completion: true,
-          format: true,
-          navigation: true,
-          semantic: true,
-          structure: true,
-          verification: true,
-        },
-      });
-    }
-
-    const outputText = output
-      ? snapshot.getText(output.startTagEnd, output.endTagStart)
-      : "";
-
-    const interpolationsData = output ? scanInterpolations(outputText) : [];
-    if (interpolationsData.length > 0) {
-      combinedText += `\n\n// Output interpolations:\n`;
-    }
-
-    interpolationsData.forEach((interp) => {
-      const interpLine = `(${interp.expression});\n`;
-      const interpStartOffset = combinedText.length;
-      combinedText += interpLine;
-
-      // Map the interpolation expression to the original source
-      const expressionStart = interpStartOffset + `(`.length;
-      tsMappings.push({
-        sourceOffsets: [output.startTagEnd + interp.sourceStart],
-        generatedOffsets: [expressionStart],
-        lengths: [interp.expression.length],
-        data: {
-          completion: true,
-          format: true,
-          navigation: true,
-          semantic: true,
-          structure: true,
-          verification: true,
-        },
-      });
+    tsMappings.push({
+      sourceOffsets: [setup.startTagEnd],
+      generatedOffsets: [setupGeneratedOffset],
+      lengths: [setupText.length],
+      data: {
+        completion: true,
+        format: true,
+        navigation: true,
+        semantic: true,
+        structure: true,
+        verification: true,
+      },
     });
-
-    yield {
-      id: "combined_context",
-      languageId: "typescript",
-      snapshot: {
-        getText: (start, end) => combinedText.substring(start, end),
-        getLength: () => combinedText.length,
-        getChangeRange: () => undefined,
-      },
-      mappings: tsMappings,
-      embeddedCodes: [],
-    };
-
-    if (!output) {
-      return;
-    }
-
-    // Create JSON output with interpolations replaced by placeholder values
-    const { transformedText, jsonMappings } = createJsonWithMappings(
-      outputText,
-      interpolationsData,
-      output.startTagEnd,
-    );
-
-    // TODO: Make generic and not tied to JSON
-    yield {
-      id: "output_json",
-      languageId: "json",
-      snapshot: {
-        getText: (start, end) => transformedText.substring(start, end),
-        getLength: () => transformedText.length,
-        getChangeRange: () => undefined,
-      },
-      mappings: jsonMappings,
-      embeddedCodes: [],
-    };
   }
+
+  const outputText = output
+    ? snapshot.getText(output.startTagEnd, output.endTagStart)
+    : "";
+
+  const interpolationsData = output ? scanInterpolations(outputText) : [];
+  if (interpolationsData.length > 0) {
+    combinedText += `\n\n// Output interpolations:\n`;
+  }
+
+  interpolationsData.forEach((interp) => {
+    const interpLine = `(${interp.expression});\n`;
+    const interpStartOffset = combinedText.length;
+    combinedText += interpLine;
+
+    // Map the interpolation expression to the original source
+    const expressionStart = interpStartOffset + `(`.length;
+    tsMappings.push({
+      sourceOffsets: [output.startTagEnd + interp.sourceStart],
+      generatedOffsets: [expressionStart],
+      lengths: [interp.expression.length],
+      data: {
+        completion: true,
+        format: true,
+        navigation: true,
+        semantic: true,
+        structure: true,
+        verification: true,
+      },
+    });
+  });
+
+  yield {
+    id: "combined_context",
+    languageId: "typescript",
+    snapshot: {
+      getText: (start, end) => combinedText.substring(start, end),
+      getLength: () => combinedText.length,
+      getChangeRange: () => undefined,
+    },
+    mappings: tsMappings,
+    embeddedCodes: [],
+  };
+
+  if (!output) {
+    return;
+  }
+
+  // Create JSON output with interpolations replaced by placeholder values
+  const { transformedText, jsonMappings } = createJsonWithMappings(
+    outputText,
+    interpolationsData,
+    output.startTagEnd,
+  );
+
+  // TODO: Make generic and not tied to JSON
+  yield {
+    id: "output_json",
+    languageId: "json",
+    snapshot: {
+      getText: (start, end) => transformedText.substring(start, end),
+      getLength: () => transformedText.length,
+      getChangeRange: () => undefined,
+    },
+    mappings: jsonMappings,
+    embeddedCodes: [],
+  };
 }
 
 function createJsonWithMappings(

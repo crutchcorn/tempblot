@@ -39,6 +39,7 @@ export function createTempblotServicePlugin(): LanguageServicePlugin {
           }
           return getTempblotRootDiagnostics(
             virtualCode.rootDocument,
+            virtualCode.isPathFile,
             document.positionAt.bind(document),
           );
         },
@@ -49,6 +50,7 @@ export function createTempblotServicePlugin(): LanguageServicePlugin {
 
 export function getTempblotRootDiagnostics(
   rootDocument: ParsedRoot,
+  isPathFile: boolean,
   positionAt: PositionAt,
 ): Diagnostic[] | undefined {
   const setupNodes = rootDocument.blocks.filter((root) => root.tag === "setup");
@@ -56,17 +58,26 @@ export function getTempblotRootDiagnostics(
     (root) => root.tag === "output",
   );
 
+  const hasValidSetupCount = setupNodes.length <= 1;
+  const hasValidOutputCount = outputNodes.length === 1;
+  const hasValidPathOutputCount = outputNodes.length === 0;
+
   if (
-    setupNodes.length <= 1 &&
-    outputNodes.length <= 1 &&
-    setupNodes.length + outputNodes.length > 0
+    isPathFile &&
+    hasValidSetupCount &&
+    setupNodes.length === 1 &&
+    hasValidPathOutputCount
   ) {
+    return;
+  }
+
+  if (!isPathFile && hasValidSetupCount && hasValidOutputCount) {
     return;
   }
 
   const errors: Diagnostic[] = [];
 
-  if (setupNodes.length === 0 && outputNodes.length === 0) {
+  if (isPathFile && setupNodes.length === 0) {
     errors.push({
       severity: 1,
       range: {
@@ -74,7 +85,19 @@ export function getTempblotRootDiagnostics(
         end: positionAt(1),
       },
       source: "tempblot",
-      message: "Missing setup or output tag.",
+      message: "Missing setup tag.",
+    });
+  }
+
+  if (!isPathFile && outputNodes.length === 0) {
+    errors.push({
+      severity: 1,
+      range: {
+        start: positionAt(0),
+        end: positionAt(1),
+      },
+      source: "tempblot",
+      message: "Missing output tag.",
     });
   }
 
@@ -88,6 +111,22 @@ export function getTempblotRootDiagnostics(
       source: "tempblot",
       message: "Only one setup tag is allowed.",
     });
+  }
+
+  if (isPathFile) {
+    for (const outputNode of outputNodes) {
+      errors.push({
+        severity: 1,
+        range: {
+          start: positionAt(outputNode.start),
+          end: positionAt(outputNode.end),
+        },
+        source: "tempblot",
+        message: "Output tag is not allowed in path files.",
+      });
+    }
+
+    return errors;
   }
 
   for (let i = 1; i < outputNodes.length; i++) {
