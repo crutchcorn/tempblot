@@ -2,9 +2,9 @@
   "extends": "tempblot-config/tsconfig.json",
   "include": ["src"],
   "references": [{ "path": "../parser/tsconfig.build.json" }],
-
   "compilerOptions": {
     "declaration": true,
-    "outDir": "lib"
+    "outDir": "lib",
+    "rootDir": "src"
   }
 }

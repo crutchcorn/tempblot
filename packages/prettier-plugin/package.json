@@ -14,8 +14,8 @@
     "lib"
   ],
   "scripts": {
-    "build": "tsc --build",
-    "prepack": "tsc --build --clean && tsc --build",
+    "build": "tsc --build tsconfig.build.json",
+    "prepack": "tsc --build tsconfig.build.json --clean && tsc --build tsconfig.build.json",
     "test:lib": "vitest",
     "test:eslint": "eslint ."
   },

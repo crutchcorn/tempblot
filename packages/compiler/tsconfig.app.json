@@ -1,4 +1,4 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "tempblot-config/tsconfig.json",
   "include": ["src"]
 }

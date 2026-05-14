@@ -1,10 +1,7 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "include": ["src"],
-  "compilerOptions": {
-    "declaration": true,
-    "outDir": "lib",
-    "rootDir": "src"
-  },
-  "references": [{ "path": "../parser" }]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.build.json" },
+    { "path": "./tsconfig.spec.json" }
+  ]
 }
