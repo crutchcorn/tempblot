@@ -118,8 +118,9 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "watch": "npm run build -- --watch",
-    "pack": "npm run build && vsce package --pre-release",
-    "release": "npm run build && vsce publish --pre-release",
+    "vsce": "node scripts/vsce.mjs",
+    "pack": "npm run build && npm run vsce -- package --pre-release",
+    "release": "npm run build && npm run vsce -- publish --pre-release",
     "test:eslint": "eslint ."
   },
   "dependencies": {
