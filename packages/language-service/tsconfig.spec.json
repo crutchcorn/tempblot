@@ -1,6 +1,6 @@
 {
   "extends": "@tempblot/config/tsconfig.json",
-  "include": ["src", "tests"],
+  "include": ["src", "tests", "vite.config.ts"],
   "references": [{ "path": "../parser/tsconfig.build.json" }],
   "compilerOptions": {
     "noEmit": true
