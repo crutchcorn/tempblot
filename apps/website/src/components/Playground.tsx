@@ -1,8 +1,9 @@
 import Editor, { type Monaco } from '@monaco-editor/react';
 import { useRef, useState } from 'react';
 import type { CancellationToken, editor, IMarkdownString, languages, Position } from 'monaco-editor';
-import { Registry, INITIAL, type IGrammar, type IRawGrammar, type IRawTheme, type StateStack } from 'vscode-textmate';
-import { createOnigScanner, createOnigString, loadWASM } from 'vscode-oniguruma';
+import * as vscodeTextmate from 'vscode-textmate';
+import type { IGrammar, IRawGrammar, IRawTheme, StateStack } from 'vscode-textmate';
+import * as vscodeOniguruma from 'vscode-oniguruma';
 import { BrowserMessageReader, BrowserMessageWriter, createProtocolConnection } from 'vscode-languageserver-protocol/browser';
 import type {
   CompletionItem,
@@ -35,6 +36,9 @@ import yamlGrammar from 'tm-grammars/grammars/yaml.json';
 import darkPlusTheme from 'tm-themes/themes/dark-plus.json';
 import onigurumaWasmUrl from 'vscode-oniguruma/release/onig.wasm?url';
 import './Playground.css';
+
+const { Registry, INITIAL } = vscodeTextmate;
+const { createOnigScanner, createOnigString, loadWASM } = vscodeOniguruma;
 
 const DEFAULT_SOURCE = `<setup>
 // Run TypeScript in the <setup>
@@ -133,7 +137,6 @@ export default function Playground() {
   return (
     <main className="playground-shell">
       <section className="playground-copy">
-        <p className="playground-eyebrow">Tempblot</p>
         <h1>Write templates with real TypeScript values</h1>
         <p>
           Tempblot lets you prepare data in a setup block, then interpolate those

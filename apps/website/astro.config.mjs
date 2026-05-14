@@ -10,9 +10,10 @@ export default defineConfig({
 		starlight({
 			title: 'Tempblot',
 			customCss: ['./src/styles/theme.css'],
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/crutchcorn/tempblot' }],
-			sidebar: [
-				{
+				social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/crutchcorn/tempblot' }],
+				sidebar: [
+					{ label: 'Playground', slug: 'playground' },
+					{
 					label: 'Guides',
 					items: [
 						{ label: 'Basic Usage', slug: 'guides/basic-usage' },

@@ -9,3 +9,20 @@
 	--sl-color-accent: #000000;
 	--sl-color-accent-high: #000000;
 }
+
+.sl-container:has(.playground-page) {
+	max-width: none;
+	padding: 0;
+}
+
+.content-panel:has(+ .content-panel .playground-page) {
+	display: none;
+}
+
+.sl-markdown-content:has(.playground-page) {
+	margin-top: 0;
+}
+
+.playground-page {
+	margin: 0;
+}
