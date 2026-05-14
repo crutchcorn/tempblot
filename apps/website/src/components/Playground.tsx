@@ -1,8 +1,10 @@
 import Editor, { type Monaco } from '@monaco-editor/react';
-import 'monaco-editor/esm/vs/language/json/monaco.contribution';
-import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
 import { useRef, useState } from 'react';
 import type { CancellationToken, editor, IMarkdownString, languages, Position } from 'monaco-editor';
+import type * as monacoNamespace from 'monaco-editor';
+import { wireTmGrammars } from 'monaco-editor-textmate';
+import { Registry } from 'monaco-textmate';
+import { loadWASM } from 'onigasm';
 import { BrowserMessageReader, BrowserMessageWriter, createProtocolConnection } from 'vscode-languageserver-protocol/browser';
 import type {
   CompletionItem,
@@ -21,6 +23,30 @@ import type {
   SignatureHelp,
   ProtocolConnection,
 } from 'vscode-languageserver-protocol/browser';
+import tempblotGrammar from '../../../../packages/vscode/syntaxes/tempblot.tmLanguage.json';
+import cssGrammar from 'tm-grammars/grammars/css.json';
+import coffeeGrammar from 'tm-grammars/grammars/coffee.json';
+import graphqlGrammar from 'tm-grammars/grammars/graphql.json';
+import htmlGrammar from 'tm-grammars/grammars/html.json';
+import htmlDerivativeGrammar from 'tm-grammars/grammars/html-derivative.json';
+import javascriptGrammar from 'tm-grammars/grammars/javascript.json';
+import jsxGrammar from 'tm-grammars/grammars/jsx.json';
+import jsonGrammar from 'tm-grammars/grammars/json.json';
+import jsoncGrammar from 'tm-grammars/grammars/jsonc.json';
+import json5Grammar from 'tm-grammars/grammars/json5.json';
+import lessGrammar from 'tm-grammars/grammars/less.json';
+import markdownGrammar from 'tm-grammars/grammars/markdown.json';
+import postcssGrammar from 'tm-grammars/grammars/postcss.json';
+import pugGrammar from 'tm-grammars/grammars/pug.json';
+import sassGrammar from 'tm-grammars/grammars/sass.json';
+import scssGrammar from 'tm-grammars/grammars/scss.json';
+import stylusGrammar from 'tm-grammars/grammars/stylus.json';
+import tomlGrammar from 'tm-grammars/grammars/toml.json';
+import tsxGrammar from 'tm-grammars/grammars/tsx.json';
+import typescriptGrammar from 'tm-grammars/grammars/typescript.json';
+import vueGrammar from 'tm-grammars/grammars/vue.json';
+import yamlGrammar from 'tm-grammars/grammars/yaml.json';
+import onigasmWasmUrl from 'onigasm/lib/onigasm.wasm?url';
 import './Playground.css';
 
 const DEFAULT_SOURCE = `<!-- Run TypeScript via Node -->
@@ -80,6 +106,7 @@ const SEMANTIC_TOKEN_MODIFIERS = [
 ];
 
 type Disposable = { dispose(): void };
+type RawGrammar = Record<string, unknown>;
 
 interface TempblotLanguageClient {
   dispose(): void;
@@ -90,9 +117,9 @@ export default function Playground() {
   const clientRef = useRef<TempblotLanguageClient | null>(null);
 
   async function handleMount(instance: editor.IStandaloneCodeEditor, monaco: Monaco) {
-    configureMonaco(monaco);
     const model = monaco.editor.createModel(source, 'tempblot', monaco.Uri.parse(BLOT_URI));
     instance.setModel(model);
+    await configureMonaco(monaco, instance);
     clientRef.current?.dispose();
     clientRef.current = await startTempblotLanguageClient(monaco, model);
   }
@@ -233,7 +260,7 @@ async function startTempblotLanguageClient(
   };
 }
 
-function configureMonaco(monaco: Monaco) {
+async function configureMonaco(monaco: Monaco, instance: editor.IStandaloneCodeEditor) {
   if (!monaco.languages.getLanguages().some((language: languages.ILanguageExtensionPoint) => language.id === 'tempblot')) {
     monaco.languages.register({ id: 'tempblot', extensions: ['.blot'] });
     monaco.languages.setLanguageConfiguration('tempblot', {
@@ -247,39 +274,72 @@ function configureMonaco(monaco: Monaco) {
         { open: '(', close: ')' },
       ],
     });
-    monaco.languages.setMonarchTokensProvider('tempblot', {
-      includeLF: true,
-      tokenizer: {
-        root: [
-          [/<!--/, 'comment', '@comment'],
-          [/(<setup\b)([^>]*)(>)/, ['tag', 'attribute.value', { token: 'tag', next: '@setup', nextEmbedded: 'typescript' }]],
-          [/(<output\b)(?=[^>]*\blang=["']json["'])([^>]*)(>)/, ['tag', 'attribute.value', { token: 'tag', next: '@outputJson', nextEmbedded: 'json' }]],
-          [/(<output\b)([^>]*)(>)/, ['tag', 'attribute.value', { token: 'tag', next: '@output' }]],
-          [/<\/?(?:setup|output)\b/, 'tag'],
-          [/\b[a-zA-Z-]+(?==)/, 'attribute.name'],
-          [/"[^"]*"/, 'attribute.value'],
-          [/<<|>>/, 'delimiter'],
-        ],
-        comment: [
-          [/.*?-->/, 'comment', '@pop'],
-          [/.*/, 'comment'],
-        ],
-        setup: [
-          [/<\/setup>/, { token: '@rematch', next: '@pop', nextEmbedded: '@pop' }],
-        ],
-        output: [
-          [/<\/output>/, { token: '@rematch', next: '@pop' }],
-        ],
-        outputJson: [
-          [/<\/output>/, { token: '@rematch', next: '@pop', nextEmbedded: '@pop' }],
-          [/<<\s*/, { token: 'delimiter', next: '@outputInterpolation', nextEmbedded: 'typescript' }],
-        ],
-        outputInterpolation: [
-          [/\s*>>/, { token: 'delimiter', next: '@outputJson', nextEmbedded: 'json' }],
-        ],
+  }
+
+  await configureTextMate(monaco, instance);
+}
+
+let textMateConfiguration: Promise<void> | undefined;
+
+async function configureTextMate(monaco: Monaco, instance: editor.IStandaloneCodeEditor) {
+  textMateConfiguration ??= (async () => {
+    await loadWASM(onigasmWasmUrl);
+
+    const grammarByScope = new Map<string, RawGrammar>([
+      ['source.tempblot', tempblotGrammar],
+      ['source.ts', typescriptGrammar],
+      ['source.tsx', tsxGrammar],
+      ['source.js', javascriptGrammar],
+      ['source.js.jsx', jsxGrammar],
+      ['source.json', jsonGrammar],
+      ['source.json.comments', jsoncGrammar],
+      ['source.json5', json5Grammar],
+      ['text.html.basic', htmlGrammar],
+      ['text.html.derivative', htmlDerivativeGrammar],
+      ['text.html.markdown', markdownGrammar],
+      ['source.css', cssGrammar],
+      ['source.css.scss', scssGrammar],
+      ['source.css.less', lessGrammar],
+      ['source.css.postcss', postcssGrammar],
+      ['source.postcss', postcssGrammar],
+      ['source.sass', sassGrammar],
+      ['source.stylus', stylusGrammar],
+      ['text.pug', pugGrammar],
+      ['source.yaml', yamlGrammar],
+      ['source.toml', tomlGrammar],
+      ['source.graphql', graphqlGrammar],
+      ['source.coffee', coffeeGrammar],
+      ['source.vue', vueGrammar],
+      ['text.html.vue', vueGrammar],
+    ]);
+
+    const registry = new Registry({
+      getGrammarDefinition: async (scopeName) => {
+        const grammar = grammarByScope.get(scopeName) ?? createPlainTextGrammar(scopeName);
+
+        return {
+          format: 'json',
+          content: JSON.stringify(grammar),
+        };
       },
     });
-  }
+
+    await wireTmGrammars(
+      monaco as typeof monacoNamespace,
+      registry,
+      new Map([['tempblot', 'source.tempblot']]),
+      instance,
+    );
+  })();
+
+  await textMateConfiguration;
+}
+
+function createPlainTextGrammar(scopeName: string): RawGrammar {
+  return {
+    scopeName,
+    patterns: [],
+  };
 }
 
 function registerLanguageProviders(
