@@ -16,7 +16,8 @@
   "scripts": {
     "build": "tsc --build",
     "prepack": "tsc --build --clean && tsc --build",
-    "test:lib": "vitest"
+    "test:lib": "vitest",
+    "test:eslint": "eslint ."
   },
   "dependencies": {
     "tempblot-parser": "workspace:*"
@@ -25,6 +26,7 @@
     "@types/node": "^24.5.2",
     "cli-testing-library": "^3.0.0",
     "prettier": "^3.6.2",
+    "tempblot-config": "workspace:*",
     "typescript": "^6.0.3",
     "vitest": "^4.1.6"
   },
