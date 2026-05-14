@@ -11,10 +11,16 @@ import {
 import type * as ts from "typescript";
 import { URI } from "vscode-uri";
 
-export function createTempblotLanguagePlugin(): LanguagePlugin<
+interface TempblotLanguagePluginOptions {
+  serviceScriptMode?: "primary" | "extraMts";
+}
+
+export function createTempblotLanguagePlugin(options: TempblotLanguagePluginOptions = {}): LanguagePlugin<
   URI,
   TempblotVirtualCode
 > {
+  const serviceScriptMode = options.serviceScriptMode ?? "primary";
+
   return {
     getLanguageId(fileNameOrUri) {
       if (String(fileNameOrUri).endsWith(".blot")) {
@@ -39,12 +45,28 @@ export function createTempblotLanguagePlugin(): LanguagePlugin<
         },
       ],
       getServiceScript(root) {
-        return undefined;
+        if (serviceScriptMode === "extraMts") {
+          return undefined;
+        }
+
+        const code = getCombinedContextCode(root);
+        if (!code) {
+          return undefined;
+        }
+
+        return {
+          code,
+          extension: ".ts",
+          scriptKind: 3 satisfies ts.ScriptKind.TS,
+          preventLeadingOffset: true,
+        };
       },
       getExtraServiceScripts(fileName, root) {
-        const code = root.embeddedCodes?.find(
-          (code) => code.id === "combined_context",
-        );
+        if (serviceScriptMode !== "extraMts") {
+          return [];
+        }
+
+        const code = getCombinedContextCode(root);
 
         if (code) {
           return [
@@ -60,6 +82,12 @@ export function createTempblotLanguagePlugin(): LanguagePlugin<
       },
     },
   };
+}
+
+function getCombinedContextCode(root: VirtualCode) {
+  return root.embeddedCodes?.find(
+    (code) => code.id === "combined_context",
+  );
 }
 
 export class TempblotVirtualCode implements VirtualCode {
@@ -119,14 +147,14 @@ function* getTempblotEmbeddedCodes(
     let combinedText = `${base}${setupText}\n\n// Output interpolations:\n`;
 
     const tsInterpolationMappings: CodeMapping[] = [];
-    interpolationsData.forEach((interp, index) => {
-      const interpLine = `const __interp_${index} = ${interp.expression};\n`;
+    interpolationsData.forEach((interp) => {
+      const interpLine = `(${interp.expression});\n`;
       const interpStartOffset = combinedText.length;
       combinedText += interpLine;
 
       // Map the interpolation expression to the original source
       const expressionStart =
-        interpStartOffset + `const __interp_${index} = `.length;
+        interpStartOffset + `(`.length;
       tsInterpolationMappings.push({
         sourceOffsets: [output.startTagEnd! + interp.sourceStart],
         generatedOffsets: [expressionStart],

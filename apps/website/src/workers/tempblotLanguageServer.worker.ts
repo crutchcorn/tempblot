@@ -25,7 +25,7 @@ connection.onInitialize(async (parameters: InitializeParams): Promise<Initialize
       playgroundTypescript,
       undefined,
       () => ({
-        languagePlugins: [createTempblotLanguagePlugin()],
+        languagePlugins: [createTempblotLanguagePlugin({ serviceScriptMode: 'extraMts' })],
         setup({ project }) {
           patchPlaygroundTypeScriptHost(project.typescript?.languageServiceHost);
         },
