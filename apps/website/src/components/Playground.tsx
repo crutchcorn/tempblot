@@ -23,45 +23,35 @@ import type {
 } from 'vscode-languageserver-protocol/browser';
 import tempblotGrammar from '../../../../packages/vscode/syntaxes/tempblot.tmLanguage.json';
 import cssGrammar from 'tm-grammars/grammars/css.json';
-import coffeeGrammar from 'tm-grammars/grammars/coffee.json';
-import graphqlGrammar from 'tm-grammars/grammars/graphql.json';
 import htmlGrammar from 'tm-grammars/grammars/html.json';
 import htmlDerivativeGrammar from 'tm-grammars/grammars/html-derivative.json';
 import javascriptGrammar from 'tm-grammars/grammars/javascript.json';
 import jsxGrammar from 'tm-grammars/grammars/jsx.json';
 import jsonGrammar from 'tm-grammars/grammars/json.json';
 import jsoncGrammar from 'tm-grammars/grammars/jsonc.json';
-import json5Grammar from 'tm-grammars/grammars/json5.json';
-import lessGrammar from 'tm-grammars/grammars/less.json';
-import markdownGrammar from 'tm-grammars/grammars/markdown.json';
-import postcssGrammar from 'tm-grammars/grammars/postcss.json';
-import pugGrammar from 'tm-grammars/grammars/pug.json';
-import sassGrammar from 'tm-grammars/grammars/sass.json';
-import scssGrammar from 'tm-grammars/grammars/scss.json';
-import stylusGrammar from 'tm-grammars/grammars/stylus.json';
-import tomlGrammar from 'tm-grammars/grammars/toml.json';
 import tsxGrammar from 'tm-grammars/grammars/tsx.json';
 import typescriptGrammar from 'tm-grammars/grammars/typescript.json';
-import vueGrammar from 'tm-grammars/grammars/vue.json';
 import yamlGrammar from 'tm-grammars/grammars/yaml.json';
 import darkPlusTheme from 'tm-themes/themes/dark-plus.json';
 import onigurumaWasmUrl from 'vscode-oniguruma/release/onig.wasm?url';
 import './Playground.css';
 
-const DEFAULT_SOURCE = `<!-- Run TypeScript via Node -->
-<setup>
-import { v4 } from "uuid";
+const DEFAULT_SOURCE = `<setup>
+// Run TypeScript in the <setup>
+const someNumber = 123;
 
-const data = {
-  hello: !!v4 ? 123 : null
-};
+function add(a: number, b: number) {
+  return a + b;
+}
 </setup>
 
-<!-- Use \`lang\` to change the syntax highlighting of the \`output\` block -->
+<!-- Then use \`lang\` to get syntax highlighting in the template! -->
+<!-- This browser version only supports a few languages, but the editor extensions supports many more. -->
 <output lang="json">
 {
-  "//": "Interpolate values with << >>",
-  "test": <<data.hello>>
+    "Interpolation using arrows": "",
+    "LSP Support": "Hover over this <<add(1, 2)>>",
+    "Even proper type checking!": "Try changing the arguments to <<add(1, '2')>>"
 }
 </output>
 `;
@@ -309,24 +299,10 @@ async function configureTextMate(monaco: Monaco, instance: editor.IStandaloneCod
       ['source.js.jsx', asRawGrammar(jsxGrammar)],
       ['source.json', asRawGrammar(jsonGrammar)],
       ['source.json.comments', asRawGrammar(jsoncGrammar)],
-      ['source.json5', asRawGrammar(json5Grammar)],
       ['text.html.basic', asRawGrammar(htmlGrammar)],
       ['text.html.derivative', asRawGrammar(htmlDerivativeGrammar)],
-      ['text.html.markdown', asRawGrammar(markdownGrammar)],
       ['source.css', asRawGrammar(cssGrammar)],
-      ['source.css.scss', asRawGrammar(scssGrammar)],
-      ['source.css.less', asRawGrammar(lessGrammar)],
-      ['source.css.postcss', asRawGrammar(postcssGrammar)],
-      ['source.postcss', asRawGrammar(postcssGrammar)],
-      ['source.sass', asRawGrammar(sassGrammar)],
-      ['source.stylus', asRawGrammar(stylusGrammar)],
-      ['text.pug', asRawGrammar(pugGrammar)],
       ['source.yaml', asRawGrammar(yamlGrammar)],
-      ['source.toml', asRawGrammar(tomlGrammar)],
-      ['source.graphql', asRawGrammar(graphqlGrammar)],
-      ['source.coffee', asRawGrammar(coffeeGrammar)],
-      ['source.vue', asRawGrammar(vueGrammar)],
-      ['text.html.vue', asRawGrammar(vueGrammar)],
     ]);
 
     const registry = new Registry({
@@ -338,22 +314,15 @@ async function configureTextMate(monaco: Monaco, instance: editor.IStandaloneCod
     const grammar = await registry.loadGrammarWithEmbeddedLanguages('source.tempblot', 1, {
       'source.tempblot': 1,
       'text.html.derivative': 2,
-      'text.html.markdown': 3,
+      'text.html.basic': 3,
       'source.ts': 4,
-      'source.css': 5,
-      'source.css.scss': 6,
-      'source.css.less': 7,
-      'source.sass': 8,
-      'source.stylus': 9,
-      'source.postcss': 10,
-      'source.vue': 11,
-      'source.coffee': 12,
-      'source.json': 13,
-      'source.json.comments': 14,
-      'source.json5': 15,
-      'source.yaml': 16,
-      'source.toml': 17,
-      'source.graphql': 18,
+      'source.tsx': 5,
+      'source.js': 6,
+      'source.js.jsx': 7,
+      'source.css': 8,
+      'source.json': 9,
+      'source.json.comments': 10,
+      'source.yaml': 11,
     });
 
     if (!grammar) {
