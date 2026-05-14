@@ -1,7 +1,26 @@
 {
-  "name": "website",
+  "name": "@tempblot/website",
+  "private": true,
   "type": "module",
   "version": "0.1.0",
+  "description": "Documentation website for Tempblot",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "apps/website"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "keywords": [
+    "astro",
+    "documentation",
+    "playground",
+    "tempblot"
+  ],
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

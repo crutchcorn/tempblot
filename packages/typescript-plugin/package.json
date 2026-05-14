@@ -3,6 +3,21 @@
   "version": "0.1.0",
   "type": "module",
   "description": "A TypeScript plugin to support language features in Tempblot files",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/typescript-plugin"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/crutchcorn"
+  },
   "main": "./lib/index.cjs",
   "exports": {
     "types": "./types/index.d.cts",
@@ -13,10 +28,12 @@
     "types"
   ],
   "keywords": [
+    "intellisense",
+    "language-service",
     "tempblot",
+    "templating",
     "typescript",
-    "plugin",
-    "templating"
+    "typescript-plugin"
   ],
   "scripts": {
     "prepack": "tsc --build --clean && tsc --build",

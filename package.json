@@ -1,6 +1,26 @@
 {
   "name": "@tempblot/root",
   "private": true,
+  "description": "Tempblot monorepo workspace",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/crutchcorn"
+  },
+  "keywords": [
+    "tempblot",
+    "templating",
+    "typescript"
+  ],
   "scripts": {
     "build": "nx affected --target=build",
     "build:all": "nx run-many --target=build",

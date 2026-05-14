@@ -3,6 +3,21 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Tempblot support for Volar",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/language-service"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/crutchcorn"
+  },
   "exports": {
     ".": {
       "types": "./lib/src/index.d.ts",
@@ -13,10 +28,12 @@
     "lib"
   ],
   "keywords": [
+    "intellisense",
+    "language-service",
     "tempblot",
+    "templating",
     "typescript",
-    "volar",
-    "templating"
+    "volar"
   ],
   "scripts": {
     "build": "tsc --build",

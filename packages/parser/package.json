@@ -3,6 +3,28 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Shared parser utilities for Tempblot",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/parser"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/crutchcorn"
+  },
+  "keywords": [
+    "parser",
+    "tempblot",
+    "template",
+    "templating",
+    "typescript"
+  ],
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",

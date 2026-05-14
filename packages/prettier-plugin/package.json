@@ -3,6 +3,28 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Prettier plugin for Tempblot templates",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/prettier-plugin"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/crutchcorn"
+  },
+  "keywords": [
+    "formatter",
+    "prettier",
+    "prettier-plugin",
+    "tempblot",
+    "templating"
+  ],
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",

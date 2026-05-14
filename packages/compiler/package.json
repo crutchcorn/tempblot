@@ -3,17 +3,28 @@
   "type": "module",
   "version": "0.1.0",
   "description": "A modern type-safe templating engine",
-  "author": "crutchcorn",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/crutchcorn/tempblot.git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
     "directory": "packages/compiler"
   },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/crutchcorn"
   },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "keywords": [
+    "compiler",
+    "tempblot",
+    "template",
+    "templating",
+    "typescript"
+  ],
   "scripts": {
     "build": "vite build",
     "test:lib": "vitest",
@@ -21,7 +32,6 @@
     "test:types": "tsc --noEmit",
     "test:eslint": "eslint ."
   },
-  "keywords": [],
   "dependencies": {
     "@tempblot/parser": "workspace:*",
     "typescript": "^6.0.3"

@@ -3,6 +3,24 @@
   "type": "module",
   "private": true,
   "version": "0.1.0",
+  "description": "Shared configuration for Tempblot packages",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/config"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "keywords": [
+    "config",
+    "eslint",
+    "tempblot",
+    "typescript"
+  ],
   "scripts": {
     "lint": "eslint \"*.{js,jsx,ts,tsx}\"",
     "format": "eslint \"*.{js,jsx,ts,tsx}\" --fix"
