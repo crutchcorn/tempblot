@@ -112,7 +112,11 @@ export function tokenizeRoot(source: string): RootToken[] {
 
     tokens.push({
       type: "TagOpenStart",
-      attributes: { name: tagName, start: tagStart, end: tagStart + tagName.length + 1 },
+      attributes: {
+        name: tagName,
+        start: tagStart,
+        end: tagStart + tagName.length + 1,
+      },
     });
 
     const attributePattern = /([a-zA-Z-]+)="([^"]*)"/g;
@@ -206,7 +210,10 @@ export function parseRootDocument(tokens: RootToken[]): ParsedRoot {
       continue;
     }
 
-    if (token.type === "TagClose" && token.attributes.name === currentBlock.tag) {
+    if (
+      token.type === "TagClose" &&
+      token.attributes.name === currentBlock.tag
+    ) {
       currentBlock.endTagStart = token.attributes.start;
       currentBlock.endTagEnd = token.attributes.end;
       currentBlock.end = token.attributes.end;
@@ -227,9 +234,12 @@ export function parseRootDocument(tokens: RootToken[]): ParsedRoot {
 export function parseRoot(tokens: RootToken[]): RequiredRoot {
   const document = parseRootDocument(tokens);
   return {
-    setup: document.blocks.find((block) => block.tag === "setup") ?? emptyBlock("setup"),
+    setup:
+      document.blocks.find((block) => block.tag === "setup") ??
+      emptyBlock("setup"),
     output:
-      document.blocks.find((block) => block.tag === "output") ?? emptyBlock("output"),
+      document.blocks.find((block) => block.tag === "output") ??
+      emptyBlock("output"),
   };
 }
 
@@ -294,7 +304,10 @@ export function scanInterpolations(text: string): InterpolationData[] {
   return interpolations;
 }
 
-function findBestInterpolationEnd(text: string, candidates: number[]): number | undefined {
+function findBestInterpolationEnd(
+  text: string,
+  candidates: number[],
+): number | undefined {
   for (let i = 0; i < candidates.length; i++) {
     const candidate = candidates[i];
     const hasLaterCandidate = i < candidates.length - 1;
@@ -319,7 +332,9 @@ export function transformOutputTemplate(output: string): string {
   let lastOffset = 0;
 
   for (const interpolation of interpolations) {
-    transformed += escapeOutputText(output.slice(lastOffset, interpolation.fullStart));
+    transformed += escapeOutputText(
+      output.slice(lastOffset, interpolation.fullStart),
+    );
     transformed += "${";
     transformed += interpolation.expression;
     transformed += "}";

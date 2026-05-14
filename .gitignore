@@ -4,6 +4,7 @@ node_modules
 *.tsbuildinfo
 *.vsix
 .idea
+.vscode
 .DS_Store
 
 .nx/cache

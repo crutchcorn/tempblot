@@ -1,28 +1,28 @@
 :root {
-	--sl-color-accent-low: #333333;
-	--sl-color-accent: #ffffff;
-	--sl-color-accent-high: #ffffff;
+  --sl-color-accent-low: #333333;
+  --sl-color-accent: #ffffff;
+  --sl-color-accent-high: #ffffff;
 }
 
-:root[data-theme='light'] {
-	--sl-color-accent-low: #e5e5e5;
-	--sl-color-accent: #000000;
-	--sl-color-accent-high: #000000;
+:root[data-theme="light"] {
+  --sl-color-accent-low: #e5e5e5;
+  --sl-color-accent: #000000;
+  --sl-color-accent-high: #000000;
 }
 
 .sl-container:has(.playground-page) {
-	max-width: none;
-	padding: 0;
+  max-width: none;
+  padding: 0;
 }
 
 .content-panel:has(+ .content-panel .playground-page) {
-	display: none;
+  display: none;
 }
 
 .sl-markdown-content:has(.playground-page) {
-	margin-top: 0;
+  margin-top: 0;
 }
 
 .playground-page {
-	margin: 0;
+  margin: 0;
 }

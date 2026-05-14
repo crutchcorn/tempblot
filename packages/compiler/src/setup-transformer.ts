@@ -222,7 +222,10 @@ function injectTempblotInstance(
       continue;
     }
 
-    if (!ts.isImportDeclaration(statement) && !insertedTempblotInstanceDeclaration) {
+    if (
+      !ts.isImportDeclaration(statement) &&
+      !insertedTempblotInstanceDeclaration
+    ) {
       statements.push(createTempblotInstanceDeclaration(sourcePath));
       insertedTempblotInstanceDeclaration = true;
     }
@@ -256,7 +259,7 @@ export function transformSetup(setup: string, sourcePath: string): string {
     useParamsLocalNames,
   );
 
-  return ts.createPrinter({ newLine: ts.NewLineKind.LineFeed }).printFile(
-    transformedSourceFile,
-  );
+  return ts
+    .createPrinter({ newLine: ts.NewLineKind.LineFeed })
+    .printFile(transformedSourceFile);
 }

@@ -71,8 +71,8 @@ Use `compilePath` to pass configuration into a `.blot` file.
 import { compilePath } from "tempblot";
 
 const output = await compilePath("./user.json.blot", {
-    name: "Ada",
-    active: true,
+  name: "Ada",
+  active: true,
 });
 ```
 
@@ -97,10 +97,10 @@ You can also define params globally with module augmentation.
 
 ```ts
 declare module "tempblot" {
-    interface TempblotParams {
-        name: string;
-        active: boolean;
-    }
+  interface TempblotParams {
+    name: string;
+    active: boolean;
+  }
 }
 ```
 

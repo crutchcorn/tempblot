@@ -1,20 +1,31 @@
-import * as prettier from 'prettier';
-import type { AstPath, Options, Parser, ParserOptions, Plugin, Printer } from 'prettier';
-import { parseTempblotRoot, type ParsedRoot, type RootBlock } from '@tempblot/parser';
+import * as prettier from "prettier";
+import type {
+  AstPath,
+  Options,
+  Parser,
+  ParserOptions,
+  Plugin,
+  Printer,
+} from "prettier";
+import {
+  parseTempblotRoot,
+  type ParsedRoot,
+  type RootBlock,
+} from "@tempblot/parser";
 
 interface TempblotAst {
-  type: 'TempblotDocument';
+  type: "TempblotDocument";
   source: string;
   root: ParsedRoot;
   formattedBlocks: Map<RootBlock, string>;
 }
 
 const parser: Parser<TempblotAst> = {
-  astFormat: 'tempblot-ast',
+  astFormat: "tempblot-ast",
   async parse(source, options) {
     const root = parseTempblotRoot(source);
     return {
-      type: 'TempblotDocument',
+      type: "TempblotDocument",
       source,
       root,
       formattedBlocks: await formatBlocks(source, root.blocks, options),
@@ -37,17 +48,17 @@ const printer: Printer<TempblotAst> = {
 const plugin: Plugin<TempblotAst> = {
   languages: [
     {
-      name: 'Tempblot',
-      parsers: ['tempblot'],
-      extensions: ['.blot'],
-      vscodeLanguageIds: ['tempblot'],
+      name: "Tempblot",
+      parsers: ["tempblot"],
+      extensions: [".blot"],
+      vscodeLanguageIds: ["tempblot"],
     },
   ],
   parsers: {
     tempblot: parser,
   },
   printers: {
-    'tempblot-ast': printer,
+    "tempblot-ast": printer,
   },
 };
 
@@ -72,13 +83,15 @@ function formatDocument(path: AstPath<TempblotAst>) {
     trailingText,
   ].filter((part) => part.length > 0);
 
-  return ensureTrailingNewline(parts.join('\n\n'));
+  return ensureTrailingNewline(parts.join("\n\n"));
 }
 
 function formatBlock(ast: TempblotAst, block: RootBlock) {
   const openTag = formatOpenTag(block);
   const closeTag = `</${block.tag}>`;
-  const contents = ast.formattedBlocks.get(block) ?? ast.source.slice(block.startTagEnd, block.endTagStart).trim();
+  const contents =
+    ast.formattedBlocks.get(block) ??
+    ast.source.slice(block.startTagEnd, block.endTagStart).trim();
 
   if (!contents) {
     return `${openTag}\n${closeTag}`;
@@ -90,7 +103,7 @@ function formatBlock(ast: TempblotAst, block: RootBlock) {
 function formatOpenTag(block: RootBlock) {
   const attributes = Object.entries(block.attributes)
     .map(([name, value]) => `${name}="${value}"`)
-    .join(' ');
+    .join(" ");
 
   return attributes ? `<${block.tag} ${attributes}>` : `<${block.tag}>`;
 }
@@ -99,41 +112,58 @@ function ensureTrailingNewline(text: string) {
   return `${text}\n`;
 }
 
-async function formatBlocks(source: string, blocks: RootBlock[], options: ParserOptions<TempblotAst>) {
+async function formatBlocks(
+  source: string,
+  blocks: RootBlock[],
+  options: ParserOptions<TempblotAst>,
+) {
   const formattedBlocks = new Map<RootBlock, string>();
 
-  await Promise.all(blocks.map(async (block) => {
-    const parserName = getBlockParser(block);
-    const rawContents = source.slice(block.startTagEnd, block.endTagStart).trim();
+  await Promise.all(
+    blocks.map(async (block) => {
+      const parserName = getBlockParser(block);
+      const rawContents = source
+        .slice(block.startTagEnd, block.endTagStart)
+        .trim();
 
-    if (!parserName || !rawContents) {
-      formattedBlocks.set(block, rawContents);
-      return;
-    }
+      if (!parserName || !rawContents) {
+        formattedBlocks.set(block, rawContents);
+        return;
+      }
 
-    formattedBlocks.set(block, await formatEmbedded(rawContents, parserName, options));
-  }));
+      formattedBlocks.set(
+        block,
+        await formatEmbedded(rawContents, parserName, options),
+      );
+    }),
+  );
 
   return formattedBlocks;
 }
 
-async function formatEmbedded(source: string, parserName: string, options: ParserOptions<TempblotAst>) {
+async function formatEmbedded(
+  source: string,
+  parserName: string,
+  options: ParserOptions<TempblotAst>,
+) {
   try {
-    return (await prettier.format(source, {
-      ...copyPrettierOptions(options),
-      parser: parserName,
-    })).trim();
+    return (
+      await prettier.format(source, {
+        ...copyPrettierOptions(options),
+        parser: parserName,
+      })
+    ).trim();
   } catch {
     return source.trim();
   }
 }
 
 function getBlockParser(block: RootBlock) {
-  if (block.tag === 'setup') {
-    return 'typescript';
+  if (block.tag === "setup") {
+    return "typescript";
   }
 
-  if (block.tag !== 'output') {
+  if (block.tag !== "output") {
     return undefined;
   }
 
@@ -143,22 +173,22 @@ function getBlockParser(block: RootBlock) {
 function getOutputParser(lang: string | undefined) {
   switch (lang) {
     case undefined:
-    case 'json':
-    case 'jsonc':
-      return 'json';
-    case 'yaml':
-    case 'yml':
-      return 'yaml';
-    case 'html':
-      return 'html';
-    case 'css':
-      return 'css';
-    case 'javascript':
-    case 'js':
-      return 'babel';
-    case 'typescript':
-    case 'ts':
-      return 'typescript';
+    case "json":
+    case "jsonc":
+      return "json";
+    case "yaml":
+    case "yml":
+      return "yaml";
+    case "html":
+      return "html";
+    case "css":
+      return "css";
+    case "javascript":
+    case "js":
+      return "babel";
+    case "typescript":
+    case "ts":
+      return "typescript";
     default:
       return undefined;
   }

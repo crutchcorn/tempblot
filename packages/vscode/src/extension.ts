@@ -1,44 +1,44 @@
-import * as languageServerProtocol from '@volar/language-server/protocol.js';
+import * as languageServerProtocol from "@volar/language-server/protocol.js";
 import {
   activateAutoInsertion,
   activateDocumentDropEdit,
   createLabsInfo,
-  getTsdk
-} from '@volar/vscode';
+  getTsdk,
+} from "@volar/vscode";
 import {
   extensions,
   window,
   workspace,
   Disposable,
   ProgressLocation,
-  ExtensionContext
-} from 'vscode';
-import { LanguageClient, TransportKind } from '@volar/vscode/node.js';
+  ExtensionContext,
+} from "vscode";
+import { LanguageClient, TransportKind } from "@volar/vscode/node.js";
 
 let client: LanguageClient | undefined;
 let disposable: Disposable | undefined;
 
 export async function activate(context: ExtensionContext) {
   // Activate TypeScript extension first
-  extensions.getExtension('vscode.typescript-language-features')?.activate();
+  extensions.getExtension("vscode.typescript-language-features")?.activate();
 
   // Get TypeScript SDK path
-  const { tsdk } = (await getTsdk(context)) ?? { tsdk: '' };
+  const { tsdk } = (await getTsdk(context)) ?? { tsdk: "" };
 
   // Create language client
   client = new LanguageClient(
-    'Tempblot',
+    "Tempblot",
     {
-      module: context.asAbsolutePath('./out/language-server.js'),
-      transport: TransportKind.ipc
+      module: context.asAbsolutePath("./out/language-server.js"),
+      transport: TransportKind.ipc,
     },
     {
-      documentSelector: [{ language: 'tempblot' }],
+      documentSelector: [{ language: "tempblot" }],
       initializationOptions: {
-        typescript: { tsdk }
+        typescript: { tsdk },
       },
-      middleware: {}
-    }
+      middleware: {},
+    },
   );
 
   // Start server initially if enabled
@@ -47,10 +47,10 @@ export async function activate(context: ExtensionContext) {
   // Watch for configuration changes
   context.subscriptions.push(
     workspace.onDidChangeConfiguration((event) => {
-      if (event.affectsConfiguration('tempblot.server.enable')) {
+      if (event.affectsConfiguration("tempblot.server.enable")) {
         void tryRestartServer();
       }
-    })
+    }),
   );
 
   // Create Volar Labs integration
@@ -61,7 +61,7 @@ export async function activate(context: ExtensionContext) {
 
   async function tryRestartServer() {
     await stopServer();
-    if (workspace.getConfiguration('tempblot').get('server.enable')) {
+    if (workspace.getConfiguration("tempblot").get("server.enable")) {
       await startServer();
     }
   }
@@ -83,16 +83,16 @@ async function startServer() {
     await window.withProgress(
       {
         location: ProgressLocation.Window,
-        title: 'Starting Tempblot Language Server...'
+        title: "Starting Tempblot Language Server...",
       },
       async () => {
         await client!.start();
 
         disposable = Disposable.from(
-          activateAutoInsertion('tempblot', client!),
-          activateDocumentDropEdit('tempblot', client!)
+          activateAutoInsertion("tempblot", client!),
+          activateDocumentDropEdit("tempblot", client!),
         );
-      }
+      },
     );
   }
 }

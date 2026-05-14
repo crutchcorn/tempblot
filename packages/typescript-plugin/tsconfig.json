@@ -1,7 +1,7 @@
 {
   "extends": "@tempblot/config/tsconfig.json",
   "include": ["lib"],
-  "references": [{"path": "../language-service/tsconfig.json"}],
+  "references": [{ "path": "../language-service/tsconfig.json" }],
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,

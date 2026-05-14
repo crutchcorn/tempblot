@@ -98,9 +98,13 @@ const value={hello:"world"}
 `.trim(),
     );
 
-    const cli = await render(`pnpm exec prettier --plugin ./lib/index.js ${fixtureArg}`, [], {
-      cwd: packageRoot,
-    });
+    const cli = await render(
+      `pnpm exec prettier --plugin ./lib/index.js ${fixtureArg}`,
+      [],
+      {
+        cwd: packageRoot,
+      },
+    );
 
     await waitForExit(cli);
 

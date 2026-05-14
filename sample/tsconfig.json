@@ -4,9 +4,7 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "strict": true,
-    "plugins": [
-      { "name": "tempblot-typescript-plugin" }
-    ]
+    "plugins": [{ "name": "tempblot-typescript-plugin" }]
   },
   "include": ["*.blot", "*.ts"]
 }

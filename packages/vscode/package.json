@@ -1,136 +1,136 @@
 {
-	"private": true,
-	"name": "@tempblot/vscode",
-	"version": "0.1.0",
-	"publisher": "crutchcorn",
-	"author": "Corbin Crutchley <crutchcorn@gmail.com>",
-	"license": "MIT",
-	"categories": [
-		"Programming Languages"
-	],
-	"displayName": "Tempblot Language Features",
-	"description": "Syntax highlighting and language features for Tempblot files",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/crutchcorn/tempblot.git",
-		"directory": "packages/vscode"
-	},
-	"homepage": "https://github.com/crutchcorn/tempblot",
-	"bugs": {
-		"url": "https://github.com/crutchcorn/tempblot/issues"
-	},
-	"keywords": [
-		"intellisense",
-		"language-server",
-		"syntax-highlighting",
-		"tempblot",
-		"typescript",
-		"vscode"
-	],
-	"engines": {
-		"vscode": "^1.104.0"
-	},
-	"activationEvents": [
-		"onLanguage:tempblot"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"configuration": [
-			{
-				"title": "Tempblot",
-				"properties": {
-					"tempblot.server.enable": {
-						"type": "boolean",
-						"default": true,
-						"description": "Enable experimental IntelliSense support for Tempblot files."
-					},
-					"tempblot.trace.server.verbosity": {
-						"enum": [
-							"off",
-							"messages",
-							"compact",
-							"verbose"
-						],
-						"default": "off",
-						"description": "Trace Tempblot language server requests in the output console."
-					},
-					"tempblot.trace.server.format": {
-						"enum": [
-							"text",
-							"json"
-						],
-						"default": "text",
-						"description": "How to format traced Tempblot language server requests."
-					}
-				}
-			}
-		],
-		"languages": [
-			{
-				"id": "tempblot",
-				"icon": {
-					"light": "images/tempblot_light.png",
-					"dark": "images/tempblot_dark.png"
-				},
-				"extensions": [
-					".blot"
-				]
-			}
-		],
-		"grammars": [
-			{
-				"language": "tempblot",
-				"scopeName": "source.tempblot",
-				"path": "./syntaxes/tempblot.tmLanguage.json",
-				"embeddedLanguages": {
-					"source.tempblot": "tempblot",
-					"text.html.derivative": "html",
-					"text.html.markdown": "markdown",
-					"source.ts": "typescript",
-					"source.css": "css",
-					"source.css.scss": "scss",
-					"source.css.less": "less",
-					"source.sass": "sass",
-					"source.stylus": "stylus",
-					"source.postcss": "postcss",
-					"source.vue": "vue",
-					"source.coffee": "coffee",
-					"source.json": "json",
-					"source.json.comments": "jsonc",
-					"source.json5": "json5",
-					"source.yaml": "yaml",
-					"source.toml": "toml",
-					"source.graphql": "graphql"
-				}
-			}
-		],
-		"typescriptServerPlugins": [
-			{
-				"name": "@tempblot/typescript-plugin",
-				"enableForWorkspaceTypeScriptVersions": true,
-				"configNamespace": "typescript",
-				"languages": [
-					"tempblot"
-				]
-			}
-		]
-	},
-	"scripts": {
-		"build": "node scripts/build.mjs",
-		"watch": "npm run build -- --watch",
-		"pack": "npm run build && vsce package --pre-release",
-		"release": "npm run build && vsce publish --pre-release",
-		"test:eslint": "eslint ."
-	},
-	"dependencies": {
-		"@tempblot/language-server": "^0.1.0",
-		"@volar/language-server": "~2.4.28",
-		"@volar/vscode": "~2.4.23"
-	},
-	"devDependencies": {
-		"@tempblot/config": "workspace:*",
-		"@types/vscode": "^1.104.0",
-		"esbuild": "^0.28.0",
-		"vsce": "^2.15.0"
-	}
+  "private": true,
+  "name": "@tempblot/vscode",
+  "version": "0.1.0",
+  "publisher": "crutchcorn",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "categories": [
+    "Programming Languages"
+  ],
+  "displayName": "Tempblot Language Features",
+  "description": "Syntax highlighting and language features for Tempblot files",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/vscode"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "keywords": [
+    "intellisense",
+    "language-server",
+    "syntax-highlighting",
+    "tempblot",
+    "typescript",
+    "vscode"
+  ],
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "activationEvents": [
+    "onLanguage:tempblot"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": [
+      {
+        "title": "Tempblot",
+        "properties": {
+          "tempblot.server.enable": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable experimental IntelliSense support for Tempblot files."
+          },
+          "tempblot.trace.server.verbosity": {
+            "enum": [
+              "off",
+              "messages",
+              "compact",
+              "verbose"
+            ],
+            "default": "off",
+            "description": "Trace Tempblot language server requests in the output console."
+          },
+          "tempblot.trace.server.format": {
+            "enum": [
+              "text",
+              "json"
+            ],
+            "default": "text",
+            "description": "How to format traced Tempblot language server requests."
+          }
+        }
+      }
+    ],
+    "languages": [
+      {
+        "id": "tempblot",
+        "icon": {
+          "light": "images/tempblot_light.png",
+          "dark": "images/tempblot_dark.png"
+        },
+        "extensions": [
+          ".blot"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "tempblot",
+        "scopeName": "source.tempblot",
+        "path": "./syntaxes/tempblot.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.tempblot": "tempblot",
+          "text.html.derivative": "html",
+          "text.html.markdown": "markdown",
+          "source.ts": "typescript",
+          "source.css": "css",
+          "source.css.scss": "scss",
+          "source.css.less": "less",
+          "source.sass": "sass",
+          "source.stylus": "stylus",
+          "source.postcss": "postcss",
+          "source.vue": "vue",
+          "source.coffee": "coffee",
+          "source.json": "json",
+          "source.json.comments": "jsonc",
+          "source.json5": "json5",
+          "source.yaml": "yaml",
+          "source.toml": "toml",
+          "source.graphql": "graphql"
+        }
+      }
+    ],
+    "typescriptServerPlugins": [
+      {
+        "name": "@tempblot/typescript-plugin",
+        "enableForWorkspaceTypeScriptVersions": true,
+        "configNamespace": "typescript",
+        "languages": [
+          "tempblot"
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "npm run build -- --watch",
+    "pack": "npm run build && vsce package --pre-release",
+    "release": "npm run build && vsce publish --pre-release",
+    "test:eslint": "eslint ."
+  },
+  "dependencies": {
+    "@tempblot/language-server": "^0.1.0",
+    "@volar/language-server": "~2.4.28",
+    "@volar/vscode": "~2.4.23"
+  },
+  "devDependencies": {
+    "@tempblot/config": "workspace:*",
+    "@types/vscode": "^1.104.0",
+    "esbuild": "^0.28.0",
+    "vsce": "^2.15.0"
+  }
 }

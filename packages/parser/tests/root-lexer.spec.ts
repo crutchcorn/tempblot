@@ -40,7 +40,7 @@ const setup = 123;
     { type: "TagOpenStart", attributes: { name: "output" } },
     { type: "TagAttribute", attributes: { name: "lang", value: "json" } },
     { type: "TagOpenEnd", attributes: { name: "output" } },
-    { type: "Text", attributes: { value: "\n{\n  \"test\": <<setup>>\n}\n" } },
+    { type: "Text", attributes: { value: '\n{\n  "test": <<setup>>\n}\n' } },
     { type: "TagClose", attributes: { name: "output" } },
   ]);
 });
@@ -72,7 +72,7 @@ const hello = 123;
       type: "Text",
       attributes: {
         value:
-          "\n{\n    \"test\": <<hello ? [\"one\", 'two', 'three'] : \"\">>\n}\n",
+          '\n{\n    "test": <<hello ? ["one", \'two\', \'three\'] : "">>\n}\n',
       },
     },
     { type: "TagClose", attributes: { name: "output" } },
@@ -108,7 +108,7 @@ const setup = 123;
     { type: "TagOpenStart", attributes: { name: "output" } },
     { type: "TagAttribute", attributes: { name: "lang", value: "json" } },
     { type: "TagOpenEnd", attributes: { name: "output" } },
-    { type: "Text", attributes: { value: "\n{\n  \"test\": <<setup>>\n}\n" } },
+    { type: "Text", attributes: { value: '\n{\n  "test": <<setup>>\n}\n' } },
     { type: "TagClose", attributes: { name: "output" } },
     { type: "Text", attributes: { value: "\n<!-- after output -->" } },
   ]);

@@ -1,4 +1,4 @@
-import tempblotPreset from './eslint-preset.js'
+import tempblotPreset from "./eslint-preset.js";
 
 export default [
   ...tempblotPreset,
@@ -10,4 +10,4 @@ export default [
       },
     },
   },
-]
+];

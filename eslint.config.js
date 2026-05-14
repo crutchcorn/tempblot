@@ -1,4 +1,4 @@
-import tempblotPreset from './packages/config/eslint-preset.js'
+import tempblotPreset from "./packages/config/eslint-preset.js";
 
 export default [
   ...tempblotPreset,
@@ -15,7 +15,7 @@ export default [
     // outside any tsconfig `include`. Override the global
     // projectService so the parser doesn't bail with "file was not
     // found by the project service".
-    files: ['**/*.mjs', '**/*.cjs', '**/*.js'],
+    files: ["**/*.mjs", "**/*.cjs", "**/*.js"],
     languageOptions: {
       parserOptions: {
         projectService: false,
@@ -23,4 +23,4 @@ export default [
       },
     },
   },
-]
+];

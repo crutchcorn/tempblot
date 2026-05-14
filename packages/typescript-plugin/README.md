@@ -23,9 +23,7 @@ Add to your VS Code workspace settings (`.vscode/settings.json`):
 
 ```json
 {
-  "typescript.preferences.plugins": [
-    { "name": "@tempblot/typescript-plugin" }
-  ]
+  "typescript.preferences.plugins": [{ "name": "@tempblot/typescript-plugin" }]
 }
 ```
 
@@ -36,9 +34,7 @@ Add to your `tsconfig.json`:
 ```json
 {
   "compilerOptions": {
-    "plugins": [
-      { "name": "@tempblot/typescript-plugin" }
-    ]
+    "plugins": [{ "name": "@tempblot/typescript-plugin" }]
   }
 }
 ```

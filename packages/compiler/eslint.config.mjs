@@ -1,9 +1,9 @@
-import tempblotPreset from '@tempblot/config/eslint-preset.js'
+import tempblotPreset from "@tempblot/config/eslint-preset.js";
 
 export default [
   ...tempblotPreset,
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
+    files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -13,11 +13,11 @@ export default [
   },
   {
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/require-await': 'off',
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/require-await": "off",
     },
   },
   {
-    ignores: ['eslint.config.mjs'],
+    ignores: ["eslint.config.mjs"],
   },
-]
+];

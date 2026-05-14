@@ -1,18 +1,18 @@
-'use strict'
+"use strict";
 
 const {
   createTempblotLanguagePlugin,
-  createTempblotServicePlugin
-} = require('@tempblot/language-service')
+  createTempblotServicePlugin,
+} = require("@tempblot/language-service");
 const {
-  createLanguageServicePlugin
-} = require('@volar/typescript/lib/quickstart/createLanguageServicePlugin.js')
+  createLanguageServicePlugin,
+} = require("@volar/typescript/lib/quickstart/createLanguageServicePlugin.js");
 
 const plugin = createLanguageServicePlugin((ts, info) => {
   return {
     languagePlugins: [createTempblotLanguagePlugin()],
-    servicePlugins: [createTempblotServicePlugin()]
-  }
-})
+    servicePlugins: [createTempblotServicePlugin()],
+  };
+});
 
-module.exports = plugin
+module.exports = plugin;

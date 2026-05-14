@@ -15,10 +15,9 @@ interface TempblotLanguagePluginOptions {
   serviceScriptMode?: "primary" | "extraMts";
 }
 
-export function createTempblotLanguagePlugin(options: TempblotLanguagePluginOptions = {}): LanguagePlugin<
-  URI,
-  TempblotVirtualCode
-> {
+export function createTempblotLanguagePlugin(
+  options: TempblotLanguagePluginOptions = {},
+): LanguagePlugin<URI, TempblotVirtualCode> {
   const serviceScriptMode = options.serviceScriptMode ?? "primary";
 
   return {
@@ -85,9 +84,7 @@ export function createTempblotLanguagePlugin(options: TempblotLanguagePluginOpti
 }
 
 function getCombinedContextCode(root: VirtualCode) {
-  return root.embeddedCodes?.find(
-    (code) => code.id === "combined_context",
-  );
+  return root.embeddedCodes?.find((code) => code.id === "combined_context");
 }
 
 export class TempblotVirtualCode implements VirtualCode {
@@ -118,7 +115,9 @@ export class TempblotVirtualCode implements VirtualCode {
         },
       },
     ];
-    this.rootDocument = parseTempblotRoot(snapshot.getText(0, snapshot.getLength()));
+    this.rootDocument = parseTempblotRoot(
+      snapshot.getText(0, snapshot.getLength()),
+    );
     this.embeddedCodes = [
       ...getTempblotEmbeddedCodes(snapshot, this.rootDocument),
     ];
@@ -156,8 +155,7 @@ function* getTempblotEmbeddedCodes(
       combinedText += interpLine;
 
       // Map the interpolation expression to the original source
-      const expressionStart =
-        interpStartOffset + `(`.length;
+      const expressionStart = interpStartOffset + `(`.length;
       tsInterpolationMappings.push({
         sourceOffsets: [output.startTagEnd + interp.sourceStart],
         generatedOffsets: [expressionStart],

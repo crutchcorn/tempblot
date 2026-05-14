@@ -7,7 +7,7 @@
   --playground-editor-shadow: rgba(0, 0, 0, 0.45);
 }
 
-:root[data-theme='light'] {
+:root[data-theme="light"] {
   --playground-fg: #0b0b0b;
   --playground-muted: #424242;
   --playground-border: rgba(0, 0, 0, 0.18);

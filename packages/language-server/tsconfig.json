@@ -10,11 +10,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "lib",
-    "test"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["lib", "test"]
 }
