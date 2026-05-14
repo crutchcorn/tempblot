@@ -2,7 +2,7 @@ import { defineConfig } from 'eslint/config'
 import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
-export const tempblotTSRules = {
+const tempblotTSRules = {
   '@typescript-eslint/no-empty-function': 'off',
   '@typescript-eslint/no-unused-vars': [
     'warn', // or "error"
@@ -14,7 +14,7 @@ export const tempblotTSRules = {
   ],
 }
 
-export const tempblotJSRules = {
+const tempblotJSRules = {
   'no-restricted-imports': [
     'error',
     {
