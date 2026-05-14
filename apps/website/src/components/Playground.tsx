@@ -1,13 +1,22 @@
 import Editor, { type Monaco } from '@monaco-editor/react';
-import { useEffect, useRef, useState } from 'react';
-import {
-  getRootBlocks,
-  parseTempblotRoot,
-  scanInterpolations,
-  type InterpolationData,
-  type ParsedRoot,
-} from 'tempblot-parser';
-import type { editor, languages } from 'monaco-editor';
+import { useRef, useState } from 'react';
+import type { CancellationToken, editor, IMarkdownString, languages, Position } from 'monaco-editor';
+import { BrowserMessageReader, BrowserMessageWriter, createProtocolConnection } from 'vscode-languageserver-protocol/browser';
+import type {
+  CompletionItem,
+  CompletionList,
+  Diagnostic,
+  DocumentDiagnosticReport,
+  Hover,
+  InitializeResult,
+  Location,
+  LocationLink,
+  MarkupContent,
+  Position as LspPosition,
+  Range as LspRange,
+  SignatureHelp,
+  ProtocolConnection,
+} from 'vscode-languageserver-protocol/browser';
 import './Playground.css';
 
 const DEFAULT_SOURCE = `<!-- Run TypeScript via Node -->
@@ -29,175 +38,35 @@ const data = {
 `;
 
 const BLOT_URI = 'file:///playground/template.blot';
-const TS_URI = 'file:///playground/template.blot.combined_context.ts';
-const JSON_URI = 'file:///playground/template.blot.output.json';
-const TS_BASE = 'export {}; // Make this file a module\n\n';
-const TS_INTERPOLATION_HEADER = '\n\n// Output interpolations:\n';
 
-type Marker = editor.IMarkerData;
-type TypeScriptDiagnostic = {
-  category: 0 | 1 | 2 | 3;
-  code: number;
-  start?: number;
-  length?: number;
-  messageText: string | DiagnosticMessageChain;
-};
-type DiagnosticMessageChain = {
-  messageText: string;
-  next?: DiagnosticMessageChain[];
-};
+type Disposable = { dispose(): void };
 
-interface Mapping {
-  sourceStart: number;
-  generatedStart: number;
-  length: number;
-}
-
-interface VirtualDocuments {
-  rootDocument: ParsedRoot;
-  tsText: string;
-  tsMappings: Mapping[];
-  jsonText: string;
-  jsonMappings: Mapping[];
-  rootMarkers: Marker[];
+interface TempblotLanguageClient {
+  dispose(): void;
 }
 
 export default function Playground() {
   const [source, setSource] = useState(DEFAULT_SOURCE);
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  const monacoRef = useRef<Monaco | null>(null);
-  const tsModelRef = useRef<editor.ITextModel | null>(null);
-  const jsonModelRef = useRef<editor.ITextModel | null>(null);
-  const rootMarkersRef = useRef<Marker[]>([]);
-  const tsMarkersRef = useRef<Marker[]>([]);
-  const jsonMarkersRef = useRef<Marker[]>([]);
-  const tsMappingsRef = useRef<Mapping[]>([]);
-  const jsonMappingsRef = useRef<Mapping[]>([]);
-  const validationRunRef = useRef(0);
+  const clientRef = useRef<TempblotLanguageClient | null>(null);
 
-  useEffect(() => {
-    const monaco = monacoRef.current;
-    const blotModel = editorRef.current?.getModel();
-    if (!monaco || !blotModel) {
-      return;
-    }
-
-    const timeout = window.setTimeout(() => {
-      void validateSource(monaco, blotModel, source, validationRunRef.current + 1);
-    }, 200);
-
-    return () => window.clearTimeout(timeout);
-  }, [source]);
-
-  function handleMount(instance: editor.IStandaloneCodeEditor, monaco: Monaco) {
-    editorRef.current = instance;
-    monacoRef.current = monaco;
-
+  async function handleMount(instance: editor.IStandaloneCodeEditor, monaco: Monaco) {
     configureMonaco(monaco);
-
-    const blotUri = monaco.Uri.parse(BLOT_URI);
-    const tsUri = monaco.Uri.parse(TS_URI);
-    const jsonUri = monaco.Uri.parse(JSON_URI);
-
-    instance.setModel(monaco.editor.createModel(source, 'tempblot', blotUri));
-    tsModelRef.current = monaco.editor.createModel('', 'typescript', tsUri);
-    jsonModelRef.current = monaco.editor.createModel('', 'json', jsonUri);
-
-    monaco.editor.onDidChangeMarkers((uris: readonly { toString(): string }[]) => {
-      if (!uris.some((uri) => uri.toString() === JSON_URI)) {
-        return;
-      }
-
-      jsonMarkersRef.current = mapMonacoMarkers(
-        monaco,
-        jsonModelRef.current,
-        jsonMappingsRef.current,
-        monaco.editor.getModelMarkers({ resource: jsonUri }),
-      );
-      publishMarkers(monaco);
-    });
-
-    void validateSource(monaco, instance.getModel(), source, validationRunRef.current + 1);
-  }
-
-  async function validateSource(
-    monaco: Monaco,
-    blotModel: editor.ITextModel | null,
-    value: string,
-    runId: number,
-  ) {
-    if (!blotModel || !tsModelRef.current || !jsonModelRef.current) {
-      return;
-    }
-
-    validationRunRef.current = runId;
-
-    const virtualDocuments = createVirtualDocuments(monaco, blotModel, value);
-    rootMarkersRef.current = virtualDocuments.rootMarkers;
-    tsMappingsRef.current = virtualDocuments.tsMappings;
-    jsonMappingsRef.current = virtualDocuments.jsonMappings;
-    tsModelRef.current.setValue(virtualDocuments.tsText);
-    jsonModelRef.current.setValue(virtualDocuments.jsonText);
-
-    try {
-      const getWorker = await monaco.languages.typescript.getTypeScriptWorker();
-      const worker = await getWorker(tsModelRef.current.uri);
-      const diagnostics = await Promise.all([
-        worker.getSyntacticDiagnostics(TS_URI),
-        worker.getSemanticDiagnostics(TS_URI),
-      ]);
-
-      if (validationRunRef.current !== runId) {
-        return;
-      }
-
-      tsMarkersRef.current = diagnostics
-        .flat()
-        .map((diagnostic: TypeScriptDiagnostic) =>
-          mapTypeScriptDiagnostic(monaco, blotModel, virtualDocuments.tsMappings, diagnostic),
-        )
-        .filter((marker: Marker | undefined): marker is Marker => Boolean(marker));
-      publishMarkers(monaco);
-    } catch (error) {
-      if (validationRunRef.current === runId) {
-        tsMarkersRef.current = [
-          {
-            severity: monaco.MarkerSeverity.Warning,
-            message: `TypeScript validation is unavailable: ${error instanceof Error ? error.message : String(error)}`,
-            startLineNumber: 1,
-            startColumn: 1,
-            endLineNumber: 1,
-            endColumn: 1,
-            source: 'tempblot-playground',
-          },
-        ];
-        publishMarkers(monaco);
-      }
-    }
-  }
-
-  function publishMarkers(monaco: Monaco) {
-    const model = editorRef.current?.getModel();
-    if (!model) {
-      return;
-    }
-
-    monaco.editor.setModelMarkers(model, 'tempblot-playground', [
-      ...rootMarkersRef.current,
-      ...tsMarkersRef.current,
-      ...jsonMarkersRef.current,
-    ]);
+    const model = monaco.editor.createModel(source, 'tempblot', monaco.Uri.parse(BLOT_URI));
+    instance.setModel(model);
+    clientRef.current?.dispose();
+    clientRef.current = await startTempblotLanguageClient(monaco, model);
   }
 
   return (
     <main className="playground-shell">
       <section className="playground-copy">
         <p className="playground-eyebrow">Tempblot Playground</p>
-        <h1>Edit templates with browser diagnostics</h1>
+        <h1>Edit templates with browser language tooling</h1>
         <p>
           Try changing setup variables, interpolation expressions, or the JSON output.
-          Monaco reports Tempblot structure errors plus TypeScript and JSON diagnostics
-          mapped back into the <code>.blot</code> document.
+          Monaco talks to the Tempblot Volar language service in a browser worker,
+          so diagnostics, completions, hover, signatures, and definitions come from
+          the same language infrastructure as the editor extensions.
         </p>
       </section>
       <section className="playground-editor" aria-label="Tempblot editor">
@@ -222,264 +91,416 @@ export default function Playground() {
   );
 }
 
+async function startTempblotLanguageClient(
+  monaco: Monaco,
+  model: editor.ITextModel,
+): Promise<TempblotLanguageClient> {
+  const worker = new Worker(new URL('../workers/tempblotLanguageServer.worker.ts', import.meta.url), {
+    type: 'module',
+  });
+  const reader = new BrowserMessageReader(worker);
+  const writer = new BrowserMessageWriter(worker);
+  const connection = createProtocolConnection(reader, writer);
+  const disposables: Disposable[] = [];
+
+  connection.onNotification('textDocument/publishDiagnostics', (params: { uri: string; diagnostics: Diagnostic[] }) => {
+    if (params.uri !== model.uri.toString()) {
+      return;
+    }
+
+    monaco.editor.setModelMarkers(
+      model,
+      'tempblot-language-server',
+      params.diagnostics.map((diagnostic) => toMonacoMarker(monaco, diagnostic)),
+    );
+  });
+
+  connection.listen();
+
+  const initializeResult = await connection.sendRequest('initialize', {
+    processId: null,
+    clientInfo: { name: 'tempblot-playground' },
+    locale: navigator.language,
+    rootUri: 'file:///playground',
+    workspaceFolders: [{ uri: 'file:///playground', name: 'playground' }],
+    capabilities: {
+      textDocument: {
+        synchronization: { dynamicRegistration: false, didSave: false },
+        completion: {
+          dynamicRegistration: false,
+          completionItem: {
+            documentationFormat: ['markdown', 'plaintext'],
+            snippetSupport: true,
+          },
+        },
+        hover: { dynamicRegistration: false, contentFormat: ['markdown', 'plaintext'] },
+        signatureHelp: { dynamicRegistration: false, signatureInformation: { documentationFormat: ['markdown', 'plaintext'] } },
+        definition: { dynamicRegistration: false, linkSupport: true },
+        declaration: { dynamicRegistration: false, linkSupport: true },
+        typeDefinition: { dynamicRegistration: false, linkSupport: true },
+        implementation: { dynamicRegistration: false, linkSupport: true },
+        documentHighlight: { dynamicRegistration: false },
+        documentSymbol: { dynamicRegistration: false },
+        publishDiagnostics: { relatedInformation: true, versionSupport: false },
+      },
+      workspace: {
+        workspaceFolders: true,
+        configuration: false,
+        didChangeWatchedFiles: { dynamicRegistration: false },
+      },
+      general: { positionEncodings: ['utf-16'] },
+    },
+  }) as InitializeResult;
+
+  connection.sendNotification('initialized', {});
+  sendDidOpen(connection, model);
+  void pullDiagnostics(monaco, connection, model);
+
+  let diagnosticsTimeout = 0;
+  disposables.push(model.onDidChangeContent(() => {
+    sendDidChange(connection, model);
+    window.clearTimeout(diagnosticsTimeout);
+    diagnosticsTimeout = window.setTimeout(() => {
+      void pullDiagnostics(monaco, connection, model);
+    }, 200);
+  }));
+  registerLanguageProviders(monaco, connection, initializeResult, disposables);
+
+  return {
+    dispose() {
+      window.clearTimeout(diagnosticsTimeout);
+      for (const disposable of disposables) {
+        disposable.dispose();
+      }
+      connection.sendNotification('textDocument/didClose', {
+        textDocument: { uri: model.uri.toString() },
+      });
+      monaco.editor.setModelMarkers(model, 'tempblot-language-server', []);
+      connection.dispose();
+      worker.terminate();
+    },
+  };
+}
+
 function configureMonaco(monaco: Monaco) {
   if (!monaco.languages.getLanguages().some((language: languages.ILanguageExtensionPoint) => language.id === 'tempblot')) {
     monaco.languages.register({ id: 'tempblot', extensions: ['.blot'] });
+    monaco.languages.setLanguageConfiguration('tempblot', {
+      brackets: [['<', '>'], ['{', '}'], ['[', ']'], ['(', ')']],
+      autoClosingPairs: [
+        { open: '"', close: '"' },
+        { open: "'", close: "'" },
+        { open: '`', close: '`' },
+        { open: '{', close: '}' },
+        { open: '[', close: ']' },
+        { open: '(', close: ')' },
+      ],
+    });
     monaco.languages.setMonarchTokensProvider('tempblot', {
       tokenizer: {
         root: [
-          [/<!--.*-->/, 'comment'],
-          [/<\/?[a-zA-Z][\w-]*/, 'tag'],
+          [/<!--/, 'comment', '@comment'],
+          [/<\/?(?:setup|output)\b/, 'tag'],
           [/\b[a-zA-Z-]+(?==)/, 'attribute.name'],
           [/"[^"]*"/, 'attribute.value'],
           [/<<|>>/, 'delimiter'],
         ],
+        comment: [
+          [/.*?-->/, 'comment', '@pop'],
+          [/.*/, 'comment'],
+        ],
       },
     });
   }
-
-  monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
-  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    allowNonTsExtensions: true,
-    allowSyntheticDefaultImports: true,
-    module: monaco.languages.typescript.ModuleKind.ESNext,
-    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-    noEmit: true,
-    strict: true,
-    target: monaco.languages.typescript.ScriptTarget.ES2022,
-  });
-  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    noSemanticValidation: true,
-    noSyntaxValidation: true,
-  });
-  monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-    validate: true,
-    allowComments: true,
-  });
 }
 
-function createVirtualDocuments(monaco: Monaco, blotModel: editor.ITextModel, source: string): VirtualDocuments {
-  const rootDocument = parseTempblotRoot(source);
-  const setups = getRootBlocks(rootDocument, 'setup');
-  const outputs = getRootBlocks(rootDocument, 'output');
-  const rootMarkers = createRootMarkers(monaco, blotModel, setups, outputs);
-
-  if (setups.length === 0 || outputs.length === 0) {
-    return { rootDocument, tsText: '', tsMappings: [], jsonText: '', jsonMappings: [], rootMarkers };
-  }
-
-  const setup = setups[0];
-  const output = outputs[0];
-  const setupText = source.slice(setup.startTagEnd, setup.endTagStart);
-  const outputText = source.slice(output.startTagEnd, output.endTagStart);
-  const interpolations = scanInterpolations(outputText);
-  const tsMappings: Mapping[] = [
-    { sourceStart: setup.startTagEnd, generatedStart: TS_BASE.length, length: setupText.length },
-  ];
-  let tsText = `${TS_BASE}${setupText}${TS_INTERPOLATION_HEADER}`;
-
-  interpolations.forEach((interpolation, index) => {
-    const prefix = `const __interp_${index} = `;
-    const line = `${prefix}${interpolation.expression};\n`;
-    tsMappings.push({
-      sourceStart: output.startTagEnd + interpolation.sourceStart,
-      generatedStart: tsText.length + prefix.length,
-      length: interpolation.expression.length,
-    });
-    tsText += line;
-  });
-
-  const { jsonText, jsonMappings } = createJsonVirtualDocument(outputText, interpolations, output.startTagEnd);
-
-  return { rootDocument, tsText, tsMappings, jsonText, jsonMappings, rootMarkers };
-}
-
-function createRootMarkers(
+function registerLanguageProviders(
   monaco: Monaco,
-  model: editor.ITextModel,
-  setups: ReturnType<typeof getRootBlocks>,
-  outputs: ReturnType<typeof getRootBlocks>,
-): Marker[] {
-  const markers: Marker[] = [];
+  connection: ProtocolConnection,
+  initializeResult: InitializeResult,
+  disposables: Disposable[],
+) {
+  const capabilities = initializeResult.capabilities;
 
-  if (setups.length === 0) {
-    markers.push(createMarkerAtOffset(monaco, model, 0, 1, 'Missing setup tag.', monaco.MarkerSeverity.Error, 'tempblot'));
+  if (capabilities.completionProvider) {
+    disposables.push(monaco.languages.registerCompletionItemProvider('tempblot', {
+      triggerCharacters: capabilities.completionProvider.triggerCharacters,
+      async provideCompletionItems(model: editor.ITextModel, position: Position, context: languages.CompletionContext) {
+        const result = await connection.sendRequest('textDocument/completion', {
+          textDocument: { uri: model.uri.toString() },
+          position: toLspPosition(position),
+          context: {
+            triggerKind: context.triggerKind + 1,
+            triggerCharacter: context.triggerCharacter,
+          },
+        }) as CompletionList | CompletionItem[] | null;
+
+        const items = Array.isArray(result) ? result : (result?.items ?? []);
+        return {
+          incomplete: !Array.isArray(result) && result?.isIncomplete,
+          suggestions: items.map((item) => toMonacoCompletionItem(monaco, model, position, item)),
+        };
+      },
+    }));
   }
 
-  if (outputs.length === 0) {
-    markers.push(createMarkerAtOffset(monaco, model, 0, 1, 'Missing output tag.', monaco.MarkerSeverity.Error, 'tempblot'));
+  if (capabilities.hoverProvider) {
+    disposables.push(monaco.languages.registerHoverProvider('tempblot', {
+      async provideHover(model: editor.ITextModel, position: Position) {
+        const hover = await connection.sendRequest('textDocument/hover', {
+          textDocument: { uri: model.uri.toString() },
+          position: toLspPosition(position),
+        }) as Hover | null;
+
+        if (!hover) {
+          return null;
+        }
+
+        return {
+          contents: markupToMarkdownStrings(hover.contents),
+          range: hover.range ? toMonacoRange(monaco, hover.range) : undefined,
+        };
+      },
+    }));
   }
 
-  for (const setup of setups.slice(1)) {
-    markers.push(
-      createMarkerAtOffset(
-        monaco,
-        model,
-        setup.start,
-        Math.max(1, setup.end - setup.start),
-        'Only one setup tag is allowed.',
-        monaco.MarkerSeverity.Warning,
-        'tempblot',
-      ),
-    );
+  if (capabilities.signatureHelpProvider) {
+    disposables.push(monaco.languages.registerSignatureHelpProvider('tempblot', {
+      signatureHelpTriggerCharacters: capabilities.signatureHelpProvider.triggerCharacters,
+      signatureHelpRetriggerCharacters: capabilities.signatureHelpProvider.retriggerCharacters,
+      async provideSignatureHelp(
+        model: editor.ITextModel,
+        position: Position,
+        _token: CancellationToken,
+        context: languages.SignatureHelpContext,
+      ) {
+        const signatureHelp = await connection.sendRequest('textDocument/signatureHelp', {
+          textDocument: { uri: model.uri.toString() },
+          position: toLspPosition(position),
+          context: {
+            triggerKind: context.triggerKind + 1,
+            triggerCharacter: context.triggerCharacter,
+            isRetrigger: context.isRetrigger,
+          },
+        }) as SignatureHelp | null;
+
+        if (!signatureHelp) {
+          return null;
+        }
+
+        return {
+          value: {
+            activeParameter: signatureHelp.activeParameter ?? 0,
+            activeSignature: signatureHelp.activeSignature ?? 0,
+            signatures: signatureHelp.signatures.map((signature) => ({
+              label: signature.label,
+              documentation: markupToString(signature.documentation),
+              parameters: signature.parameters?.map((parameter) => ({
+                label: Array.isArray(parameter.label) ? [parameter.label[0], parameter.label[1]] : parameter.label,
+                documentation: markupToString(parameter.documentation),
+              })) ?? [],
+            })),
+          },
+          dispose() {},
+        };
+      },
+    }));
   }
 
-  for (const output of outputs.slice(1)) {
-    markers.push(
-      createMarkerAtOffset(
-        monaco,
-        model,
-        output.start,
-        Math.max(1, output.end - output.start),
-        'Only one output tag is allowed.',
-        monaco.MarkerSeverity.Warning,
-        'tempblot',
-      ),
-    );
-  }
+  if (capabilities.definitionProvider) {
+    disposables.push(monaco.languages.registerDefinitionProvider('tempblot', {
+      async provideDefinition(model: editor.ITextModel, position: Position) {
+        const result = await connection.sendRequest('textDocument/definition', {
+          textDocument: { uri: model.uri.toString() },
+          position: toLspPosition(position),
+        }) as Location | Location[] | LocationLink[] | null;
 
-  return markers;
+        return locationsToMonaco(monaco, result);
+      },
+    }));
+  }
 }
 
-function createJsonVirtualDocument(
-  outputText: string,
-  interpolations: InterpolationData[],
-  outputStartOffset: number,
-): { jsonText: string; jsonMappings: Mapping[] } {
-  const jsonMappings: Mapping[] = [];
-  let jsonText = '';
-  let lastOffset = 0;
+function sendDidOpen(connection: ProtocolConnection, model: editor.ITextModel) {
+  connection.sendNotification('textDocument/didOpen', {
+    textDocument: {
+      uri: model.uri.toString(),
+      languageId: 'tempblot',
+      version: model.getVersionId(),
+      text: model.getValue(),
+    },
+  });
+}
 
-  for (const interpolation of interpolations) {
-    const beforeText = outputText.slice(lastOffset, interpolation.fullStart);
-    if (beforeText.length > 0) {
-      jsonMappings.push({
-        sourceStart: outputStartOffset + lastOffset,
-        generatedStart: jsonText.length,
-        length: beforeText.length,
-      });
-      jsonText += beforeText;
+function sendDidChange(connection: ProtocolConnection, model: editor.ITextModel) {
+  connection.sendNotification('textDocument/didChange', {
+    textDocument: {
+      uri: model.uri.toString(),
+      version: model.getVersionId(),
+    },
+    contentChanges: [{ text: model.getValue() }],
+  });
+}
+
+async function pullDiagnostics(monaco: Monaco, connection: ProtocolConnection, model: editor.ITextModel) {
+  try {
+    const report = await connection.sendRequest('textDocument/diagnostic', {
+      textDocument: { uri: model.uri.toString() },
+    }) as DocumentDiagnosticReport | null;
+
+    if (!report || report.kind !== 'full') {
+      return;
     }
 
-    jsonText += 'null';
-    lastOffset = interpolation.fullEnd;
+    monaco.editor.setModelMarkers(
+      model,
+      'tempblot-language-server',
+      report.items.map((diagnostic) => toMonacoMarker(monaco, diagnostic)),
+    );
+  } catch {
+    // Some server configurations use push diagnostics instead.
   }
-
-  const remainingText = outputText.slice(lastOffset);
-  if (remainingText.length > 0) {
-    jsonMappings.push({
-      sourceStart: outputStartOffset + lastOffset,
-      generatedStart: jsonText.length,
-      length: remainingText.length,
-    });
-    jsonText += remainingText;
-  }
-
-  return { jsonText, jsonMappings };
 }
 
-function mapTypeScriptDiagnostic(
-  monaco: Monaco,
-  model: editor.ITextModel | null,
-  mappings: Mapping[],
-  diagnostic: TypeScriptDiagnostic,
-): Marker | undefined {
-  if (!model || diagnostic.start === undefined) {
-    return undefined;
-  }
+function toLspPosition(position: Position): LspPosition {
+  return { line: position.lineNumber - 1, character: position.column - 1 };
+}
 
-  return mapGeneratedRangeToMarker(
-    monaco,
-    model,
-    mappings,
-    diagnostic.start,
-    diagnostic.length ?? 1,
-    flattenMessageText(diagnostic.messageText),
-    diagnostic.category === 0 ? monaco.MarkerSeverity.Warning : monaco.MarkerSeverity.Error,
-    'typescript',
+function toMonacoPosition(position: LspPosition) {
+  return { lineNumber: position.line + 1, column: position.character + 1 };
+}
+
+function toMonacoRange(monaco: Monaco, range: LspRange) {
+  return new monaco.Range(
+    range.start.line + 1,
+    range.start.character + 1,
+    range.end.line + 1,
+    range.end.character + 1,
   );
 }
 
-function mapMonacoMarkers(
-  monaco: Monaco,
-  model: editor.ITextModel | null,
-  mappings: Mapping[],
-  markers: editor.IMarker[],
-): Marker[] {
-  if (!model) {
-    return [];
-  }
-
-  return markers
-    .map((marker) => {
-      const startOffset = model.getOffsetAt({ lineNumber: marker.startLineNumber, column: marker.startColumn });
-      const endOffset = model.getOffsetAt({ lineNumber: marker.endLineNumber, column: marker.endColumn });
-      return mapGeneratedRangeToMarker(
-        monaco,
-        model,
-        mappings,
-        startOffset,
-        Math.max(1, endOffset - startOffset),
-        marker.message,
-        marker.severity,
-        marker.source ?? 'json',
-      );
-    })
-    .filter((marker): marker is Marker => Boolean(marker));
-}
-
-function mapGeneratedRangeToMarker(
-  monaco: Monaco,
-  sourceModel: editor.ITextModel,
-  mappings: Mapping[],
-  generatedStart: number,
-  generatedLength: number,
-  message: string,
-  severity: Marker['severity'],
-  source: string,
-): Marker | undefined {
-  const mapping = mappings.find(
-    (candidate) =>
-      generatedStart >= candidate.generatedStart && generatedStart <= candidate.generatedStart + candidate.length,
-  );
-
-  if (!mapping) {
-    return undefined;
-  }
-
-  const relativeStart = Math.min(generatedStart - mapping.generatedStart, mapping.length);
-  const sourceStart = mapping.sourceStart + relativeStart;
-  const sourceLength = Math.max(1, Math.min(generatedLength, mapping.length - relativeStart));
-
-  return createMarkerAtOffset(monaco, sourceModel, sourceStart, sourceLength, message, severity, source);
-}
-
-function createMarkerAtOffset(
-  monaco: Monaco,
-  model: editor.ITextModel,
-  offset: number,
-  length: number,
-  message: string,
-  severity: Marker['severity'],
-  source: string,
-): Marker {
-  const start = model.getPositionAt(offset);
-  const end = model.getPositionAt(offset + length);
+function toMonacoMarker(monaco: Monaco, diagnostic: Diagnostic): editor.IMarkerData {
   return {
-    severity,
-    message,
-    startLineNumber: start.lineNumber,
-    startColumn: start.column,
-    endLineNumber: end.lineNumber,
-    endColumn: end.column,
-    source,
+    severity: toMonacoSeverity(monaco, diagnostic.severity),
+    message: diagnostic.message,
+    source: diagnostic.source,
+    code: typeof diagnostic.code === 'string' || typeof diagnostic.code === 'number' ? String(diagnostic.code) : undefined,
+    startLineNumber: diagnostic.range.start.line + 1,
+    startColumn: diagnostic.range.start.character + 1,
+    endLineNumber: diagnostic.range.end.line + 1,
+    endColumn: diagnostic.range.end.character + 1,
   };
 }
 
-function flattenMessageText(message: TypeScriptDiagnostic['messageText']): string {
-  if (typeof message === 'string') {
-    return message;
+function toMonacoSeverity(monaco: Monaco, severity: Diagnostic['severity']): editor.IMarkerData['severity'] {
+  if (severity === 2) return monaco.MarkerSeverity.Warning;
+  if (severity === 3) return monaco.MarkerSeverity.Info;
+  if (severity === 4) return monaco.MarkerSeverity.Hint;
+  return monaco.MarkerSeverity.Error;
+}
+
+function toMonacoCompletionItem(
+  monaco: Monaco,
+  model: editor.ITextModel,
+  position: Position,
+  item: CompletionItem,
+): languages.CompletionItem {
+  const word = model.getWordUntilPosition(position);
+  const fallbackRange = new monaco.Range(position.lineNumber, word.startColumn, position.lineNumber, word.endColumn);
+  const range = item.textEdit && 'range' in item.textEdit
+    ? toMonacoRange(monaco, item.textEdit.range)
+    : fallbackRange;
+
+  return {
+    label: item.label,
+    kind: toMonacoCompletionKind(monaco, item.kind),
+    detail: item.detail,
+    documentation: markupToMarkdownString(item.documentation),
+    sortText: item.sortText,
+    filterText: item.filterText,
+    insertText: item.textEdit && 'newText' in item.textEdit ? item.textEdit.newText : (item.insertText ?? item.label),
+    insertTextRules: item.insertTextFormat === 2 ? monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet : undefined,
+    range,
+    commitCharacters: item.commitCharacters,
+  };
+}
+
+function toMonacoCompletionKind(monaco: Monaco, kind: CompletionItem['kind']): languages.CompletionItemKind {
+  const kinds = monaco.languages.CompletionItemKind;
+  switch (kind) {
+    case 2: return kinds.Method;
+    case 3: return kinds.Function;
+    case 4: return kinds.Constructor;
+    case 5: return kinds.Field;
+    case 6: return kinds.Variable;
+    case 7: return kinds.Class;
+    case 8: return kinds.Interface;
+    case 9: return kinds.Module;
+    case 10: return kinds.Property;
+    case 12: return kinds.Value;
+    case 13: return kinds.Enum;
+    case 14: return kinds.Keyword;
+    case 15: return kinds.Snippet;
+    case 20: return kinds.EnumMember;
+    case 21: return kinds.Constant;
+    case 22: return kinds.Struct;
+    case 25: return kinds.TypeParameter;
+    default: return kinds.Text;
+  }
+}
+
+function markupToMarkdownStrings(value: Hover['contents']): IMarkdownString[] {
+  if (Array.isArray(value)) {
+    return value.map(markupToMarkdownString).filter((item): item is IMarkdownString => Boolean(item));
   }
 
-  return [message.messageText, ...(message.next ?? []).map(flattenMessageText)].join('\n');
+  const item = markupToMarkdownString(value);
+  return item ? [item] : [];
+}
+
+function markupToMarkdownString(value: string | MarkupContent | { language: string; value: string } | undefined): IMarkdownString | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  if (typeof value === 'string') {
+    return { value };
+  }
+
+  if ('language' in value) {
+    return { value: `\`\`\`${value.language}\n${value.value}\n\`\`\`` };
+  }
+
+  return { value: value.value };
+}
+
+function markupToString(value: string | MarkupContent | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  return typeof value === 'string' ? value : value.value;
+}
+
+function locationsToMonaco(monaco: Monaco, result: Location | Location[] | LocationLink[] | null): languages.Definition | null {
+  if (!result) {
+    return null;
+  }
+
+  const locations = Array.isArray(result) ? result : [result];
+  return locations.map((location) => {
+    if ('targetUri' in location) {
+      return {
+        uri: monaco.Uri.parse(location.targetUri),
+        range: toMonacoRange(monaco, location.targetRange),
+        targetSelectionRange: toMonacoRange(monaco, location.targetSelectionRange),
+        originSelectionRange: location.originSelectionRange ? toMonacoRange(monaco, location.originSelectionRange) : undefined,
+      };
+    }
+
+    return {
+      uri: monaco.Uri.parse(location.uri),
+      range: toMonacoRange(monaco, location.range),
+    };
+  });
 }
