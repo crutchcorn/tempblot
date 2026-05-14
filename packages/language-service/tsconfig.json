@@ -1,10 +1,7 @@
 {
-  "extends": "@tempblot/config/tsconfig.json",
-  "include": ["src"],
-  "references": [{ "path": "../parser/tsconfig.build.json" }],
-
-  "compilerOptions": {
-    "declaration": true,
-    "outDir": "lib"
-  }
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.build.json" },
+    { "path": "./tsconfig.spec.json" }
+  ]
 }

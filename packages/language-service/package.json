@@ -36,8 +36,10 @@
     "volar"
   ],
   "scripts": {
-    "build": "tsc --build",
-    "prepack": "tsc --build --clean && tsc --build",
+    "build": "tsc --build tsconfig.build.json",
+    "prepack": "tsc --build tsconfig.build.json --clean && tsc --build tsconfig.build.json",
+    "test:lib": "vitest",
+    "test:types": "tsc --noEmit --project tsconfig.spec.json",
     "test:eslint": "eslint ."
   },
   "dependencies": {
@@ -50,7 +52,8 @@
   "devDependencies": {
     "@tempblot/config": "workspace:*",
     "@types/node": "^24.5.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.6"
   },
   "sideEffects": false
 }

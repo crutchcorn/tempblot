@@ -130,25 +130,45 @@ function* getTempblotEmbeddedCodes(
 ): Generator<VirtualCode> {
   const setups = getRootBlocks(rootDocument, "setup");
   const outputs = getRootBlocks(rootDocument, "output");
+  const setup = setups[0];
+  const output = outputs[0];
 
-  // If we have both setup and output, combine them into a single TypeScript context
-  // This allows setup variables to be accessible in output interpolations
-  if (setups.length > 0 && outputs.length > 0) {
-    const setup = setups[0]; // Take the first setup block
-    const output = outputs[0]; // Take the first output block
-
-    const setupText = snapshot.getText(setup.startTagEnd, setup.endTagStart);
-    const outputText = snapshot.getText(output.startTagEnd, output.endTagStart);
-
-    // Extract interpolation expressions and their positions from output
-    const interpolationsData = scanInterpolations(outputText);
-
-    // Create a combined TypeScript context wrapped in a module
-    // This ensures each .blot file has its own isolated scope
+  // Combine setup and output interpolations into one TypeScript context so setup
+  // variables are visible from interpolation expressions when both exist.
+  if (setup || output) {
     const base = `export {}; // Make this file a module\n\n`;
-    let combinedText = `${base}${setupText}\n\n// Output interpolations:\n`;
+    let combinedText = base;
+    const tsMappings: CodeMapping[] = [];
 
-    const tsInterpolationMappings: CodeMapping[] = [];
+    if (setup) {
+      const setupText = snapshot.getText(setup.startTagEnd, setup.endTagStart);
+      const setupGeneratedOffset = combinedText.length;
+      combinedText += setupText;
+
+      tsMappings.push({
+        sourceOffsets: [setup.startTagEnd],
+        generatedOffsets: [setupGeneratedOffset],
+        lengths: [setupText.length],
+        data: {
+          completion: true,
+          format: true,
+          navigation: true,
+          semantic: true,
+          structure: true,
+          verification: true,
+        },
+      });
+    }
+
+    const outputText = output
+      ? snapshot.getText(output.startTagEnd, output.endTagStart)
+      : "";
+
+    const interpolationsData = output ? scanInterpolations(outputText) : [];
+    if (interpolationsData.length > 0) {
+      combinedText += `\n\n// Output interpolations:\n`;
+    }
+
     interpolationsData.forEach((interp) => {
       const interpLine = `(${interp.expression});\n`;
       const interpStartOffset = combinedText.length;
@@ -156,7 +176,7 @@ function* getTempblotEmbeddedCodes(
 
       // Map the interpolation expression to the original source
       const expressionStart = interpStartOffset + `(`.length;
-      tsInterpolationMappings.push({
+      tsMappings.push({
         sourceOffsets: [output.startTagEnd + interp.sourceStart],
         generatedOffsets: [expressionStart],
         lengths: [interp.expression.length],
@@ -171,34 +191,23 @@ function* getTempblotEmbeddedCodes(
       });
     });
 
-    yield {
-      id: "combined_context",
-      languageId: "typescript",
-      snapshot: {
-        getText: (start, end) => combinedText.substring(start, end),
-        getLength: () => combinedText.length,
-        getChangeRange: () => undefined,
-      },
-      mappings: [
-        // Mapping for setup block
-        {
-          sourceOffsets: [setup.startTagEnd],
-          generatedOffsets: [base.length],
-          lengths: [setupText.length],
-          data: {
-            completion: true,
-            format: true,
-            navigation: true,
-            semantic: true,
-            structure: true,
-            verification: true,
-          },
+    if (tsMappings.length > 0) {
+      yield {
+        id: "combined_context",
+        languageId: "typescript",
+        snapshot: {
+          getText: (start, end) => combinedText.substring(start, end),
+          getLength: () => combinedText.length,
+          getChangeRange: () => undefined,
         },
-        // Mappings for interpolation expressions
-        ...tsInterpolationMappings,
-      ],
-      embeddedCodes: [],
-    };
+        mappings: tsMappings,
+        embeddedCodes: [],
+      };
+    }
+
+    if (!output) {
+      return;
+    }
 
     // Create JSON output with interpolations replaced by placeholder values
     const { transformedText, jsonMappings } = createJsonWithMappings(
