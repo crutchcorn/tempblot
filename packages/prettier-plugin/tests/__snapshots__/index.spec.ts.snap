@@ -1,0 +1,75 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`formats .blot files through Prettier CLI 1`] = `
+"<setup>
+const value = { hello: "world" };
+</setup>
+
+<output lang="json">
+{ "hello": "world" }
+</output>"
+`;
+
+exports[`formats css output 1`] = `
+"<output lang="css">
+.card {
+  color: red;
+  background: white;
+}
+</output>
+"
+`;
+
+exports[`formats html output 1`] = `
+"<output lang="html">
+<main>
+  <h1>Hello</h1>
+  <p>World</p>
+</main>
+</output>
+"
+`;
+
+exports[`formats javascript output 1`] = `
+"<output lang="js">
+const run = () => ({ hello: "world" });
+</output>
+"
+`;
+
+exports[`formats setup and json output 1`] = `
+"<!-- before -->
+
+<setup>
+const value = { hello: "world", items: [1, 2, 3] };
+</setup>
+
+<output data-z="last" data-a="first" lang="json">
+{ "hello": "world", "items": [1, 2, 3] }
+</output>
+"
+`;
+
+exports[`formats typescript output 1`] = `
+"<output lang="ts">
+const value: Record<string, string> = { hello: "world" };
+</output>
+"
+`;
+
+exports[`formats unknown output language 1`] = `
+"<output lang="txt">
+leave   this   alone
+</output>
+"
+`;
+
+exports[`formats yaml output 1`] = `
+"<output lang="yaml">
+hello: world
+items:
+  - 1
+  - 2
+</output>
+"
+`;

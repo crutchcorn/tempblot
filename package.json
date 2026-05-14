@@ -1,8 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "build": "pnpm run build:parser && pnpm run build:language-service && pnpm run build:language-server && pnpm run build:typescript-plugin && pnpm run build:vscode",
+    "build": "pnpm run build:parser && pnpm run build:prettier-plugin && pnpm run build:language-service && pnpm run build:language-server && pnpm run build:typescript-plugin && pnpm run build:vscode",
     "build:parser": "cd ./packages/parser && pnpm build",
+    "build:prettier-plugin": "cd ./packages/prettier-plugin && pnpm build",
     "build:language-service": "cd ./packages/language-service && pnpm build",
     "build:language-server": "cd ./packages/language-server && pnpm build",
     "build:typescript-plugin": "cd ./packages/typescript-plugin && pnpm build",
