@@ -1,17 +1,12 @@
 {
   "private": true,
   "scripts": {
-    "build": "pnpm run build:parser && pnpm run build:prettier-plugin && pnpm run build:language-service && pnpm run build:language-server && pnpm run build:typescript-plugin && pnpm run build:vscode",
-    "build:parser": "cd ./packages/parser && pnpm build",
-    "build:prettier-plugin": "cd ./packages/prettier-plugin && pnpm build",
-    "build:language-service": "cd ./packages/language-service && pnpm build",
-    "build:language-server": "cd ./packages/language-server && pnpm build",
-    "build:typescript-plugin": "cd ./packages/typescript-plugin && pnpm build",
-    "build:vscode": "cd ./packages/vscode && pnpm build",
-    "build:website": "cd ./apps/website && pnpm build",
-    "watch": "cd ./packages/vscode && pnpm watch",
-    "pack": "cd ./packages/vscode && pnpm pack",
-    "release": "cd ./packages/vscode && pnpm release",
+    "build": "nx run-many -t build --projects=tempblot-parser,prettier-plugin-tempblot,tempblot-language-service,tempblot-language-server,tempblot-typescript-plugin,tempblot-vscode",
+    "build:vscode": "nx run tempblot-vscode:build",
+    "build:website": "nx run website:build",
+    "watch": "nx run tempblot-vscode:watch",
+    "pack": "nx run tempblot-vscode:pack",
+    "release": "nx run tempblot-vscode:release",
     "format": "prettier --write .",
     "test:sherif": "sherif",
     "test:knip": "knip"
@@ -19,6 +14,7 @@
   "devDependencies": {
     "@types/node": "^24.5.2",
     "knip": "^6.13.1",
+    "nx": "^22.1.3",
     "prettier": "^3.6.2",
     "sherif": "^1.6.1",
     "typescript": "^6.0.3",
