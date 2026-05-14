@@ -1,8 +1,10 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { tokenizeRoot } from "./root-lexer.js";
-import { parseRoot } from "./root-parser.js";
-import { transformOutput } from "./output-transformer.js";
+import {
+  parseRoot,
+  tokenizeRoot,
+  transformOutputTemplate,
+} from "tempblot-parser";
 import { transformSetup } from "./setup-transformer.js";
 
 export { TempblotInstance, useParams } from "./instance.js";
@@ -28,7 +30,7 @@ export async function compilePath<TParams = unknown>(
   const sourceDir = path.dirname(sourcePath);
   const rootTokens = tokenizeRoot(source);
   const rootAST = parseRoot(rootTokens);
-  const transformedOutput = transformOutput(rootAST.output.contents);
+  const transformedOutput = transformOutputTemplate(rootAST.output.contents);
   const transformedSetup = transformSetup(rootAST.setup.contents, sourcePath);
   const concatenatedSetupOutput = `
     ${transformedSetup}
