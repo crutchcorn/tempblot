@@ -253,37 +253,11 @@ export function scanInterpolations(text: string): InterpolationData[] {
 
     const fullStart = i;
     let j = i + 2;
-    let depth = 1;
+    const candidates: number[] = [];
 
-    while (j < text.length && depth > 0) {
-      if (text[j - 1] !== "\\" && text[j] === "<" && text[j + 1] === "<") {
-        depth++;
-        j += 2;
-        continue;
-      }
-
+    while (j < text.length) {
       if (text[j - 1] !== "\\" && text[j] === ">" && text[j + 1] === ">") {
-        depth--;
-        if (depth === 0) {
-          const rawExpression = text.slice(i + 2, j);
-          const leadingWhitespace = rawExpression.match(/^\s*/)?.[0].length ?? 0;
-          const trailingWhitespace = rawExpression.match(/\s*$/)?.[0].length ?? 0;
-          const trimmedRawExpression = rawExpression.slice(
-            leadingWhitespace,
-            rawExpression.length - trailingWhitespace,
-          );
-
-          interpolations.push({
-            expression: transformOutputTemplate(trimmedRawExpression),
-            rawExpression: trimmedRawExpression,
-            sourceStart: i + 2 + leadingWhitespace,
-            sourceEnd: j - trailingWhitespace,
-            fullStart,
-            fullEnd: j + 2,
-          });
-          i = j + 2;
-          break;
-        }
+        candidates.push(j);
         j += 2;
         continue;
       }
@@ -291,12 +265,52 @@ export function scanInterpolations(text: string): InterpolationData[] {
       j++;
     }
 
-    if (depth > 0) {
+    const expressionEnd = findBestInterpolationEnd(text, candidates);
+
+    if (expressionEnd === undefined) {
       i++;
+      continue;
     }
+
+    const rawExpression = text.slice(i + 2, expressionEnd);
+    const leadingWhitespace = rawExpression.match(/^\s*/)?.[0].length ?? 0;
+    const trailingWhitespace = rawExpression.match(/\s*$/)?.[0].length ?? 0;
+    const trimmedRawExpression = rawExpression.slice(
+      leadingWhitespace,
+      rawExpression.length - trailingWhitespace,
+    );
+
+    interpolations.push({
+      expression: unescapeEscapedDelimiters(trimmedRawExpression),
+      rawExpression: trimmedRawExpression,
+      sourceStart: i + 2 + leadingWhitespace,
+      sourceEnd: expressionEnd - trailingWhitespace,
+      fullStart,
+      fullEnd: expressionEnd + 2,
+    });
+    i = expressionEnd + 2;
   }
 
   return interpolations;
+}
+
+function findBestInterpolationEnd(text: string, candidates: number[]): number | undefined {
+  for (let i = 0; i < candidates.length; i++) {
+    const candidate = candidates[i];
+    const hasLaterCandidate = i < candidates.length - 1;
+
+    if (hasLaterCandidate && isSpacedShiftOperator(text, candidate)) {
+      continue;
+    }
+
+    return candidate;
+  }
+
+  return undefined;
+}
+
+function isSpacedShiftOperator(text: string, offset: number): boolean {
+  return /\s/.test(text[offset - 1] ?? "") && /\s/.test(text[offset + 2] ?? "");
 }
 
 export function transformOutputTemplate(output: string): string {
@@ -328,6 +342,24 @@ function escapeOutputText(text: string): string {
       i++;
     } else if (text[i] === "`") {
       transformed += "\\`";
+    } else {
+      transformed += text[i];
+    }
+  }
+
+  return transformed;
+}
+
+function unescapeEscapedDelimiters(text: string): string {
+  let transformed = "";
+
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === "\\" && text[i + 1] === ">") {
+      transformed += ">";
+      i++;
+    } else if (text[i] === "\\" && text[i + 1] === "<") {
+      transformed += "<";
+      i++;
     } else {
       transformed += text[i];
     }
