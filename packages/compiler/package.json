@@ -23,14 +23,14 @@
   },
   "keywords": [],
   "dependencies": {
-    "tempblot-parser": "workspace:*",
+    "@tempblot/parser": "workspace:*",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
+    "@tempblot/config": "workspace:*",
     "@types/node": "^24.5.2",
     "publint": "^0.3.21",
-    "tempblot-config": "workspace:*",
     "unplugin-dts": "^1.0.0-beta.6",
     "vite": "^8.0.12",
     "vitest": "^4.1.6"

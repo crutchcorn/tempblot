@@ -1,5 +1,5 @@
 {
-  "name": "tempblot-language-service",
+  "name": "@tempblot/language-service",
   "version": "0.0.1",
   "type": "module",
   "description": "Tempblot support for Volar",
@@ -24,15 +24,15 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
+    "@tempblot/parser": "workspace:*",
     "@volar/language-core": "~2.4.23",
     "@volar/language-service": "~2.4.23",
     "@volar/typescript": "~2.4.23",
-    "tempblot-parser": "workspace:*",
     "vscode-uri": "^3.1.0"
   },
   "devDependencies": {
+    "@tempblot/config": "workspace:*",
     "@types/node": "^24.5.2",
-    "tempblot-config": "workspace:*",
     "typescript": "^6.0.3"
   },
   "sideEffects": false

@@ -47,8 +47,8 @@ export default defineConfig({
 	vite: {
 		resolve: {
 			alias: {
-				'tempblot-language-service': new URL('../../packages/language-service/src/index.ts', import.meta.url).pathname,
-				'tempblot-parser': new URL('../../packages/parser/src/index.ts', import.meta.url).pathname,
+				'@tempblot/language-service': new URL('../../packages/language-service/src/index.ts', import.meta.url).pathname,
+				'@tempblot/parser': new URL('../../packages/parser/src/index.ts', import.meta.url).pathname,
 			},
 		},
 	},

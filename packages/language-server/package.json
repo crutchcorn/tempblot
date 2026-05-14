@@ -1,5 +1,5 @@
 {
-  "name": "tempblot-language-server",
+  "name": "@tempblot/language-server",
   "version": "0.0.1",
   "type": "module",
   "description": "A language server for Tempblot",
@@ -32,12 +32,12 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
-    "@volar/language-server": "~2.4.28",
-    "tempblot-language-service": "workspace:*"
+    "@tempblot/language-service": "workspace:*",
+    "@volar/language-server": "~2.4.28"
   },
   "devDependencies": {
+    "@tempblot/config": "workspace:*",
     "@types/node": "^24.5.2",
-    "tempblot-config": "workspace:*",
     "typescript": "^6.0.3"
   }
 }

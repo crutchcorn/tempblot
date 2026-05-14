@@ -1,6 +1,6 @@
 import * as prettier from 'prettier';
 import type { AstPath, Options, Parser, ParserOptions, Plugin, Printer } from 'prettier';
-import { parseTempblotRoot, type ParsedRoot, type RootBlock } from 'tempblot-parser';
+import { parseTempblotRoot, type ParsedRoot, type RootBlock } from '@tempblot/parser';
 
 interface TempblotAst {
   type: 'TempblotDocument';

@@ -12,7 +12,7 @@ A TypeScript plugin that provides language features for Tempblot (`.blot`) files
 ## Installation
 
 ```bash
-npm install tempblot-typescript-plugin
+npm install @tempblot/typescript-plugin
 ```
 
 ## Configuration
@@ -24,7 +24,7 @@ Add to your VS Code workspace settings (`.vscode/settings.json`):
 ```json
 {
   "typescript.preferences.plugins": [
-    { "name": "tempblot-typescript-plugin" }
+    { "name": "@tempblot/typescript-plugin" }
   ]
 }
 ```
@@ -37,7 +37,7 @@ Add to your `tsconfig.json`:
 {
   "compilerOptions": {
     "plugins": [
-      { "name": "tempblot-typescript-plugin" }
+      { "name": "@tempblot/typescript-plugin" }
     ]
   }
 }

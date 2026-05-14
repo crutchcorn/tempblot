@@ -1,5 +1,5 @@
 {
-  "name": "tempblot-root",
+  "name": "@tempblot/root",
   "private": true,
   "scripts": {
     "build": "nx affected --target=build",

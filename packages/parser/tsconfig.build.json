@@ -1,5 +1,5 @@
 {
-  "extends": "tempblot-config/tsconfig.json",
+  "extends": "@tempblot/config/tsconfig.json",
   "include": ["src"],
   "compilerOptions": {
     "declaration": true,

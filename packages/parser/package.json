@@ -1,5 +1,5 @@
 {
-  "name": "tempblot-parser",
+  "name": "@tempblot/parser",
   "version": "0.0.1",
   "type": "module",
   "description": "Shared parser utilities for Tempblot",
@@ -21,8 +21,8 @@
     "test:eslint": "eslint ."
   },
   "devDependencies": {
+    "@tempblot/config": "workspace:*",
     "@types/node": "^24.5.2",
-    "tempblot-config": "workspace:*",
     "typescript": "^6.0.3",
     "vitest": "^4.1.6"
   },

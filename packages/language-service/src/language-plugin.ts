@@ -7,7 +7,7 @@ import {
   scanInterpolations,
   type InterpolationData,
   type ParsedRoot,
-} from "tempblot-parser";
+} from "@tempblot/parser";
 import type * as ts from "typescript";
 import { URI } from "vscode-uri";
 

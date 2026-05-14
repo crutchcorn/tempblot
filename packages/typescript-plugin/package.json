@@ -1,5 +1,5 @@
 {
-  "name": "tempblot-typescript-plugin",
+  "name": "@tempblot/typescript-plugin",
   "version": "0.0.1",
   "type": "module",
   "description": "A TypeScript plugin to support language features in Tempblot files",
@@ -24,12 +24,12 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
-    "@volar/typescript": "~2.4.23",
-    "tempblot-language-service": "workspace:*"
+    "@tempblot/language-service": "workspace:*",
+    "@volar/typescript": "~2.4.23"
   },
   "devDependencies": {
+    "@tempblot/config": "workspace:*",
     "@types/node": "^24.5.2",
-    "tempblot-config": "workspace:*",
     "typescript": "^6.0.3"
   },
   "sideEffects": false
