@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { parseRoot, tokenizeRoot } from "../src/index.js";
+import { parseRoot, tokenizeRoot } from "../src/index.ts";
 
 const source = `
 <setup>

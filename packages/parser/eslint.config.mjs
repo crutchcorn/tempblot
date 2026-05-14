@@ -3,9 +3,12 @@ import tempblotPreset from 'tempblot-config/eslint-preset.js'
 export default [
   ...tempblotPreset,
   {
+    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ['tests/*.ts', 'vite.config.ts'],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -17,6 +20,6 @@ export default [
     },
   },
   {
-    ignores: ['eslint.config.mjs'],
+    ignores: ['eslint.config.mjs', 'lib/**'],
   },
 ]

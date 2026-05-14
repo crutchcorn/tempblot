@@ -1,15 +1,24 @@
-import { Diagnostic } from '@volar/language-service';
+import type {
+  Diagnostic,
+  LanguageServiceContext,
+  LanguageServicePlugin,
+  LanguageServicePluginInstance,
+} from '@volar/language-service';
 import { URI } from 'vscode-uri';
-import { TempblotVirtualCode } from './language-plugin.js';
+import { TempblotVirtualCode } from './language-plugin.ts';
 
-export function createTempblotServicePlugin() {
+type DiagnosticsDocument = Parameters<
+  NonNullable<LanguageServicePluginInstance['provideDiagnostics']>
+>[0];
+
+export function createTempblotServicePlugin(): LanguageServicePlugin {
   return {
     capabilities: {
       diagnosticProvider: { interFileDependencies: false, workspaceDiagnostics: false },
     },
-    create(context: any) {
+    create(context: LanguageServiceContext) {
       return {
-        provideDiagnostics(document: any) {
+        provideDiagnostics(document: DiagnosticsDocument) {
           const decoded = context.decodeEmbeddedDocumentUri(URI.parse(document.uri));
           if (!decoded) {
             // Not a embedded document

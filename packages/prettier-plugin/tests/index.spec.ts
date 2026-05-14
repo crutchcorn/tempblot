@@ -6,7 +6,7 @@ import { render } from "cli-testing-library";
 import * as prettier from "prettier";
 import { expect, test } from "vitest";
 
-import plugin from "../src/index.js";
+import plugin from "../src/index.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -5,9 +5,9 @@ import {
   tokenizeRoot,
   transformOutputTemplate,
 } from "tempblot-parser";
-import { transformSetup } from "./setup-transformer.js";
+import { transformSetup } from "./setup-transformer.ts";
 
-export { TempblotInstance, useParams } from "./instance.js";
+export { TempblotInstance, useParams } from "./instance.ts";
 
 declare global {
   var tempblotParams: Record<string, unknown> | undefined;
@@ -40,7 +40,11 @@ export async function compilePath<TParams = unknown>(
   const tempPath = path.join(sourceDir, `.tempblot_${outputVarName}.ts`);
   try {
     await fs.writeFile(tempPath, concatenatedSetupOutput);
-    const compiledOutput: string = (await import(tempPath))[outputVarName];
+    const compiledModule = (await import(tempPath)) as Record<string, unknown>;
+    const compiledOutput = compiledModule[outputVarName];
+    if (typeof compiledOutput !== "string") {
+      throw new TypeError("Tempblot output must compile to a string");
+    }
     return compiledOutput;
   } finally {
     await fs.unlink(tempPath);

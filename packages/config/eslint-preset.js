@@ -20,12 +20,12 @@ export const tempblotJSRules = {
     {
       patterns: [
         {
-          regex: '\.\.?\/.*\.js',
+          regex: '^\.\.?\/.*\.js$',
           message:
             "importing `.js` files is not supported by Node's built-in TypeScript support. Use `.ts` instead.",
         },
         {
-          regex: '^\\./(?!.*\\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs)$)',
+          regex: '^\\./(?!.*\\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs|json)$)',
           message:
             'Relative imports must include the file extension. For example, use `import foo from "./foo.ts"` instead of `import foo from "./foo"`.',
         },
@@ -55,6 +55,10 @@ export default defineConfig(
   {
     // - `eslint-preset.js`: the preset bootstraps itself, ignoring
     //   keeps eslint from re-evaluating it under the typed rules.
-    ignores: ['eslint-preset.js', '**/dist/**', '**/lib/**', '**/out/**'],
+    ignores: [
+      'eslint-preset.js',
+      '**/dist/**',
+      '**/out/**',
+    ],
   },
 )

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { transformOutputTemplate } from "../src/index.js";
+import { transformOutputTemplate } from "../src/index.ts";
 
 test("transformOutputTemplate", () => {
   const source = 'const someStr = `<div><<val ? "\\>\\>" : "\\<\\<">></div>`;';

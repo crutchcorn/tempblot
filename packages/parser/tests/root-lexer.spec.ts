@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { tokenizeRoot } from "../src/index.js";
+import { tokenizeRoot } from "../src/index.ts";
 
 function withoutOffsets(value: unknown): unknown {
   if (Array.isArray(value)) {
