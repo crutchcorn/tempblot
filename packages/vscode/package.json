@@ -106,11 +106,9 @@
 		"release": "npm run build && vsce publish --pre-release"
 	},
 	"dependencies": {
-		"@volar/language-server": "~2.4.23",
+		"@volar/language-server": "~2.4.28",
 		"@volar/vscode": "~2.4.23",
-		"tempblot-language-server": "workspace:*",
-		"tempblot-language-service": "workspace:*",
-		"tempblot-typescript-plugin": "workspace:*"
+		"tempblot-language-server": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.104.0",

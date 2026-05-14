@@ -5,3 +5,6 @@ node_modules
 *.vsix
 .idea
 .DS_Store
+
+.nx/cache
+.nx/workspace-data

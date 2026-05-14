@@ -6,5 +6,6 @@
       "ignoreDependencies": ["tempblot-language-server"]
     }
   },
-  "ignoreDependencies": ["uuid"]
+  "ignoreDependencies": ["sherif", "uuid"],
+  "ignoreFiles": ["sample/index.ts"]
 }

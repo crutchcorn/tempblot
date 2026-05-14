@@ -17,9 +17,8 @@
   "scripts": {
     "build": "vite build",
     "test:lib": "vitest",
-    "test:build": "publint",
-    "test:types": "tsc --noEmit",
-    "test:attw": "attw --profile esm-only --pack ."
+    "test:build": "publint && attw --profile esm-only --pack .",
+    "test:types": "tsc --noEmit"
   },
   "keywords": [],
   "dependencies": {

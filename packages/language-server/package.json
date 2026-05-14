@@ -28,12 +28,10 @@
   ],
   "scripts": {
     "build": "tsc --build",
-    "prepack": "tsc --build --clean && tsc --build",
-    "test-api": "node --test",
-    "test": "npm run test-api"
+    "prepack": "tsc --build --clean && tsc --build"
   },
   "dependencies": {
-    "@volar/language-server": "~2.4.23",
+    "@volar/language-server": "~2.4.28",
     "tempblot-language-service": "workspace:*"
   },
   "devDependencies": {

@@ -1,0 +1,74 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ],
+      "outputs": [
+        "{projectRoot}/dist",
+        "{projectRoot}/lib",
+        "{projectRoot}/out"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ]
+    },
+    "test:lib": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ]
+    },
+    "test:types": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ]
+    },
+    "test:build": {
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ]
+    },
+    "watch": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false
+    },
+    "pack": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false
+    },
+    "release": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false
+    }
+  },
+  "analytics": false
+}
