@@ -1,0 +1,9 @@
+<setup>
+import { useParams } from "tempblot";
+
+const { name } = useParams<{ name: string }>();
+</setup>
+
+<output lang="ts">
+export const name = "<<name>>";
+</output>

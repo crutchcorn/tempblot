@@ -1,11 +1,14 @@
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, expect, test } from "vitest";
 
 import { generate } from "../src/index.ts";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const fixturesDir = path.join(__dirname, "fixtures");
 const testRoots: string[] = [];
 
 afterEach(async () => {
@@ -15,18 +18,8 @@ afterEach(async () => {
 });
 
 test("generates a static blot file", async () => {
-  const { inputDir, outputDir } = await createTestWorkspace();
-  await fs.writeFile(
-    path.join(inputDir, "test.json.blot"),
-    `<setup>
-const val = 123;
-</setup>
-
-<output lang="json">
-{ "value": <<val>> }
-</output>
-`,
-  );
+  const inputDir = getFixtureInputDir("static");
+  const outputDir = await createOutputDir();
 
   const result = await generate({ inputDir, outputDir });
 
@@ -44,24 +37,8 @@ const val = 123;
 });
 
 test("generates dynamic file names from getPaths", async () => {
-  const { inputDir, outputDir } = await createTestWorkspace();
-  await fs.writeFile(
-    path.join(inputDir, "[path].blot"),
-    `<setup>
-import { useParams } from "tempblot";
-
-export function getPaths() {
-  return [{ path: "one.js", val: 1 }, { path: "two.js", val: 2 }];
-}
-
-const { val } = useParams<{ path: string; val: number }>();
-</setup>
-
-<output lang="js">
-console.log(<<val>>);
-</output>
-`,
-  );
+  const inputDir = getFixtureInputDir("dynamic-files");
+  const outputDir = await createOutputDir();
 
   await generate({ inputDir, outputDir });
 
@@ -78,32 +55,8 @@ console.log(2);
 });
 
 test("generates dynamic directories from _paths.blot", async () => {
-  const { inputDir, outputDir } = await createTestWorkspace();
-  const dynamicDir = path.join(inputDir, "[name]");
-  await fs.mkdir(dynamicDir);
-  await fs.writeFile(
-    path.join(dynamicDir, "_paths.blot"),
-    `<setup>
-export function getPaths() {
-  return [{ name: "one" }, { name: "two" }];
-}
-</setup>
-`,
-  );
-  await fs.writeFile(
-    path.join(dynamicDir, "index.ts.blot"),
-    `<setup>
-import { useParams } from "tempblot";
-
-const { name } = useParams<{ name: string }>();
-</setup>
-
-<output lang="ts">
-export const name = "<<name>>";
-</output>
-`,
-  );
-  await fs.writeFile(path.join(dynamicDir, "static.txt"), "copied");
+  const inputDir = getFixtureInputDir("dynamic-directories");
+  const outputDir = await createOutputDir();
 
   await generate({ inputDir, outputDir });
 
@@ -116,17 +69,16 @@ export const name = "one";
 export const name = "two";
 `);
   await expect(fs.readFile(path.join(outputDir, "one", "static.txt"), "utf8"))
-    .resolves.toBe("copied");
+    .resolves.toBe("copied\n");
 });
 
 test("skips existing files when requested", async () => {
-  const { inputDir, outputDir } = await createTestWorkspace();
-  await fs.writeFile(
-    path.join(inputDir, "test.txt.blot"),
-    `<output>new</output>`,
-  );
-  await fs.mkdir(outputDir);
-  await fs.writeFile(path.join(outputDir, "test.txt"), "existing");
+  const inputDir = getFixtureInputDir("skip-existing");
+  const outputDir = await createOutputDir();
+
+  await fs.cp(getFixtureOutputDir("skip-existing"), outputDir, {
+    recursive: true,
+  });
 
   const result = await generate({
     inputDir,
@@ -135,20 +87,23 @@ test("skips existing files when requested", async () => {
   });
 
   await expect(fs.readFile(path.join(outputDir, "test.txt"), "utf8"))
-    .resolves.toBe("existing");
+    .resolves.toBe("existing\n");
   expect(result.files).toMatchObject([{ action: "skipped" }]);
 });
 
-async function createTestWorkspace(): Promise<{
-  inputDir: string;
-  outputDir: string;
-}> {
+async function createOutputDir(): Promise<string> {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "tempblot-generator-"));
-  const inputDir = path.join(root, "input");
   const outputDir = path.join(root, "output");
 
   testRoots.push(root);
-  await fs.mkdir(inputDir);
 
-  return { inputDir, outputDir };
+  return outputDir;
+}
+
+function getFixtureInputDir(name: string): string {
+  return path.join(fixturesDir, name, "input");
+}
+
+function getFixtureOutputDir(name: string): string {
+  return path.join(fixturesDir, name, "output");
 }

@@ -1,0 +1,7 @@
+<setup>
+const val = 123;
+</setup>
+
+<output lang="json">
+{ "value": <<val>> }
+</output>

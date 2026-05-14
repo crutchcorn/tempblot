@@ -1,0 +1,13 @@
+<setup>
+import { useParams } from "tempblot";
+
+export function getPaths() {
+  return [{ path: "one.js", val: 1 }, { path: "two.js", val: 2 }];
+}
+
+const { val } = useParams<{ path: string; val: number }>();
+</setup>
+
+<output lang="js">
+console.log(<<val>>);
+</output>
