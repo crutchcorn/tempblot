@@ -9,6 +9,7 @@
     "release": "nx run tempblot-vscode:release",
     "format": "prettier --write .",
     "test": "nx run-many -t test:lib --projects=tempblot-parser,prettier-plugin-tempblot,tempblot && nx run-many -t test:types --projects=tempblot-parser,tempblot && nx run-many -t test:build --projects=tempblot && nx run tempblot-workspace:sherif && nx run tempblot-workspace:knip",
+    "test:pr": "nx affected -t test:lib --projects=tempblot-parser,prettier-plugin-tempblot,tempblot && nx affected -t test:types --projects=tempblot-parser,tempblot && nx affected -t test:build --projects=tempblot && nx run tempblot-workspace:sherif && nx run tempblot-workspace:knip",
     "test:lib": "nx run-many -t test:lib --projects=tempblot-parser,prettier-plugin-tempblot,tempblot",
     "test:types": "nx run-many -t test:types --projects=tempblot-parser,tempblot",
     "test:build": "nx run-many -t test:build --projects=tempblot",
