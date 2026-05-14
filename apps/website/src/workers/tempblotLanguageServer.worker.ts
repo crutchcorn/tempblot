@@ -16,7 +16,7 @@ import { create as createTypeScriptServicePlugins } from 'volar-service-typescri
 const connection = createConnection();
 const server = createServer(connection);
 const typeScriptLibPath = '/node_modules/typescript/lib';
-const nodeTypesPath = '/playground/node_modules/@types/node/index.d.ts';
+const nodeTypesPath = '/playground/node_modules/@types/node';
 
 connection.onInitialize(async (parameters: InitializeParams): Promise<InitializeResult> => {
   return server.initialize(
@@ -86,6 +86,7 @@ function patchPlaygroundTypeScriptHost(host: typescript.LanguageServiceHost | un
   const originalFileExists = host.fileExists?.bind(host);
   const originalDirectoryExists = host.directoryExists?.bind(host);
   const originalReadDirectory = host.readDirectory?.bind(host);
+  const originalGetScriptFileNames = host.getScriptFileNames.bind(host);
   const originalGetScriptSnapshot = host.getScriptSnapshot.bind(host);
   const originalGetScriptVersion = host.getScriptVersion.bind(host);
   const originalGetDefaultLibFileName = host.getDefaultLibFileName?.bind(host);
@@ -115,6 +116,10 @@ function patchPlaygroundTypeScriptHost(host: typescript.LanguageServiceHost | un
       ...(originalReadDirectory?.(rootDir, extensions, excludes, includes, depth) ?? []),
     ])];
   };
+  host.getScriptFileNames = () => [...new Set([
+    ...originalGetScriptFileNames(),
+    ...nodeTypeRootFiles,
+  ])];
   host.getScriptSnapshot = (fileName) => {
     const normalized = normalizeFileName(fileName);
     const source = virtualTypeFilesByPath.get(normalized);
@@ -203,31 +208,7 @@ function createVirtualTypeFiles() {
       version: '0.0.0-playground',
       types: 'index.d.ts',
     })],
-    [nodeTypesPath, `
-declare var __dirname: string;
-declare var __filename: string;
-declare var global: typeof globalThis;
-declare function setImmediate(callback: (...args: unknown[]) => void, ...args: unknown[]): unknown;
-declare function clearImmediate(immediate: unknown): void;
-declare var Buffer: {
-  from(input: string | ArrayBuffer | ArrayBufferView, encoding?: string): Uint8Array;
-  isBuffer(value: unknown): value is Uint8Array;
-};
-declare function require(id: string): unknown;
-declare namespace NodeJS {
-  interface ProcessEnv {
-    [key: string]: string | undefined;
-  }
-  interface Process {
-    argv: string[];
-    cwd(): string;
-    env: ProcessEnv;
-    exit(code?: number): never;
-    nextTick(callback: (...args: unknown[]) => void, ...args: unknown[]): void;
-  }
-}
-declare var process: NodeJS.Process;
-`],
+    ...Object.entries(nodeTypeSources).map(([path, source]) => [`${nodeTypesPath}/${path}`, source] as const),
     ...Object.entries(typeScriptLibSources).map(([name, source]) => [`${typeScriptLibPath}/${name}`, source] as const),
   ]);
 }
@@ -252,6 +233,14 @@ const typeScriptLibSources = Object.fromEntries(
   })).map(([path, source]) => [path.split('/').pop()!, source as string]),
 );
 
+const nodeTypeSources = Object.fromEntries(
+  Object.entries(import.meta.glob('/node_modules/@types/node/**/*.d.ts', {
+    eager: true,
+    query: '?raw',
+    import: 'default',
+  })).map(([path, source]) => [path.split('/node/')[1], source as string]),
+);
+
 const playgroundTypescript = {
   ...typescript,
   getDefaultLibFilePath(options: typescript.CompilerOptions) {
@@ -260,6 +249,8 @@ const playgroundTypescript = {
 } satisfies typeof typescript;
 
 const virtualTypeFilesByPath = createVirtualTypeFiles();
+const nodeTypeRootFiles = [...virtualTypeFilesByPath.keys()]
+  .filter((fileName) => fileName.startsWith(`${nodeTypesPath}/`) && fileName.endsWith('.d.ts'));
 const virtualTypeFilesByUri = new Map(
   [...virtualTypeFilesByPath].map(([path, source]) => [`file://${path}`, source]),
 );
