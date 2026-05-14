@@ -38,7 +38,7 @@ const value: number = 1;
   expect(combinedContext?.snapshot.getText(0, combinedContext.snapshot.getLength()))
     .toContain("const value: number = 1;");
   expect(virtualCode.embeddedCodes.map((code) => code.id)).not.toContain(
-    "output_json",
+    "output",
   );
 });
 
@@ -51,14 +51,47 @@ test("creates output embedded code for output-only files", () => {
   const combinedContext = virtualCode.embeddedCodes.find(
     (code) => code.id === "combined_context",
   );
-  const outputJson = virtualCode.embeddedCodes.find(
-    (code) => code.id === "output_json",
+  const output = virtualCode.embeddedCodes.find(
+    (code) => code.id === "output",
   );
 
   expect(combinedContext?.snapshot.getText(0, combinedContext.snapshot.getLength()))
     .toContain("(1 + 1);");
-  expect(outputJson?.snapshot.getText(0, outputJson.snapshot.getLength()))
+  expect(output?.languageId).toBe("json");
+  expect(output?.snapshot.getText(0, output.snapshot.getLength()))
     .toContain('{"value": null}');
+});
+
+test("creates output embedded code from non-JSON output languages", () => {
+  const source = `<output lang="html">
+<h1><<title>></h1>
+</output>`;
+
+  const virtualCode = createVirtualCode(source);
+  const output = virtualCode.embeddedCodes.find((code) => code.id === "output");
+
+  expect(output?.languageId).toBe("html");
+  expect(output?.snapshot.getText(0, output.snapshot.getLength()))
+    .toContain("<h1>tempblot</h1>");
+});
+
+test("normalizes output language aliases", () => {
+  const markdownCode = createVirtualCode(
+    `<output lang="md"># <<title>></output>`,
+  );
+  const javascriptCode = createVirtualCode(
+    `<output lang="js">const value = <<value>>;</output>`,
+  );
+
+  const markdownOutput = markdownCode.embeddedCodes.find(
+    (code) => code.id === "output",
+  );
+  const javascriptOutput = javascriptCode.embeddedCodes.find(
+    (code) => code.id === "output",
+  );
+
+  expect(markdownOutput?.languageId).toBe("markdown");
+  expect(javascriptOutput?.languageId).toBe("javascript");
 });
 
 test("creates empty TypeScript embedded code for output-only files without interpolations", () => {
@@ -72,14 +105,14 @@ test("creates empty TypeScript embedded code for output-only files without inter
   const combinedContext = virtualCode.embeddedCodes.find(
     (code) => code.id === "combined_context",
   );
-  const outputJson = virtualCode.embeddedCodes.find(
-    (code) => code.id === "output_json",
+  const output = virtualCode.embeddedCodes.find(
+    (code) => code.id === "output",
   );
 
   expect(combinedContext?.snapshot.getText(0, combinedContext.snapshot.getLength()))
     .toBe("export {}; // Make this file a module\n\n");
   expect(combinedContext?.mappings).toEqual([]);
-  expect(outputJson?.snapshot.getText(0, outputJson.snapshot.getLength()))
+  expect(output?.snapshot.getText(0, output.snapshot.getLength()))
     .toContain('"test": "a"');
 });
 

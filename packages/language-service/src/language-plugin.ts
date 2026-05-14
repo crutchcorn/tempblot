@@ -213,36 +213,64 @@ function* getTempblotEmbeddedCodes(
     return;
   }
 
-  // Create JSON output with interpolations replaced by placeholder values
-  const { transformedText, jsonMappings } = createJsonWithMappings(
+  const outputLanguageId = getOutputLanguageId(output.attributes.lang);
+  const { transformedText, mappings } = createOutputWithMappings(
     outputText,
     interpolationsData,
     output.startTagEnd,
+    outputLanguageId,
   );
 
-  // TODO: Make generic and not tied to JSON
   yield {
-    id: "output_json",
-    languageId: "json",
+    id: "output",
+    languageId: outputLanguageId,
     snapshot: {
       getText: (start, end) => transformedText.substring(start, end),
       getLength: () => transformedText.length,
       getChangeRange: () => undefined,
     },
-    mappings: jsonMappings,
+    mappings,
     embeddedCodes: [],
   };
 }
 
-function createJsonWithMappings(
+function getOutputLanguageId(lang: string | undefined): string {
+  switch (lang) {
+    case undefined:
+    case "html":
+      return "html";
+    case "md":
+      return "markdown";
+    case "js":
+      return "javascript";
+    case "jsx":
+      return "javascriptreact";
+    case "ts":
+      return "typescript";
+    case "tsx":
+      return "typescriptreact";
+    case "txt":
+      return "plaintext";
+    case "gql":
+      return "graphql";
+    case "coffee":
+      return "coffeescript";
+    default:
+      return lang;
+  }
+}
+
+function createOutputWithMappings(
   outputText: string,
   interpolationsData: InterpolationData[],
   outputStartOffset: number,
-): { transformedText: string; jsonMappings: CodeMapping[] } {
+  languageId: string,
+): { transformedText: string; mappings: CodeMapping[] } {
   const mappings: CodeMapping[] = [];
   let transformedText = "";
   let lastOffset = 0;
   let generatedOffset = 0;
+  const interpolationPlaceholder = getInterpolationPlaceholder(languageId);
 
   // Process each interpolation
   for (const interp of interpolationsData) {
@@ -266,10 +294,8 @@ function createJsonWithMappings(
       generatedOffset += beforeText.length;
     }
 
-    // Replace interpolation with null placeholder for JSON validity
-    const placeholder = "null";
-    transformedText += placeholder;
-    generatedOffset += placeholder.length;
+    transformedText += interpolationPlaceholder;
+    generatedOffset += interpolationPlaceholder.length;
 
     lastOffset = interp.fullEnd;
   }
@@ -293,5 +319,24 @@ function createJsonWithMappings(
     transformedText += remainingText;
   }
 
-  return { transformedText, jsonMappings: mappings };
+  return { transformedText, mappings };
+}
+
+function getInterpolationPlaceholder(languageId: string): string {
+  switch (languageId) {
+    case "json":
+    case "jsonc":
+    case "json5":
+      return "null";
+    case "css":
+    case "scss":
+    case "less":
+    case "sass":
+    case "stylus":
+    case "postcss":
+    case "toml":
+      return "0";
+    default:
+      return "tempblot";
+  }
 }
