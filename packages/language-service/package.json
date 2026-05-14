@@ -43,7 +43,7 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
-    "@tempblot/parser": "^0.1.0",
+    "@tempblot/parser": "workspace:^",
     "@volar/language-core": "~2.4.23",
     "@volar/language-service": "~2.4.23",
     "@volar/typescript": "~2.4.23",

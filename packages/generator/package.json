@@ -33,7 +33,7 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
-    "tempblot": "^0.1.0"
+    "tempblot": "workspace:^"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",

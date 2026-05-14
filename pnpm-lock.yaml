@@ -51,7 +51,7 @@ importers:
         specifier: ^4.7.0
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@tempblot/language-service':
-        specifier: ^0.1.0
+        specifier: workspace:^
         version: link:../../packages/language-service
       '@volar/language-server':
         specifier: ~2.4.28
@@ -112,7 +112,7 @@ importers:
   packages/compiler:
     dependencies:
       '@tempblot/parser':
-        specifier: ^0.1.0
+        specifier: workspace:^
         version: link:../parser
       typescript:
         specifier: ^6.0.3
@@ -149,7 +149,7 @@ importers:
   packages/generator:
     dependencies:
       tempblot:
-        specifier: ^0.1.0
+        specifier: workspace:^
         version: link:../compiler
     devDependencies:
       '@arethetypeswrong/cli':
@@ -177,7 +177,7 @@ importers:
   packages/language-server:
     dependencies:
       '@tempblot/language-service':
-        specifier: ^0.1.0
+        specifier: workspace:^
         version: link:../language-service
       '@volar/language-server':
         specifier: ~2.4.28
@@ -196,7 +196,7 @@ importers:
   packages/language-service:
     dependencies:
       '@tempblot/parser':
-        specifier: ^0.1.0
+        specifier: workspace:^
         version: link:../parser
       '@volar/language-core':
         specifier: ~2.4.23
@@ -242,7 +242,7 @@ importers:
   packages/prettier-plugin:
     dependencies:
       '@tempblot/parser':
-        specifier: ^0.1.0
+        specifier: workspace:^
         version: link:../parser
     devDependencies:
       '@tempblot/config':
@@ -267,7 +267,7 @@ importers:
   packages/typescript-plugin:
     dependencies:
       '@tempblot/language-service':
-        specifier: ^0.1.0
+        specifier: workspace:^
         version: link:../language-service
       '@volar/typescript':
         specifier: ~2.4.23
@@ -286,7 +286,7 @@ importers:
   packages/vscode:
     dependencies:
       '@tempblot/language-server':
-        specifier: ^0.1.0
+        specifier: workspace:^
         version: link:../language-server
       '@volar/language-server':
         specifier: ~2.4.28
