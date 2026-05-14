@@ -90,6 +90,9 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
     devDependencies:
+      '@types/node':
+        specifier: ^24.5.2
+        version: 24.12.4
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
