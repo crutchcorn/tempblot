@@ -32,8 +32,19 @@ export function createTempblotLanguagePlugin(): LanguagePlugin<
           scriptKind: 3 satisfies ts.ScriptKind.TS,
         },
       ],
-      getServiceScript() {
-        return undefined;
+      getServiceScript(root) {
+        const code = root.embeddedCodes?.find(
+          (code) => code.id === "combined_context",
+        );
+        if (!code) {
+          return undefined;
+        }
+        return {
+          code,
+          extension: ".ts",
+          scriptKind: 3 satisfies ts.ScriptKind.TS,
+          preventLeadingOffset: true,
+        };
       },
       getExtraServiceScripts(fileName, root) {
         if (root.embeddedCodes) {

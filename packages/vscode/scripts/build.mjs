@@ -19,6 +19,7 @@ await build({
   },
   external: ['vscode'],
   logLevel: 'info',
+  mainFields: ['module', 'main'],
   minify: !debug,
   outdir: fileURLToPath(new URL('../', import.meta.url)),
   platform: 'node',
