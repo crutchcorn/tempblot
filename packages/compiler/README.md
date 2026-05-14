@@ -35,6 +35,31 @@ const data = {
 </output>
 ```
 
+# Passing Params
+
+Pass configuration into a `.blot` file with `compilePath`, then read it in the
+`<setup>` block with `useParams`.
+
+```ts
+import { compilePath } from "tempblot";
+
+const output = await compilePath("./config.json.blot", { name: "Tempblot" });
+```
+
+```blot
+<setup>
+import { useParams } from "tempblot";
+
+const params = useParams<{ name: string }>();
+</setup>
+
+<output lang="json">
+{
+    "name": <<params.name>>
+}
+</output>
+```
+
 # Installation
 
 ```shell
