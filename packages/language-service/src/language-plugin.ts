@@ -156,7 +156,7 @@ function* getTempblotEmbeddedCodes(
       const expressionStart =
         interpStartOffset + `(`.length;
       tsInterpolationMappings.push({
-        sourceOffsets: [output.startTagEnd! + interp.sourceStart],
+        sourceOffsets: [output.startTagEnd + interp.sourceStart],
         generatedOffsets: [expressionStart],
         lengths: [interp.expression.length],
         data: {

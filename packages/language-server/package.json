@@ -28,7 +28,8 @@
   ],
   "scripts": {
     "build": "tsc --build",
-    "prepack": "tsc --build --clean && tsc --build"
+    "prepack": "tsc --build --clean && tsc --build",
+    "test:eslint": "eslint ."
   },
   "dependencies": {
     "@volar/language-server": "~2.4.28",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
+    "tempblot-config": "workspace:*",
     "typescript": "^6.0.3"
   }
 }

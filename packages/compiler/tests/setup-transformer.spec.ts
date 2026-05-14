@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { transformSetup } from "../src/setup-transformer.js";
+import { transformSetup } from "../src/setup-transformer.ts";
 
 const sourcePath = "/path/to/somefile.tempblot";
 

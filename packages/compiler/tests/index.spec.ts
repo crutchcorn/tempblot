@@ -4,7 +4,7 @@ import { dirname } from "node:path";
 
 import { test, expect } from "vitest";
 
-import { compilePath, useParams } from "../src/index.js";
+import { compilePath, useParams } from "../src/index.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

@@ -17,10 +17,12 @@
     "build": "tsc --build",
     "prepack": "tsc --build --clean && tsc --build",
     "test:lib": "vitest",
-    "test:types": "tsc --noEmit"
+    "test:types": "tsc --noEmit",
+    "test:eslint": "eslint ."
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
+    "tempblot-config": "workspace:*",
     "typescript": "^6.0.3",
     "vitest": "^4.1.6"
   },

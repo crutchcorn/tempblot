@@ -42,13 +42,13 @@ export async function activate(context: ExtensionContext) {
   );
 
   // Start server initially if enabled
-  tryRestartServer();
+  void tryRestartServer();
 
   // Watch for configuration changes
   context.subscriptions.push(
     workspace.onDidChangeConfiguration((event) => {
       if (event.affectsConfiguration('tempblot.server.enable')) {
-        tryRestartServer();
+        void tryRestartServer();
       }
     })
   );

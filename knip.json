@@ -7,5 +7,5 @@
     }
   },
   "ignoreDependencies": ["sherif", "uuid"],
-  "ignoreFiles": ["sample/index.ts"]
+  "ignoreFiles": ["sample/index.ts", "packages/config/tsignore.ts"]
 }

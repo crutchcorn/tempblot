@@ -1,3 +1,5 @@
+// An interface so we can interface merge in the future from external sources
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface TempblotParams {}
 
 export class TempblotInstance<TParams = TempblotParams> {
