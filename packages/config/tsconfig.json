@@ -2,13 +2,20 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "ESNext",
+    "lib": ["ES2021"],
+    "types": ["node"],
     "module": "NodeNext",
+    "sourceMap": true,
+    "composite": true,
+    "declaration": true,
     "strict": true,
-    "noEmit": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
-    "erasableSyntaxOnly": true
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": ["tsignore.ts", "eslint-preset.js", "eslint.config.mjs"]
 }

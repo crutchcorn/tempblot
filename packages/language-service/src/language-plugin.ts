@@ -1,5 +1,5 @@
 /// <reference types="@volar/typescript" />
-import { CodeMapping, type VirtualCode } from "@volar/language-core";
+import type { CodeMapping, VirtualCode } from "@volar/language-core";
 import { type LanguagePlugin } from "@volar/language-service";
 import {
   getRootBlocks,
@@ -99,7 +99,10 @@ export class TempblotVirtualCode implements VirtualCode {
   // Reuse in custom language service plugin
   rootDocument: ParsedRoot;
 
-  constructor(public snapshot: ts.IScriptSnapshot) {
+  snapshot: ts.IScriptSnapshot;
+
+  constructor(snapshot: ts.IScriptSnapshot) {
+    this.snapshot = snapshot;
     this.mappings = [
       {
         sourceOffsets: [0],
