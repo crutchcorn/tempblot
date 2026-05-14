@@ -41,7 +41,7 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
-    "@tempblot/language-service": "workspace:*",
+    "@tempblot/language-service": "^0.1.0",
     "@volar/typescript": "~2.4.23"
   },
   "devDependencies": {

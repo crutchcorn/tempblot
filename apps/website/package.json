@@ -32,7 +32,7 @@
     "@astrojs/react": "^5.0.4",
     "@astrojs/starlight": "^0.39.2",
     "@monaco-editor/react": "^4.7.0",
-    "@tempblot/language-service": "workspace:*",
+    "@tempblot/language-service": "^0.1.0",
     "@volar/language-server": "~2.4.28",
     "astro": "^6.3.1",
     "monaco-editor": "^0.55.1",

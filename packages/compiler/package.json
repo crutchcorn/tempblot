@@ -33,7 +33,7 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
-    "@tempblot/parser": "workspace:*",
+    "@tempblot/parser": "^0.1.0",
     "typescript": "^6.0.3"
   },
   "devDependencies": {

@@ -1,3 +1,5 @@
+preferWorkspacePackages: true
+linkWorkspacePackages: true
 packages:
   - 'packages/*'
   - 'apps/*'
