@@ -45,6 +45,7 @@
     "@arethetypeswrong/cli": "^0.18.2",
     "@tempblot/config": "workspace:*",
     "@types/node": "^26.2.0",
+    "cli-testing-library": "^4.0.0",
     "publint": "^0.3.21",
     "unplugin-dts": "^1.0.0-beta.6",
     "vite": "^8.0.12",
