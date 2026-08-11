@@ -1,0 +1,56 @@
+{
+  "name": "@tempblot/utils",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Shared utilities for Tempblot tooling",
+  "author": "Corbin Crutchley <crutchcorn@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crutchcorn/tempblot.git",
+    "directory": "packages/utils"
+  },
+  "homepage": "https://github.com/crutchcorn/tempblot",
+  "bugs": {
+    "url": "https://github.com/crutchcorn/tempblot/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/crutchcorn"
+  },
+  "keywords": [
+    "git",
+    "tempblot",
+    "template",
+    "utilities"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "test:lib": "vitest",
+    "test:build": "publint && attw --profile esm-only --pack .",
+    "test:types": "tsc --noEmit",
+    "test:eslint": "eslint ."
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
+    "@tempblot/config": "workspace:*",
+    "@types/node": "^24.5.2",
+    "publint": "^0.3.21",
+    "unplugin-dts": "^1.0.0-beta.6",
+    "vite": "^8.0.12",
+    "vitest": "^4.1.6"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  }
+}
