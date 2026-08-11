@@ -9,3 +9,5 @@ allowBuilds:
   keytar: false
   nx: true
   sharp: true
+minimumReleaseAgeExclude:
+  - "cli-testing-library@4.0.0"
