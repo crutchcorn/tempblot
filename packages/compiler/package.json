@@ -10,6 +10,7 @@
     "url": "git+https://github.com/crutchcorn/tempblot.git",
     "directory": "packages/compiler"
   },
+  "bin": "dist/bin/tempblot.js",
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/crutchcorn"
@@ -33,7 +34,11 @@
     "test:eslint": "eslint ."
   },
   "dependencies": {
+    "@bomb.sh/args": "^0.3.1",
+    "@bomb.sh/tab": "^0.0.22",
+    "@clack/prompts": "^1.7.0",
     "@tempblot/parser": "workspace:^",
+    "@tempblot/utils": "workspace:^",
     "typescript": "^6.0.3"
   },
   "devDependencies": {

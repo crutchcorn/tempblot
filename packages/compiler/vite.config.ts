@@ -1,3 +1,4 @@
+import { chmodSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
@@ -11,7 +12,14 @@ export default defineConfig(({ mode }) => ({
     dts({
       tsconfigPath: "tsconfig.app.json",
       entryRoot: "src",
+      include: ["src"],
     }),
+    {
+      name: "executable-bin",
+      closeBundle() {
+        chmodSync(resolve(__dirname, "dist/bin/tempblot.js"), 0o755);
+      },
+    },
   ],
   resolve: {
     alias: {
@@ -21,8 +29,10 @@ export default defineConfig(({ mode }) => ({
   build: {
     lib: {
       name: "Tempblot",
-      fileName: "index",
-      entry: resolve(__dirname, "src/index.ts"),
+      entry: {
+        index: resolve(__dirname, "src/index.ts"),
+        "bin/tempblot": resolve(__dirname, "bin/tempblot.ts"),
+      },
       formats: ["es"],
     },
     rollupOptions: {
