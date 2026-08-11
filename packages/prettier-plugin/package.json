@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@tempblot/config": "workspace:*",
-    "@types/node": "^24.5.2",
+    "@types/node": "^26.2.0",
     "cli-testing-library": "^3.0.0",
     "prettier": "^3.6.2",
     "typescript": "^6.0.3",
