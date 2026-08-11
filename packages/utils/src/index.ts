@@ -13,7 +13,8 @@ export interface CloneTemplateOptions {
 }
 
 export interface CloneTemplateResult {
-  path: string;
+  tmpPath: string;
+}
 }
 
 export async function cloneTemplate(
@@ -51,7 +52,8 @@ export async function cloneTemplate(
   }
 
   registerCleanup(clonePath);
-  return { path: clonePath };
+  return { tmpPath: clonePath };
+}
 }
 
 async function ensureSupportedGitVersion(): Promise<void> {

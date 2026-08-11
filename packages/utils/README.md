@@ -5,7 +5,7 @@ Shared utilities for Tempblot tooling.
 ```ts
 import { cloneTemplate } from "@tempblot/utils";
 
-const { path } = await cloneTemplate({ url: GIT_URL });
+const { tmpPath } = await cloneTemplate({ url: GIT_URL });
 ```
 
 `cloneTemplate` requires Git 2.37 or newer. It clones the template into a

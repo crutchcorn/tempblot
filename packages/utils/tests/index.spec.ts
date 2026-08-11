@@ -24,20 +24,20 @@ test("clones all template files with sparse checkout", async () => {
   const repositoryPath = await createRepository();
 
   const result = await cloneTemplate({ url: repositoryPath });
-  testRoots.push(result.path);
+  testRoots.push(result.tmpPath);
 
   await expect(
-    fs.readFile(path.join(result.path, "root.txt"), "utf8"),
+    fs.readFile(path.join(result.tmpPath, "root.txt"), "utf8"),
   ).resolves.toBe("root");
   await expect(
     fs.readFile(
-      path.join(result.path, "nested", "deep", "template.txt"),
+      path.join(result.tmpPath, "nested", "deep", "template.txt"),
       "utf8",
     ),
   ).resolves.toBe("nested");
   await expect(
     fs.readFile(
-      path.join(result.path, ".git", "info", "sparse-checkout"),
+      path.join(result.tmpPath, ".git", "info", "sparse-checkout"),
       "utf8",
     ),
   ).resolves.toContain("nested");
@@ -80,8 +80,8 @@ test("removes the clone when the process exits", async () => {
     `
       import { cloneTemplate } from ${JSON.stringify(sourceUrl)};
       const result = await cloneTemplate({ url: process.argv[1] });
-      await import("node:fs/promises").then(({ access }) => access(result.path));
-      console.log(result.path);
+      await import("node:fs/promises").then(({ access }) => access(result.tmpPath));
+      console.log(result.tmpPath);
     `,
     undefined,
     repositoryPath,
