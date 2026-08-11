@@ -1,8 +1,9 @@
-import { spawn } from "node:child_process";
+import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import * as fs from "node:fs";
 import * as fsPromises from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const minimumGitVersion = [2, 37, 0] as const;
 const cleanupPaths = new Set<string>();
@@ -15,6 +16,25 @@ export interface CloneTemplateOptions {
 export interface CloneTemplateResult {
   tmpPath: string;
 }
+
+export type SpawnSafeAllow =
+  | "addons"
+  | "child"
+  | "ffi"
+  | "net"
+  | "wasi"
+  | "worker";
+
+export type SpawnSafeAllows = Partial<Record<SpawnSafeAllow, boolean>>;
+
+export interface SpawnSafeOptions {
+  allows?: SpawnSafeAllows;
+  defaultFSPaths?: readonly (string | URL)[];
+  file: string | URL;
+}
+
+export interface SpawnSafeResult {
+  new_child_process: ChildProcessWithoutNullStreams;
 }
 
 export async function cloneTemplate(
@@ -54,6 +74,84 @@ export async function cloneTemplate(
   registerCleanup(clonePath);
   return { tmpPath: clonePath };
 }
+
+export function spawnSafe(options: SpawnSafeOptions): SpawnSafeResult {
+  ensureSupportedNodeVersion();
+
+  const normalizedFilePath = normalizeFilePath(options.file);
+  const extension = path.extname(normalizedFilePath);
+
+  if (extension !== ".js" && extension !== ".ts") {
+    throw new TypeError(
+      `spawnSafe only supports .js and .ts files: ${String(options.file)}`,
+    );
+  }
+
+  const defaultFSPaths = (options.defaultFSPaths ?? []).map(normalizeFilePath);
+  const nodeArguments = [
+    "--permission",
+    `--allow-fs-read=${normalizedFilePath}`,
+  ];
+
+  for (const defaultFSPath of defaultFSPaths) {
+    nodeArguments.push(
+      `--allow-fs-read=${defaultFSPath}`,
+      `--allow-fs-write=${defaultFSPath}`,
+    );
+  }
+
+  nodeArguments.push(...getAllowFlags(options.allows ?? {}));
+  nodeArguments.push(normalizedFilePath);
+
+  return { new_child_process: spawn(process.execPath, nodeArguments) };
+}
+
+const permissionFlags: Readonly<Record<SpawnSafeAllow, string>> = {
+  addons: "--allow-addons",
+  child: "--allow-child-process",
+  ffi: "--allow-ffi",
+  net: "--allow-net",
+  wasi: "--allow-wasi",
+  worker: "--allow-worker",
+};
+
+function getAllowFlags(allows: SpawnSafeAllows): string[] {
+  const flags: string[] = [];
+
+  for (const [allow, enabled] of Object.entries(allows)) {
+    const flag = (permissionFlags as Readonly<Record<string, string>>)[allow];
+
+    if (flag === undefined) {
+      throw new TypeError(`Unknown spawnSafe permission: ${allow}`);
+    }
+
+    if (typeof enabled !== "boolean") {
+      throw new TypeError(`spawnSafe permission ${allow} must be a boolean`);
+    }
+
+    if (enabled) {
+      flags.push(flag);
+    }
+  }
+
+  return flags;
+}
+
+function ensureSupportedNodeVersion(): void {
+  const [majorVersion = ""] = process.versions.node.split(".");
+  const major = Number.parseInt(majorVersion, 10);
+
+  if (!Number.isSafeInteger(major) || major < 26) {
+    throw new Error(
+      `spawnSafe requires Node.js 26 or newer; found ${process.versions.node}.`,
+    );
+  }
+}
+
+function normalizeFilePath(filePath: string | URL): string {
+  return filePath instanceof URL
+    ? fileURLToPath(filePath)
+    : path.resolve(filePath);
 }
 
 async function ensureSupportedGitVersion(): Promise<void> {
