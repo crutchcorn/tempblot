@@ -85,12 +85,17 @@ export default defineConfig({
           items: [
             { label: "Basic Usage", slug: "guides/basic-usage" },
             { label: "Project Layout", slug: "guides/project-layout" },
+            { label: "Building CLIs", slug: "guides/building-clis" },
           ],
         },
       ],
     }),
     AutoImport({
-      imports: [{ [import.meta.resolve("@astrojs/starlight/components")]: ["FileTree"] }],
+      imports: [
+        {
+          [import.meta.resolve("@astrojs/starlight/components")]: ["FileTree"],
+        },
+      ],
     }),
   ],
 });
