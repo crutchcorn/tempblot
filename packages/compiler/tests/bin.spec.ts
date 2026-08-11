@@ -63,7 +63,15 @@ test("the packed binary runs outside the project", async () => {
     mkdirSync(dirname(installedBinary), { recursive: true });
     symlinkSync(binaryPath, installedBinary);
 
-    const cli = await render(installedBinary, [], {
+    const invalidCommandCli = await render(installedBinary, ["compile"], {
+      cwd: join(temporaryRoot, "consumer"),
+    });
+
+    expect(
+      await invalidCommandCli.findByError("Usage: tempblot get"),
+    ).toHaveErrorMessage("Usage: tempblot get [--url <repository-url>]");
+
+    const cli = await render(installedBinary, ["get"], {
       cwd: join(temporaryRoot, "consumer"),
     });
 

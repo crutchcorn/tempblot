@@ -17,6 +17,13 @@ const args = parse(argv, {
   string: ["url"],
 });
 
+const [command] = args._;
+
+if (command !== getCmd.value) {
+  console.error(`Usage: tempblot ${getCmd.value} [--url <repository-url>]`);
+  process.exit(1);
+}
+
 const url =
   args.url ||
   ((await text({
