@@ -1,4 +1,6 @@
 import * as path from "node:path";
+import * as fs from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 
@@ -8,6 +10,51 @@ import { compilePath, useParams } from "../src/index.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+async function compileOutput(output: string): Promise<string> {
+  const tempDir = await fs.mkdtemp(path.join(tmpdir(), "tempblot-output-"));
+  const sourcePath = path.join(tempDir, "test.blot");
+
+  try {
+    await fs.writeFile(
+      sourcePath,
+      `<setup>const x = 1;</setup><output>${output}</output>`,
+    );
+    return await compilePath(sourcePath, undefined);
+  } finally {
+    await fs.rm(tempDir, { recursive: true, force: true });
+  }
+}
+
+test.each([
+  "a ${{ github.ref }} b",
+  "a ${HOME} b",
+  "a ${x} b",
+  "C:\\users\\x",
+  "c \\n d",
+  "a ` b",
+  "a \\` b",
+  "a \\\\` b",
+  "a \\${x} b",
+  "a \\\\${x} b",
+  "a \\",
+])("preserves literal output %j", async (output) => {
+  expect(await compileOutput(output)).toEqual(output);
+});
+
+test("preserves literal syntax alongside Tempblot interpolations", async () => {
+  const output = "${x} \\n ` \\<<x>> <<`value: ${x}`>> \\${HOME}";
+
+  expect(await compileOutput(output)).toEqual(
+    "${x} \\n ` \\1 value: 1 \\${HOME}",
+  );
+});
+
+test("preserves escaped delimiters in output and interpolations", async () => {
+  const output = '\\<\\<literal\\>\\> << x ? "\\>\\>" : "\\<\\<" >>';
+
+  expect(await compileOutput(output)).toEqual("<<literal>> >>");
+});
 
 test("compiles a basic file", async () => {
   const result = await compilePath(

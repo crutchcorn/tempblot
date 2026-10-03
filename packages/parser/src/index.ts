@@ -355,8 +355,12 @@ function escapeOutputText(text: string): string {
     } else if (text[i] === "\\" && text[i + 1] === "<") {
       transformed += "<";
       i++;
+    } else if (text[i] === "\\") {
+      transformed += "\\\\";
     } else if (text[i] === "`") {
       transformed += "\\`";
+    } else if (text[i] === "$" && text[i + 1] === "{") {
+      transformed += "\\$";
     } else {
       transformed += text[i];
     }
